@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /chatgpt-web/
+Disallow: /css/
+Disallow: /js/
+Disallow: /calibre-library/
+Disallow: /alist/
+Disallow: /sjtu/
+Disallow: /pp-ocr/
+Disallow: /font-compress/
