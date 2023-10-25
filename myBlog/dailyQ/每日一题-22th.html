@@ -1,0 +1,494 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>每日一题-22th | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="⭐每日一题⭐专栏 written by SJTU-XHW 本人学识有限，解析难免有错，恳请读者能够批评指正，本人将不胜感激！  LuoGu P1044. 栈？卡特兰数！题目背景栈是计算机中经典的数据结构，简单的说，栈就是限制在一端进行插入删除操作的线性表。 栈有两种最重要的操作，即 pop（从栈顶弹出一个元素）和 push（将一个元素进栈）。 栈的重要性不言自明，任何一门数据结构的课程都会介绍栈。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="每日一题-22th">
+<meta property="og:url" content="https://sjtuxhw.asia/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-22th.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="⭐每日一题⭐专栏 written by SJTU-XHW 本人学识有限，解析难免有错，恳请读者能够批评指正，本人将不胜感激！  LuoGu P1044. 栈？卡特兰数！题目背景栈是计算机中经典的数据结构，简单的说，栈就是限制在一端进行插入删除操作的线性表。 栈有两种最重要的操作，即 pop（从栈顶弹出一个元素）和 push（将一个元素进栈）。 栈的重要性不言自明，任何一门数据结构的课程都会介绍栈。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sjtuxhw.asia/img/404.png">
+<meta property="article:published_time" content="2023-07-16T22:51:12.000Z">
+<meta property="article:modified_time" content="2023-09-19T05:29:10.608Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="Programming">
+<meta property="article:tag" content="Leetcode">
+<meta property="article:tag" content="洛谷">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sjtuxhw.asia/img/404.png"><link rel="shortcut icon" href="/myBlog/img/favicon.ico"><link rel="canonical" href="https://sjtuxhw.asia/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-22th.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myBlog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?64dd3b0c09c8af7b916f8249d32097e2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = {
+  root: '/myBlog/',
+  algolia: undefined,
+  localSearch: {"path":"/myBlog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '每日一题-22th',
+  isPost: false,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2023-09-19 01:29:10'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/myBlog/css/mouseConfig.css"><link rel="stylesheet" href="/myBlog/css/valineBg.css"><link rel="stylesheet" href="/myBlog/css/rightmenu.css"><link rel="stylesheet" href="/myBlog/css/custom_music.css"><link rel="stylesheet" href="/myBlog/css/addFonts.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/myBlog/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/myBlog/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">45</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="not-home-page" id="page-header" style="background-image: url('/myBlog/img/archive-bg.jpg')"><nav id="nav"><span id="blog-info"><a href="/myBlog/" title="SJTU-XHW's blog"><img class="site-icon" src="/myBlog/img/head_icon.png"/><span class="site-name">SJTU-XHW's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="page-site-info"><h1 id="site-title">每日一题-22th</h1></div></header><main class="layout" id="content-inner"><div id="page"><div id="article-container"><p>⭐每日一题⭐专栏</p>
+<p><i>written by SJTU-XHW</i></p>
+<p><i>本人学识有限，解析难免有错，恳请读者能够批评指正，本人将不胜感激！</i></p>
+<hr>
+<h2 id="LuoGu-P1044-栈？卡特兰数！"><a href="#LuoGu-P1044-栈？卡特兰数！" class="headerlink" title="LuoGu P1044. 栈？卡特兰数！"></a>LuoGu P1044. 栈？卡特兰数！</h2><h3 id="题目背景"><a href="#题目背景" class="headerlink" title="题目背景"></a>题目背景</h3><p>栈是计算机中经典的数据结构，简单的说，栈就是限制在一端进行插入删除操作的线性表。</p>
+<p>栈有两种最重要的操作，即 pop（从栈顶弹出一个元素）和 push（将一个元素进栈）。</p>
+<p>栈的重要性不言自明，任何一门数据结构的课程都会介绍栈。宁宁同学在复习栈的基本概念时，想到了一个书上没有讲过的问题，而他自己无法给出答案，所以需要你的帮忙。</p>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p><img src="P1044/1.png" alt=""></p>
+<p>宁宁考虑的是这样一个问题：一个操作数序列，$1,2,\ldots ,n$（图示为 1 到 3 的情况），栈 A 的深度大于 $n$。</p>
+<p>现在可以进行两种操作，</p>
+<ol>
+<li>将一个数，从操作数序列的头端移到栈的头端（对应数据结构栈的 push 操作）</li>
+<li>将一个数，从栈的头端移到输出序列的尾端（对应数据结构栈的 pop 操作）</li>
+</ol>
+<p>使用这两种操作，由一个操作数序列就可以得到一系列的输出序列，下图所示为由 <code>1 2 3</code> 生成序列 <code>2 3 1</code> 的过程。</p>
+<p><img src="P1044/2.png" alt=""></p>
+<p>（原始状态如上图所示）</p>
+<p>你的程序将对给定的 $n$，计算并输出由操作数序列 $1,2,\ldots,n$ 经过操作可能得到的输出序列的总数。</p>
+<h3 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h3><h4 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a>输入格式</h4><p>输入文件只含一个整数 $n$（$1 \leq n \leq 18$）。</p>
+<h4 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a>输出格式</h4><p>输出文件只有一行，即可能输出序列的总数目。</p>
+<h4 id="样例-1-输入"><a href="#样例-1-输入" class="headerlink" title="样例 1 输入"></a>样例 1 输入</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3</span><br></pre></td></tr></table></figure>
+<h4 id="样例-1-输出"><a href="#样例-1-输出" class="headerlink" title="样例 1 输出"></a>样例 1 输出</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">5</span><br></pre></td></tr></table></figure>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><h4 id="PART-Ⅰ"><a href="#PART-Ⅰ" class="headerlink" title="PART Ⅰ"></a>PART Ⅰ</h4><p>首先弄清楚这就是个普普通通的简单的栈。数据结构书上曾经提到过一种与其类似的题目，讲的是给定一个入栈序列，要求某个元素在出栈序列中的约束关系，求最终出栈序列的种类。这里的思路我想应该相似，主要是数学问题；</p>
+<p>一开始没有思路，就打算从少的数中推理规律。$n=1$ 时，自然只有一种序列；$n=2$ 时 2 种；$n=3$ 时，我们这样考虑（假设这三个元素从前到后分别是 $A,B,C$）：</p>
+<ul>
+<li><strong>$A$ 必然是第一个进栈的</strong>；因为进栈序列是给定的（这不影响一般性）；</li>
+<li><strong>在 $A$ 进栈以后，但凡有一个元素进栈（无论几个），它必须都先出栈，$A$ 才能出栈</strong>；</li>
+</ul>
+<p>因此，我们可以将序列分为：<strong>$A$ 出栈前的进出栈序列</strong> 和 <strong>$A$ 出栈后的进出栈序列</strong> 这两个序列，这两个序列有着极好的性质：<strong>同一个元素的进/出栈必然在这两个序列之一中，不可能分居两个序列</strong>（由上面第二条推得）；</p>
+<p>这样就能轻松把这个问题分解为子问题（现在把 3 个拓展到 $n$ 个）：</p>
+<ul>
+<li>$A$ 出栈前有 $k$（$k\in[0,n-1]$，分类加法原理）个元素<strong>进栈并出栈</strong>，另外（分步乘法原理） $n-k-1$ 个元素在 $A$ 出栈后<strong>进栈并出栈</strong>；</li>
+</ul>
+<p>我们假设 $n$ 个元素进出栈的序列种类是 $f(n)$，那么可知：</p>
+<script type="math/tex; mode=display">
+f(n)=\sum\limits_{k=0}^{n-1}f(k)f(n-k-1)</script><p>上面的结论<strong>再配合动态规划（空间换时间）</strong>足以让我们解决这题，但是，既然我们都得出了一个数学递推式，能不能进一步优化呢？比如通项公式（和“旋转函数、一步两步上楼梯”这些题一样）？</p>
+<h4 id="PART-Ⅱ"><a href="#PART-Ⅱ" class="headerlink" title="PART Ⅱ"></a>PART Ⅱ</h4><p>不妨把思路转换到另一个问题上：这很像另一道题目——不超过对角线的方格路线问题：在 $n\times n$ 的正方形方格中，<strong>从左下角开始到右上角结束、不越过“左下-右上”对角线的、在右下方的单调路径</strong>有多少种。当时考虑的一个重要问题是<strong>右移格数时刻不能超过上移的格数</strong>；</p>
+<p>因此类比到这里，栈对于出栈序列的约束就在于两点：<strong>① 出栈的元素在数量上一定少于进栈元素；② 先进后出</strong>。单从数量角度来看，我们可以类比成 “进栈=&gt;向右走一格”，“出栈=&gt;向上走一格”，这样原问题转化为上面的问题。</p>
+<blockquote>
+<p>有同学会问，诶？出栈序列和元素种类没有关系吗？</p>
+<p><strong>没错！前面我们早已说明，可以只需考虑一个特定的进栈序列，而不失一般性</strong>。这样每次 向右一格 对应的元素是固定的，所以<strong>由 向右一格 和 向上一格 组成的序列能和出入栈序列一一对应</strong>；</p>
+</blockquote>
+<p>我们对于这个问题还是没什么好办法，不过没关系！我们从 $n=4$ 的小的情况开始：</p>
+<p><img src="P1044/Catalan_number_4x4_grid_example.svg.png" height="275"></p>
+<p>以上的情况都是符合条件的，但怎么用数学计算出来呢？</p>
+<p>我们已经知道从左下到右上的单调路径<strong>就是从 $n$ 个向右、$n$ 个向上的路径中选出所有向右（或上）操作所在的步数，那么向上（或右）也就确定了</strong>，这个数量是 $C_{2n}^n$；这个情况就需要考虑原命题的反面：<strong>跨过对角线的路径是非法路径</strong>；</p>
+<p>紧接着我们了解到 对每一条非法路径都有一个<strong>变换</strong>：从第一次跨越对角线的元素开始，将此后的点（包含自己）相对于副对角线折叠，这样得到的另一条与其对应的路径。如下图所示，黑色实线是方格的主对角线、红色实线是主对角线上面的一条副对角线、红色虚线是折叠前的一条非法路径、红色含箭头实线是折叠后的路径。</p>
+<p><img src="P1044/165px-Catalan_number-path_reflection.svg.png"></p>
+<p>这个“折叠后的路径”，如图所示，因为终点在 $(n-1,n+1)$，所以不在这题的讨论范围中，但是<strong>恰恰因为</strong>所有这类路径的终点都在 $(n-1,n+1)$，能够针对这个折叠操作建立一个<strong>双射</strong>；<strong>因此可知所有非法路径都唯一对应着一条终点位于 $(n-1,n+1)$ 的路径</strong>；因此：</p>
+<script type="math/tex; mode=display">
+非法路径总数=终点(n-1,n+1)的路径总数=C_{2n}^{n-1}=C_{2n}^{n+1}</script><p>问题完成了：$f(n)=路径总数-非法路径数=C_{2n}^n-C_{2n}^{n-1}=\dfrac{1}{n+1}C_{2n}^n$.</p>
+<hr>
+<p>经过上面的讨论，这题答案的递推公式、通项公式都已经解出。</p>
+<p>其实，上面的 $f(n)$ 序列是有名字的——“<strong>卡特兰数</strong>”（Catalan Number），它是数学上的一个重要的序列（<a target="_blank" rel="noopener external nofollow noreferrer" href="https://oeis.org/A000108">A000108</a>），在很多问题中都有相似的思路，<strong>因此有很多定义式，并且相互等价</strong>。以上思路中涉及到了卡特兰数的 <strong>三个定义式</strong>，分别是：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+f(n)&=\sum\limits_{k=0}^{n-1}f(k)f(n-k-1)\\
+&=C_{2n}^n-C_{2n}^{n-1}\\
+&=\dfrac{1}{n+1}C_{2n}^n
+\end{aligned}</script><p>事实上，卡特兰数还有许多种定义式，在以下问题中有应用：</p>
+<ol>
+<li><strong>$n$ 个结点可以构造多少种不同构的二叉树</strong>；</li>
+<li><strong>对角线不相交的情况下，将一个凸多边形分成三角形区域的方法数</strong>；</li>
+<li><strong>在圆上选择 $2n$ 个不相同的点，将这些点成对连接，使得这些线段不相交的方法数</strong>；</li>
+<li><strong>一个栈有 $n$ 个相异的进栈元素，问出栈序列的种类数</strong>（本题）；</li>
+<li><strong>在 $n\times n$ 方格中，不越过对角线的非降对角路径的总数</strong>；</li>
+</ol>
+<p>强烈大家阅读英文维基学习，这里的知识包括以上的证明、各种定义方式，比某些国内教科书说的还要详细：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://en.wikipedia.org/wiki/Catalan_number">Catalan number - Wikipedia</a></p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>只有一个需要注意的，是组合数的计算方法。不建议直接使用定义，因为 $n!$ 很快会溢出；（这竟然是相当麻烦的地方</p>
+<p>可以考虑 递推 $C_n^m=C_{n-1}^m+C_{n-1}^{m-1}$ 结合 动态规划；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> c[<span class="number">38</span>][<span class="number">38</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> <span class="title">C</span><span class="params">(<span class="type">int</span> n, <span class="type">int</span> m)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (m == <span class="number">0</span> || m == n) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (c[n][m] != <span class="number">0</span>) <span class="keyword">return</span> c[n][m];</span><br><span class="line">    <span class="keyword">return</span> c[n][m] = <span class="built_in">C</span>(n - <span class="number">1</span>, m) + <span class="built_in">C</span>(n - <span class="number">1</span>, m - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> n; cin &gt;&gt; n;</span><br><span class="line">    cout &lt;&lt; <span class="built_in">C</span>(<span class="number">2</span> * n, n) - <span class="built_in">C</span>(<span class="number">2</span> * n, n - <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/myBlog/img/favicon.ico" onerror="this.onerror=null;this.src='/myBlog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SJTU-XHW</div><div class="author-info__description">A blog to document learning and life</div></div><div class="card-info-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">45</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.asia/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! ‎|•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评"><img src="https://cdn.sjtuxhw.top/cover_imgs/anime_bokumachi.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="《只有我不在的城市》番评"/></a><div class="content"><a class="title" href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评">《只有我不在的城市》番评</a><time datetime="2023-10-01T14:20:47.000Z" title="发表于 2023-10-01 10:20:47">2023-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/09/17/CSAPP-Notes-Chapter1-3/" title="CSAPP Notes Chapter1~3"><img src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes Chapter1~3"/></a><div class="content"><a class="title" href="/myBlog/2023/09/17/CSAPP-Notes-Chapter1-3/" title="CSAPP Notes Chapter1~3">CSAPP Notes Chapter1~3</a><time datetime="2023-09-17T23:47:15.000Z" title="发表于 2023-09-17 19:47:15">2023-09-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="MC-Forge开发笔记（一）"><img src="https://cdn.sjtuxhw.top/cover_imgs/minecraft1.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="MC-Forge开发笔记（一）"/></a><div class="content"><a class="title" href="/myBlog/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="MC-Forge开发笔记（一）">MC-Forge开发笔记（一）</a><time datetime="2023-09-06T01:04:06.000Z" title="发表于 2023-09-05 21:04:06">2023-09-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/08/30/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%B8%89%EF%BC%89/" title="从C++入门Qt（三）"><img src="https://cdn.sjtuxhw.top/cover_imgs/qt3.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="从C++入门Qt（三）"/></a><div class="content"><a class="title" href="/myBlog/2023/08/30/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%B8%89%EF%BC%89/" title="从C++入门Qt（三）">从C++入门Qt（三）</a><time datetime="2023-08-30T23:05:14.000Z" title="发表于 2023-08-30 19:05:14">2023-08-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/08/16/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%BA%8C%EF%BC%89/" title="从C++入门Qt（二）"><img src="https://cdn.sjtuxhw.top/cover_imgs/qt2.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="从C++入门Qt（二）"/></a><div class="content"><a class="title" href="/myBlog/2023/08/16/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%BA%8C%EF%BC%89/" title="从C++入门Qt（二）">从C++入门Qt（二）</a><time datetime="2023-08-17T03:15:11.000Z" title="发表于 2023-08-16 23:15:11">2023-08-16</time></div></div></div></div><div class="card-widget" id="card-newest-comments"><div class="item-headline"><i class="fas fa-comment-dots"></i><span>最新评论</span></div><div class="aside-list"><span>正在加载中...</span></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分类</span>
+            
+            </div>
+            <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/myBlog/categories/Chat/"><span class="card-category-list-name">Chat</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/myBlog/categories/literary/"><span class="card-category-list-name">literary</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/myBlog/categories/review/"><span class="card-category-list-name">review</span><span class="card-category-list-count">6</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/myBlog/categories/technical/"><span class="card-category-list-name">technical</span><span class="card-category-list-count">13</span></a></li>
+            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/myBlog/tags/Disassembly/" style="font-size: 1.1em; color: #999">Disassembly</a> <a href="/myBlog/tags/Sort/" style="font-size: 1.1em; color: #999">Sort</a> <a href="/myBlog/tags/Linear-List/" style="font-size: 1.1em; color: #999">Linear-List</a> <a href="/myBlog/tags/CMake/" style="font-size: 1.1em; color: #999">CMake</a> <a href="/myBlog/tags/Data-Structure/" style="font-size: 1.5em; color: #99a9bf">Data-Structure</a> <a href="/myBlog/tags/Discrete-Math/" style="font-size: 1.23em; color: #999ea6">Discrete-Math</a> <a href="/myBlog/tags/BSTree/" style="font-size: 1.1em; color: #999">BSTree</a> <a href="/myBlog/tags/Appreciation/" style="font-size: 1.1em; color: #999">Appreciation</a> <a href="/myBlog/tags/MySQL/" style="font-size: 1.1em; color: #999">MySQL</a> <a href="/myBlog/tags/Programmimg/" style="font-size: 1.1em; color: #999">Programmimg</a> <a href="/myBlog/tags/Crawler/" style="font-size: 1.1em; color: #999">Crawler</a> <a href="/myBlog/tags/git/" style="font-size: 1.1em; color: #999">git</a> <a href="/myBlog/tags/Fiddler/" style="font-size: 1.1em; color: #999">Fiddler</a> <a href="/myBlog/tags/Java/" style="font-size: 1.37em; color: #99a4b2">Java</a> <a href="/myBlog/tags/essay/" style="font-size: 1.37em; color: #99a4b2">essay</a> <a href="/myBlog/tags/Anime/" style="font-size: 1.1em; color: #999">Anime</a> <a href="/myBlog/tags/Database/" style="font-size: 1.1em; color: #999">Database</a> <a href="/myBlog/tags/Crack/" style="font-size: 1.1em; color: #999">Crack</a> <a href="/myBlog/tags/External-Search/" style="font-size: 1.1em; color: #999">External-Search</a> <a href="/myBlog/tags/Graph/" style="font-size: 1.23em; color: #999ea6">Graph</a> <a href="/myBlog/tags/Forge/" style="font-size: 1.1em; color: #999">Forge</a> <a href="/myBlog/tags/GNU/" style="font-size: 1.37em; color: #99a4b2">GNU</a> <a href="/myBlog/tags/CDN/" style="font-size: 1.1em; color: #999">CDN</a> <a href="/myBlog/tags/Tree/" style="font-size: 1.1em; color: #999">Tree</a> <a href="/myBlog/tags/Matlab/" style="font-size: 1.1em; color: #999">Matlab</a> <a href="/myBlog/tags/Hash-Table/" style="font-size: 1.1em; color: #999">Hash-Table</a> <a href="/myBlog/tags/Set-Theory/" style="font-size: 1.1em; color: #999">Set-Theory</a> <a href="/myBlog/tags/Flag/" style="font-size: 1.1em; color: #999">Flag</a> <a href="/myBlog/tags/Web/" style="font-size: 1.1em; color: #999">Web</a> <a href="/myBlog/tags/ICS/" style="font-size: 1.1em; color: #999">ICS</a> <a href="/myBlog/tags/Qt/" style="font-size: 1.37em; color: #99a4b2">Qt</a> <a href="/myBlog/tags/HDC/" style="font-size: 1.1em; color: #999">HDC</a> <a href="/myBlog/tags/Container/" style="font-size: 1.1em; color: #999">Container</a> <a href="/myBlog/tags/Docker/" style="font-size: 1.1em; color: #999">Docker</a> <a href="/myBlog/tags/SQL/" style="font-size: 1.1em; color: #999">SQL</a> <a href="/myBlog/tags/C/" style="font-size: 1.37em; color: #99a4b2">C++</a> <a href="/myBlog/tags/CSAPP/" style="font-size: 1.1em; color: #999">CSAPP</a> <a href="/myBlog/tags/Logic/" style="font-size: 1.1em; color: #999">Logic</a> <a href="/myBlog/tags/HarmonyOS/" style="font-size: 1.1em; color: #999">HarmonyOS</a> <a href="/myBlog/tags/Math/" style="font-size: 1.1em; color: #999">Math</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2023/10/"><span class="card-archive-list-date">十月 2023</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2023/09/"><span class="card-archive-list-date">九月 2023</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2023/08/"><span class="card-archive-list-date">八月 2023</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2023/07/"><span class="card-archive-list-date">七月 2023</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2023/06/"><span class="card-archive-list-date">六月 2023</span><span class="card-archive-list-count">5</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2023/05/"><span class="card-archive-list-date">五月 2023</span><span class="card-archive-list-count">8</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2023/04/"><span class="card-archive-list-date">四月 2023</span><span class="card-archive-list-count">4</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">27</div></div><div class="webinfo-item"><div class="item-name">已运行时间 :</div><div class="item-count" id="runtimeshow" data-publishDate="2023-03-24T04:00:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">211k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总访问量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2023-10-25T13:43:45.793Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 By SJTU-XHW | tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/myBlog/js/utils.js"></script><script src="/myBlog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo-ax33bluz4-alex-andrews-projects.vercel.app/',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo-ax33bluz4-alex-andrews-projects.vercel.app/',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+      GLOBAL_CONFIG_SITE.isPost && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://twikoo-ax33bluz4-alex-andrews-projects.vercel.app/',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <div class='name'><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom.innerHTML= result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script src="/myBlog/js/jquery-3.7.0.min.js"></script><script src="/myBlog/js/rightmenu.js"></script><div class="aplayer no-destroy" data-id="6898044781" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false"></div><script src="/myBlog/js/mourn.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="/myBlog/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/myBlog/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>

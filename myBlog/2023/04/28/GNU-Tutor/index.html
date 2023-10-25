@@ -1,0 +1,789 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>GNU-Tutor | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="基础：C&#x2F;C++的源文件编译过程 想要代码在操作系统上运行，需要进行以下编译步骤，从高级语言转机器语言，以下任务gcc&#x2F;g++均能完成：  预编译（.c&#x2F;cpp &amp; .h —&gt; .i ）：*对应gcc&#x2F;g++命令：gcc -E [xxx] -o [output.i] 展开所有宏定义#define（字符替换）； 处理所有条件预编译命令（#ifdef、#ifndef、#endif等）；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GNU-Tutor">
+<meta property="og:url" content="https://sjtuxhw.asia/2023/04/28/GNU-Tutor/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="基础：C&#x2F;C++的源文件编译过程 想要代码在操作系统上运行，需要进行以下编译步骤，从高级语言转机器语言，以下任务gcc&#x2F;g++均能完成：  预编译（.c&#x2F;cpp &amp; .h —&gt; .i ）：*对应gcc&#x2F;g++命令：gcc -E [xxx] -o [output.i] 展开所有宏定义#define（字符替换）； 处理所有条件预编译命令（#ifdef、#ifndef、#endif等）；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/GNU-Tutor.jpg">
+<meta property="article:published_time" content="2023-04-28T04:44:44.000Z">
+<meta property="article:modified_time" content="2023-09-19T05:25:27.146Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="GNU">
+<meta property="article:tag" content="Programming">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/GNU-Tutor.jpg"><link rel="shortcut icon" href="/myBlog/img/favicon.ico"><link rel="canonical" href="https://sjtuxhw.asia/2023/04/28/GNU-Tutor/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myBlog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?64dd3b0c09c8af7b916f8249d32097e2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = {
+  root: '/myBlog/',
+  algolia: undefined,
+  localSearch: {"path":"/myBlog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'GNU-Tutor',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-09-19 01:25:27'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/myBlog/css/mouseConfig.css"><link rel="stylesheet" href="/myBlog/css/valineBg.css"><link rel="stylesheet" href="/myBlog/css/rightmenu.css"><link rel="stylesheet" href="/myBlog/css/custom_music.css"><link rel="stylesheet" href="/myBlog/css/addFonts.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/myBlog/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/myBlog/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">45</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.sjtuxhw.top/cover_imgs/GNU-Tutor.jpg')"><nav id="nav"><span id="blog-info"><a href="/myBlog/" title="SJTU-XHW's blog"><img class="site-icon" src="/myBlog/img/head_icon.png"/><span class="site-name">SJTU-XHW's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">GNU-Tutor</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-04-28T04:44:44.000Z" title="发表于 2023-04-28 00:44:44">2023-04-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-09-19T05:25:27.146Z" title="更新于 2023-09-19 01:25:27">2023-09-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>12分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/myBlog/2023/04/28/GNU-Tutor/#post-comment"><span id="twikoo-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="基础：C-C-的源文件编译过程"><a href="#基础：C-C-的源文件编译过程" class="headerlink" title="基础：C/C++的源文件编译过程"></a>基础：C/C++的源文件编译过程</h2><blockquote>
+<p>想要代码在操作系统上运行，需要进行以下编译步骤，从高级语言转机器语言，以下任务gcc/g++均能完成：</p>
+<ol>
+<li>预编译（<em>.c/cpp &amp; </em>.h —&gt; <em>.i ）：<em>*对应gcc/g++命令：<code>gcc -E [xxx] -o [output.i]</code></em></em><ul>
+<li>展开所有宏定义#define（字符替换）；</li>
+<li>处理所有条件预编译命令（#ifdef、#ifndef、#endif等）；</li>
+<li>处理#include，具体操作是将指向的文件直接插入到文件的这一行（严格遵循上一步的条件）；</li>
+<li>删除所有注释；</li>
+<li>添加行号、文件标识，以便调试/编译出错时及时指出；</li>
+<li>保留#pragma指令，以供编译器使用；</li>
+</ul>
+</li>
+<li>编译（<em>.i —&gt; </em>.s ，即高级语言转汇编语言）：<strong>对应gcc/g++命令：<code>gcc -S [xxx] -o [output.s]</code></strong><ul>
+<li>词法分析、语法分析、语义分析（前端）；</li>
+<li>生成中间代码、优化，生成目标代码（解释型语言无需做此步，生成中间代码后直接对语义执行）；</li>
+<li>编译原理入门：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.cnblogs.com/fisherss/p/13905395.html">https://www.cnblogs.com/fisherss/p/13905395.html</a></li>
+</ul>
+</li>
+<li>汇编（<em>.s —&gt; </em>.o/obj，即汇编语言转机器语言）：<strong>对应gcc/g++命令：<code>gcc -c [xxx] -o [output.o/obj]</code></strong><ul>
+<li>类Unix系统下生成*.o，Windows系统下生成*.obj；</li>
+</ul>
+</li>
+<li>链接（<em>.o —&gt; </em>.out/exe，链接各种需要的库和其他目标文件）：<strong>对应gcc/g++命令：<code>gcc [xxx] -o [output]</code></strong></li>
+<li>生成调试文件（供gdb使用，<strong>对应gcc/g++命令：<code>gcc [xxx] -g -o [output]</code></strong>）<ul>
+<li>也支持<code>-o</code>参数：<code>-O</code>（默认）、<code>-O1</code>（尝试减少代码体积和代码运行时间，但是并不执行会花费大量时间的优化操作）、<code>-O2</code>（包含 -O1的优化并增加了不需要在目标文件大小和执行速度上进行折衷的优化，会花费更多的编译时间当然也会生成性能更好的代码）、<code>-O3</code>（不建议使用）</li>
+</ul>
+</li>
+</ol>
+<p>注：以上<code>[xxx]</code>内容表示gcc接受前面的任意类型文件（比如链接命令可以直接执行使*.cc—-&gt;*.out）。</p>
+</blockquote>
+<h2 id="基础：GNU及其相关概念"><a href="#基础：GNU及其相关概念" class="headerlink" title="基础：GNU及其相关概念"></a>基础：GNU及其相关概念</h2><blockquote>
+<ol>
+<li>GNU是由Richard Stallman在1983年9月27日公开发起的一项计划，目标是创建一套完全自由的操作系统，对标商业化的Unix系统。</li>
+<li>GNU软件可以自由地”使用、复制、修改和发布”，所有GNU软件都有一份在禁止其他人添加任何限制的情况下授权所有权利给任何人的协议条款，<strong>GNU通用公共许可证</strong>(GNU General Public License，GPL)。</li>
+<li>GNU及其创始人：开源运动的先驱</li>
+<li>GNU框架下的著名实现成果：GNU/Linux、GNU/GCC、GNU/make、GNU/GDB</li>
+</ol>
+</blockquote>
+<ul>
+<li>GCC（GNU Compiler Collection，GNU编译器集合），支持从预编译到链接过程的所有源码编译过程；</li>
+<li>MinGW（Minimalist GNU for Windows），可自由使用和自由发布的Windows特定头文件和使用GNU工具集导入库的集合，允许你在Windows平台生成本地的Windows程序而不需要第三方C运行时(C Runtime)库，可以理解为C/C++在Windows上的必要库的集合；<ul>
+<li>MSVC：微软开发的VC运行库，附在Visual Studio上，默认使用<strong>MSVC编译器</strong>；</li>
+<li>MinGW  和  MSVC  的性质、完成目标都相同，只是开发者不同，选其一即可；</li>
+</ul>
+</li>
+<li>LLVM：是构架编译器(compiler)的框架系统，以C++编写而成，用于优化以任意程序语言编写的程序的编译时间(compile-time)、链接时间(link-time)、运行时间(run-time)以及空闲时间(idle-time)，对开发者保持开放，并兼容已有脚本。多用于Apple平台；</li>
+<li>make与CMake<ul>
+<li><code>make</code>出现背景：庞大项目下，一次次使用GCC编译无比麻烦，例如库的依赖关系链接和设定。需要采用：写一个文件指导编译过程的方法。</li>
+<li><code>make</code>的不足：对类Unix系统通用（不兼容Windows）、语法简单（功能受限）、不同编译器语法规则不同（适合GCC，却不适合MSVC）；</li>
+<li>改进（<code>cmake</code>）：make必须编写对应编译器的makefile来实现编译；而CMake则通过<code>CMakeLists.txt</code>，结合当前系统环境、编译器构建合适的文件（可以针对make，也可以针对MSVC）；</li>
+</ul>
+</li>
+<li>GDB： 全称“GNU symbolic debugger”，</li>
+</ul>
+<h2 id="CMake-快速入门"><a href="#CMake-快速入门" class="headerlink" title="CMake 快速入门"></a>CMake 快速入门</h2><ul>
+<li><p>基本步骤</p>
+<blockquote>
+<ol>
+<li>写 CMake 配置文件 CMakeLists.txt 。</li>
+<li>执行命令 <code>cmake PATH</code> 或者 <code>ccmake PATH</code> 生成 Makefile（<code>ccmake</code> 和 <code>cmake</code> 的区别在于前者提供了一个交互式的界面）。其中， <code>PATH</code> 是 CMakeLists.txt 所在的目录。</li>
+<li>使用 <code>make</code> /<code>cmake --build</code>命令进行编译。</li>
+</ol>
+</blockquote>
+</li>
+<li><p><code>CMakeLists.txt</code>语法</p>
+<ul>
+<li><p>普通用法（不存在链接库）</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span> (VERSION <span class="number">2.8</span> [FATAL_ERROR])</span><br><span class="line"><span class="comment"># 项目名称</span></span><br><span class="line"><span class="keyword">project</span> (projectName [LANGUAGE CXX])</span><br><span class="line"><span class="comment"># 查找当前目录下的所有源文件</span></span><br><span class="line"><span class="comment"># 并将名称保存到 DIR_SRCS 变量</span></span><br><span class="line"><span class="keyword">aux_source_directory</span>(. DIR_SRCS)</span><br><span class="line"><span class="comment"># 指定生成目标（也可以不用aux_source_directory，但是需要手动一个一个写）</span></span><br><span class="line"><span class="comment"># 如：add_executable (projectName sourceFile1 sourceFile2 ...)</span></span><br><span class="line"><span class="keyword">add_executable</span>(projectName <span class="variable">$&#123;DIR_SRCS&#125;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>存在链接库的用法：<strong>情况1：要编译为动态链接库的文件放在另一个目录下。</strong></p>
+<ul>
+<li>在main存在的目录下的CMakeList.txt：</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># CMake 最低版本号要求</span></span><br><span class="line"><span class="keyword">cmake_minimum_required</span> (VERSION <span class="number">2.8</span>)</span><br><span class="line"><span class="comment"># 项目信息</span></span><br><span class="line"><span class="keyword">project</span> (projectName)</span><br><span class="line"><span class="comment"># 查找当前目录下的所有源文件</span></span><br><span class="line"><span class="comment"># 并将名称保存到 DIR_SRCS 变量</span></span><br><span class="line"><span class="keyword">aux_source_directory</span>(. DIR_SRCS)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加 subDirName 子目录（提示CMake查看该子目录下的CMakeLists.txt）</span></span><br><span class="line"><span class="keyword">add_subdirectory</span>(subDirName)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定生成目标 </span></span><br><span class="line"><span class="keyword">add_executable</span>(exeName main.cc)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加链接库（提示CMake和后来的make，exeName需要链接dllName的链接库）</span></span><br><span class="line"><span class="keyword">target_link_libraries</span>(exeName dllName)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在编译链接库的目录下的CMakeLists.txt：</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查找当前目录下的所有源文件</span></span><br><span class="line"><span class="comment"># 并将名称保存到 DIR_LIB_SRCS 变量</span></span><br><span class="line"><span class="keyword">aux_source_directory</span>(. DIR_LIB_SRCS)</span><br><span class="line"><span class="comment"># 生成链接库</span></span><br><span class="line"><span class="keyword">add_library</span> (dllName <span class="variable">$&#123;DIR_LIB_SRCS&#125;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>存在链接库的用法：<strong>情况2：要编译为动态链接库的文件放在同一个目录下。</strong></p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># CMake 最低版本号要求</span></span><br><span class="line"><span class="keyword">cmake_minimum_required</span> (VERSION <span class="number">2.8</span>)</span><br><span class="line"><span class="comment"># 项目信息</span></span><br><span class="line"><span class="keyword">project</span> (projectName)</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_library</span> (dllName dllSourceFiles)</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_executable</span> (exeName sourceFiles)</span><br><span class="line"></span><br><span class="line"><span class="keyword">target_link_libraries</span> (exeName dllName)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>存在链接库的用法：<strong>情况3：第三方已编译的动态链接库（*.so/*.dll）</strong></p>
+<ul>
+<li><p>注：每个第三方库都必须经过如下设置</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_library</span> (libName SHARED IMPORTED)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set_target_properties</span> (</span><br><span class="line">    libName</span><br><span class="line">    PROPERTIES IMPORTED_LOCATION</span><br><span class="line">    <span class="variable">$&#123;CMAKE_SOURCE_DIR&#125;</span>/[libDIR]</span><br><span class="line">)</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="keyword">target_link_libraries</span> (exeName libName)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>CMake定制安装规则：如果使用<code>make install</code>则会用到</p>
+<ul>
+<li><p>安装位置设置：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># fileName（可以是链接库名，也可以是可执行文件名）安装到/usr/local/bin</span></span><br><span class="line"><span class="keyword">install</span> (TARGETS fileName DESTINATION bin)</span><br><span class="line"><span class="comment"># dll.h安装到/usr/local/include</span></span><br><span class="line"><span class="keyword">install</span> (FILES dll.h DESTINATION <span class="keyword">include</span>)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>CMake添加调试标记（供GDB使用）</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将编译选项切换为Debug（而非Release）</span></span><br><span class="line"><span class="keyword">set</span> (CMAKE_BUILD_TYPE DEBUG)</span><br><span class="line"><span class="comment"># 以下命令如果是针对C语言，请将CXX改为C（将Debug模式下的CXXFLAGS的CMake参数加上调试符号）</span></span><br><span class="line"><span class="keyword">set</span> (CMAKE_CXX_FLAGS_DEBUG <span class="string">&quot;$&#123;CXXFLAGS&#125; -O0 -Wall -ggdb&quot;</span>)</span><br><span class="line"><span class="comment"># 一般对Release选项直接用O2优化编译即可，可以这么写：</span></span><br><span class="line"><span class="keyword">set</span> (CMAKE_CXX_FLAGS_RELEASE <span class="string">&quot;$&#123;CXXFLAGS&#125; -O2 -Wall&quot;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="GCC-G-快速入门"><a href="#GCC-G-快速入门" class="headerlink" title="GCC/G++快速入门"></a>GCC/G++快速入门</h2><p>XP 看什么，在1. 中已经写了，详细见官方文档</p>
+<h2 id="GDB-快速入门（以Linux环境为例）"><a href="#GDB-快速入门（以Linux环境为例）" class="headerlink" title="GDB 快速入门（以Linux环境为例）"></a>GDB 快速入门（以Linux环境为例）</h2><ul>
+<li>常用命令</li>
+</ul>
+<table>
+    <tr>
+        <th>命令名称</th>
+        <th>命令缩写</th>
+        <th>命令说明</th>
+    </tr>
+    <tr>
+        <td>run</td>
+        <td>r</td>
+        <td>运行一个待调试的程序</td>
+    </tr>
+    <tr>
+        <td>continue</td>
+        <td>c</td>
+        <td>让暂停的程序继续运行（到下一个断点）</td>
+    </tr>
+    <tr>
+        <td>next</td>
+        <td>n</td>
+        <td>运行到下一行（逐过程）</td>
+    </tr>
+    <tr>
+        <td>step</td>
+        <td>s</td>
+        <td>单步执行，遇到函数会进入（逐步）</td>
+    </tr>
+    <tr>
+        <td>until</td>
+        <td>u [num]</td>
+        <td>运行到指定行停下来</td>
+    </tr>
+    <tr>
+        <td>finish</td>
+        <td>fi</td>
+        <td>结束当前调用函数，回到上一层调用函数处（跳出）</td>
+    </tr>
+    <tr>
+        <td>return</td>
+        <td>return [val]</td>
+        <td>结束当前调用函数并返回指定值，到上一层函数调用处</td>
+    </tr>
+    <tr>
+        <td>jump</td>
+        <td>j [num]</td>
+        <td>将当前程序执行流跳转到指定行或地址（VS移动执行点）</td>
+    </tr>
+    <tr>
+        <td>print</td>
+        <td>p [var_name]</td>
+        <td>打印变量或寄存器值</td>
+    </tr>
+    <tr>
+        <td>backtrace</td>
+        <td>bt</td>
+        <td>查看当前线程的调用堆栈</td>
+    </tr>
+    <tr>
+        <td>frame</td>
+        <td>f [stackName]</td>
+        <td>切换到当前调用线程的指定堆栈</td>
+    </tr>
+    <tr>
+        <td>thread</td>
+        <td>thread</td>
+        <td>切换到指定线程</td>
+    </tr>
+    <tr>
+        <td>break</td>
+        <td>b [line/funcName]</td>
+        <td>添加断点（行数/函数入口）</td>
+    </tr>
+    <tr>
+        <td>tbreak</td>
+        <td>tb</td>
+        <td>添加临时断点（一次性断点）</td>
+    </tr>
+    <tr>
+        <td>delete</td>
+        <td>d</td>
+        <td>删除断点</td>
+    </tr>
+    <tr>
+        <td>enable</td>
+        <td>enable</td>
+        <td>启用某个断点</td>
+    </tr>
+    <tr>
+        <td>disable</td>
+        <td>disable</td>
+        <td>禁用某个断点</td>
+    </tr>
+    <tr>
+        <td>watch</td>
+        <td>watch</td>
+        <td>监视某一个变量或内存地址的值是否发生变化</td>
+    </tr>
+    <tr>
+        <td>list</td>
+        <td>l</td>
+        <td>显示源码</td>
+    </tr>
+    <tr>
+        <td>info</td>
+        <td>i</td>
+        <td>查看断点 / 线程等信息</td>
+    </tr>
+    <tr>
+        <td>ptype</td>
+        <td>ptype</td>
+        <td>查看变量类型</td>
+    </tr>
+    <tr>
+        <td>disassemble</td>
+        <td>dis</td>
+        <td>查看汇编代码</td>
+    </tr>
+    <tr>
+        <td>set args</td>
+        <td>set args</td>
+        <td>设置程序启动命令行参数</td>
+    </tr>
+    <tr>
+        <td>show args</td>
+        <td>show args</td>
+        <td>查看设置的命令行参数</td>
+    </tr>
+</table>
+
+
+<p><i><u>下面正式开始快速入门的使用介绍</u></i></p>
+<p><strong>提示：在GDB命令行中，直接回车表示执行上一条命令。</strong></p>
+<ul>
+<li><p>运行前部署</p>
+<ul>
+<li>需要使用g++/gcc/make/cmake等编译（引导）方式来设置运行模式（debug），载入断点符号；</li>
+<li>启用调试的三种方式<ul>
+<li>直接调试目标程序：gdb ./hello_server</li>
+<li>附加进程id：gdb attach pid（<strong>此法在退出GDB前要detach pid</strong>）</li>
+<li>调试core文件：gdb filename corename</li>
+</ul>
+</li>
+<li>启动待调试程序：<code>run</code></li>
+<li>进行如上步骤后，会进入gdb交互命令行，此时如果是<i>直接调试目标程序</i>，则目标程序还未启动，可以：<ul>
+<li>设置运行参数：<code>set args [arg1 arg2 ..]</code></li>
+<li>查看运行参数：<code>show args</code></li>
+<li>查看运行路径：<code>show paths / pwd</code></li>
+<li>设置当前环境变量：<code>set env name=value</code></li>
+<li>查看环境变量：<code>show env [name]</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>设置断点（所有断点都有编号bID）</p>
+<ul>
+<li><p>指定函数入口出设置断点：<code>break fucnName</code></p>
+<blockquote>
+<p>如果此函数被重载，则会出现断点菜单。只需选择相应的重载函数设置即可（如果放弃填0；可多选，空格隔开）</p>
+</blockquote>
+</li>
+<li><p>指定行号设置断点：<code>break N</code></p>
+</li>
+<li><p>指定源文件的上述位置设置断点：<code>break fileName:xxx</code></p>
+</li>
+<li><p>指定当前行前/后设置断点：<code>break +/-N</code></p>
+</li>
+<li><p>在下一行设置断点：<code>break</code></p>
+</li>
+<li><p><strong>条件断点</strong>：<code>break [...] if cond</code>（[…]可以是上述参数，cond可以含有当前scope中的任意变量名，例如：<code>break if i==100</code>）</p>
+<blockquote>
+<p>每个断点都有条件属性，只不过默认是true，只有if设置了才变成条件断点。</p>
+</blockquote>
+</li>
+<li><p>查询指定断点的信息：<code>info break [bID]</code></p>
+</li>
+</ul>
+</li>
+<li><p>设置观察点</p>
+<ul>
+<li>观察表达式，一有变化立即停止：<code>watch &lt;expr&gt;</code>，例如：<code>watch i+k</code></li>
+<li>观察变量，一旦被读，立即停止：<code>rwatch &lt;var&gt;</code>，例如：<code>rwatch j</code></li>
+<li>观察变量，一旦被访问（读或写），立即停止：<code>awatch &lt;var&gt;</code></li>
+<li>查询观察点信息：<code>info watchpoints [wID]</code></li>
+</ul>
+</li>
+<li><p>设置捕捉点</p>
+<ul>
+<li><p>设置事件捕获点：<code>catch &lt;event&gt;</code></p>
+<blockquote>
+<p>event 可以是如下关键字：</p>
+<ul>
+<li><p>throw：当程序抛出异常</p>
+</li>
+<li><p>catch：当程序捕获到异常</p>
+</li>
+<li>exec：当程序调用系统shell执行</li>
+<li>fork：当程序调用fork</li>
+<li>vfork：当程序调用vfork</li>
+<li>load [libName]：当程序载入共享库</li>
+<li>unload [libName]：当程序卸载共享库</li>
+</ul>
+</blockquote>
+</li>
+<li><p>单次设置捕获点：<code>tcatch &lt;event&gt;</code></p>
+</li>
+</ul>
+</li>
+<li><p>维护上述所有的停止点</p>
+<ul>
+<li>清除停止点：<code>clear(全部) / clear funcName / clear N / clear fileName:xxx</code></li>
+<li>清除断点：<code>delete [ID]</code></li>
+<li>停用/启用停止点：<code>disable/enable [ID]</code></li>
+<li>仅启用停止点一次：<code>enable [ID] once(会再次disable)/delete</code></li>
+</ul>
+</li>
+<li><p>维护条件断点</p>
+<ul>
+<li>修改指定的条件断点的条件：<code>condition [bID] &lt;expr&gt;</code></li>
+<li>清除指定的条件断点的条件（变为条件true的普通断点）：<code>condition [bID]</code></li>
+<li>忽略指定的条件断点<strong>的条件</strong>若干次：<code>ignore [bID] &lt;count&gt;</code></li>
+</ul>
+</li>
+<li><p>停止点命令：自动化调试</p>
+<blockquote>
+<p>和断点的条件属性一样，命令也可以是属性！在触发停止点停止后，会立即执行停止点命令</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 格式：</span><br><span class="line">commands [bID]</span><br><span class="line">当前语言下的代码指令</span><br><span class="line">[continue]    // 如果希望执行完停止点命令后继续断电后的指令，</span><br><span class="line">            // 在命令后、end前写continue关键字即可</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>恢复程序运行和单步调试</p>
+<ul>
+<li>继续（可以指定其后忽略断点数）：<code>continue [N=0]</code></li>
+<li>逐步（step in，前提是调用函数在编译时也加了debug符号；count表示跳过的指令行数）：<code>step [count=0]</code></li>
+<li>逐过程（step over）：<code>next [count=0]</code></li>
+<li>跳出当前函数：<code>finish</code></li>
+<li>设置机器码单步跟踪：<code>set step-mode on(default=off)</code></li>
+<li>显示跟踪模式：<code>show step-mode</code></li>
+<li>继续到指定行：<code>until [N]</code></li>
+<li>逐机器码：<code>stepi [count=0]</code></li>
+</ul>
+</li>
+<li><p>运行时数据查看：<code>print /f &lt;expr&gt;</code></p>
+<blockquote>
+<p><strong>请注意：GDB不能使用程序中的宏定义</strong></p>
+<p><code>前置知识：</code>@<code>是GDB中与数组相关的操作符、</code>::<code>是GDB中的作用域运算符、&#123;type&#125; addr 是指针相关操作符</code></p>
+</blockquote>
+<ul>
+<li><p>expr为普通变量或静态数组：全局/静态全局/当前scope的局部变量都可以，也可指定<code>[&quot;fileName&quot;::][&quot;funcName&quot;::]var</code>；</p>
+</li>
+<li><p>expr为动态数组：使用<code>@</code>操作符，用法：第一个内存的地址<strong>的值（需要对指针取值,*）</strong>@ 显示元素长度</p>
+<blockquote>
+<p>例如程序定义了：<code>int* arr = new int[len] &#123;0&#125;;</code>，那么可以使用：</p>
+<p><code>print /d *arr@len</code>来查看arr数组中的情况</p>
+</blockquote>
+</li>
+<li><p>参数<code>/f</code></p>
+<blockquote>
+<p>x 按十六进制格式显示变量<br>d 按十进制格式显示变量<br>u 按十六进制格式显示无符号整型<br>o 按八进制格式显示变量<br>t 按二进制格式显示变量<br>a 按十六进制格式显示变量<br>c 按字符格式显示变量<br>f 按浮点数格式显示变量</p>
+</blockquote>
+</li>
+<li><p>设置显示选项（只讲述部分）</p>
+<ul>
+<li><code>set print pretty on</code>：更优雅地显示结构体等变量；</li>
+<li><code>set print vtbl on</code>：更优雅地显示虚函数表；</li>
+</ul>
+</li>
+<li><p>查看内存：<code>examine [/n(内存长度Byte)f(同print含义)&lt;u&gt;(取地址中内容作变量值，可以取b-单字节数据，h-双字节数据，w-四字节数据，g-八字节数据)]</code></p>
+</li>
+<li><p>自动显示点（也有编号dID）</p>
+<ul>
+<li>设置：<code>display /f &lt;expr&gt;</code>，程序停止时打印该表达式的值；</li>
+<li>删除：<code>delete [dID]</code></li>
+<li>启用/禁用：<code>disable/enable [dID]</code></li>
+</ul>
+</li>
+<li><p>查看显示的历史记录</p>
+<blockquote>
+<p>GDB将print过的表达式值编号，定义为环境变量：<code>$1、$2、$3、...</code></p>
+<p>也可以用<code>show values [N]</code>查看历史</p>
+</blockquote>
+</li>
+<li><p>设置、查看GDB环境变量</p>
+<blockquote>
+<p><strong>GDB环境变量不限类型，定义方式：<code>set $name = value</code></strong></p>
+<p>调用方式：<code>$name</code></p>
+<p>查看所有环境变量：<code>show env</code></p>
+</blockquote>
+</li>
+<li><p>查看寄存器：<code>info [all-]registers</code>（不加all-，不包含浮点寄存器）</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>以下部分以后补充。<a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.cnblogs.com/lvdongjie/p/8994092.html">https://www.cnblogs.com/lvdongjie/p/8994092.html</a></strong></p>
+<ul>
+<li>运行时变更执行</li>
+<li>信号处理</li>
+<li>线程调试</li>
+<li>源码查看</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://sjtuxhw.asia">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sjtuxhw.asia/2023/04/28/GNU-Tutor/">https://sjtuxhw.asia/2023/04/28/GNU-Tutor/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://sjtuxhw.asia" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myBlog/tags/GNU/">GNU</a><a class="post-meta__tags" href="/myBlog/tags/Programming/">Programming</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/GNU-Tutor.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/myBlog/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/myBlog/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myBlog/2023/04/28/Git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Git学习笔记"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/git.jpg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Git学习笔记</div></div></a></div><div class="next-post pull-right"><a href="/myBlog/2023/04/25/hello-world/" title="Hello World"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/hello-world.jpeg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hello World</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/myBlog/2023/09/17/CSAPP-Notes-Chapter1-3/" title="CSAPP Notes Chapter1~3"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-17</div><div class="title">CSAPP Notes Chapter1~3</div></div></a></div><div><a href="/myBlog/2023/07/21/CMake-%E8%BF%9B%E9%98%B6/" title="CMake 进阶"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/cmake.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-21</div><div class="title">CMake 进阶</div></div></a></div><div><a href="/myBlog/2023/04/28/Git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Git学习笔记"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/git.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="title">Git学习笔记</div></div></a></div><div><a href="/myBlog/2023/04/28/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Java 学习笔记（1）"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/java1.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="title">Java 学习笔记（1）</div></div></a></div><div><a href="/myBlog/2023/06/18/Matlab-%E5%A4%8D%E4%B9%A0/" title="Matlab 复习"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/matlab.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-18</div><div class="title">Matlab 复习</div></div></a></div><div><a href="/myBlog/2023/06/28/SQL%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86/" title="SQL学习笔记-第一部分"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/sql-1.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-28</div><div class="title">SQL学习笔记-第一部分</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/myBlog/img/favicon.ico" onerror="this.onerror=null;this.src='/myBlog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SJTU-XHW</div><div class="author-info__description">A blog to document learning and life</div></div><div class="card-info-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">45</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.asia/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! ‎|•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%EF%BC%9AC-C-%E7%9A%84%E6%BA%90%E6%96%87%E4%BB%B6%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B"><span class="toc-text">基础：C&#x2F;C++的源文件编译过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%EF%BC%9AGNU%E5%8F%8A%E5%85%B6%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-text">基础：GNU及其相关概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CMake-%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8"><span class="toc-text">CMake 快速入门</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GCC-G-%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8"><span class="toc-text">GCC&#x2F;G++快速入门</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GDB-%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8%EF%BC%88%E4%BB%A5Linux%E7%8E%AF%E5%A2%83%E4%B8%BA%E4%BE%8B%EF%BC%89"><span class="toc-text">GDB 快速入门（以Linux环境为例）</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评"><img src="https://cdn.sjtuxhw.top/cover_imgs/anime_bokumachi.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="《只有我不在的城市》番评"/></a><div class="content"><a class="title" href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评">《只有我不在的城市》番评</a><time datetime="2023-10-01T14:20:47.000Z" title="发表于 2023-10-01 10:20:47">2023-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/09/17/CSAPP-Notes-Chapter1-3/" title="CSAPP Notes Chapter1~3"><img src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes Chapter1~3"/></a><div class="content"><a class="title" href="/myBlog/2023/09/17/CSAPP-Notes-Chapter1-3/" title="CSAPP Notes Chapter1~3">CSAPP Notes Chapter1~3</a><time datetime="2023-09-17T23:47:15.000Z" title="发表于 2023-09-17 19:47:15">2023-09-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="MC-Forge开发笔记（一）"><img src="https://cdn.sjtuxhw.top/cover_imgs/minecraft1.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="MC-Forge开发笔记（一）"/></a><div class="content"><a class="title" href="/myBlog/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="MC-Forge开发笔记（一）">MC-Forge开发笔记（一）</a><time datetime="2023-09-06T01:04:06.000Z" title="发表于 2023-09-05 21:04:06">2023-09-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/08/30/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%B8%89%EF%BC%89/" title="从C++入门Qt（三）"><img src="https://cdn.sjtuxhw.top/cover_imgs/qt3.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="从C++入门Qt（三）"/></a><div class="content"><a class="title" href="/myBlog/2023/08/30/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%B8%89%EF%BC%89/" title="从C++入门Qt（三）">从C++入门Qt（三）</a><time datetime="2023-08-30T23:05:14.000Z" title="发表于 2023-08-30 19:05:14">2023-08-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/08/16/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%BA%8C%EF%BC%89/" title="从C++入门Qt（二）"><img src="https://cdn.sjtuxhw.top/cover_imgs/qt2.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="从C++入门Qt（二）"/></a><div class="content"><a class="title" href="/myBlog/2023/08/16/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%BA%8C%EF%BC%89/" title="从C++入门Qt（二）">从C++入门Qt（二）</a><time datetime="2023-08-17T03:15:11.000Z" title="发表于 2023-08-16 23:15:11">2023-08-16</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 By SJTU-XHW | tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/myBlog/js/utils.js"></script><script src="/myBlog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo-ax33bluz4-alex-andrews-projects.vercel.app/',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo-ax33bluz4-alex-andrews-projects.vercel.app/',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+      GLOBAL_CONFIG_SITE.isPost && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://twikoo-ax33bluz4-alex-andrews-projects.vercel.app/',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <div class='name'><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom.innerHTML= result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script src="/myBlog/js/jquery-3.7.0.min.js"></script><script src="/myBlog/js/rightmenu.js"></script><div class="aplayer no-destroy" data-id="6898044781" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false"></div><script src="/myBlog/js/mourn.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="/myBlog/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/myBlog/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>

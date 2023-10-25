@@ -1,0 +1,833 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>MC-Forge开发笔记（一） | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="written by SJTU-XHW Reference: Minecraft Forge Doc 1.16.x、Boson 1.16（导论部分） 注意：以 MC 版本 1.16.5 为例（同一大版本 1.16.x 的操作方式变化不大） 本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MC-Forge开发笔记（一）">
+<meta property="og:url" content="https://sjtuxhw.asia/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="written by SJTU-XHW Reference: Minecraft Forge Doc 1.16.x、Boson 1.16（导论部分） 注意：以 MC 版本 1.16.5 为例（同一大版本 1.16.x 的操作方式变化不大） 本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/minecraft1.png">
+<meta property="article:published_time" content="2023-09-06T01:04:06.000Z">
+<meta property="article:modified_time" content="2023-09-19T05:18:25.180Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Minecraft">
+<meta property="article:tag" content="Forge">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/minecraft1.png"><link rel="shortcut icon" href="/myBlog/img/favicon.ico"><link rel="canonical" href="https://sjtuxhw.asia/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myBlog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?64dd3b0c09c8af7b916f8249d32097e2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = {
+  root: '/myBlog/',
+  algolia: undefined,
+  localSearch: {"path":"/myBlog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'MC-Forge开发笔记（一）',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-09-19 01:18:25'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/myBlog/css/mouseConfig.css"><link rel="stylesheet" href="/myBlog/css/valineBg.css"><link rel="stylesheet" href="/myBlog/css/rightmenu.css"><link rel="stylesheet" href="/myBlog/css/custom_music.css"><link rel="stylesheet" href="/myBlog/css/addFonts.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/myBlog/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/myBlog/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">45</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.sjtuxhw.top/cover_imgs/minecraft1.png')"><nav id="nav"><span id="blog-info"><a href="/myBlog/" title="SJTU-XHW's blog"><img class="site-icon" src="/myBlog/img/head_icon.png"/><span class="site-name">SJTU-XHW's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">MC-Forge开发笔记（一）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-09-06T01:04:06.000Z" title="发表于 2023-09-05 21:04:06">2023-09-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-09-19T05:18:25.180Z" title="更新于 2023-09-19 01:18:25">2023-09-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">11.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>41分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/myBlog/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/#post-comment"><span id="twikoo-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><i>written by SJTU-XHW</i></p>
+<p><i>Reference: </i><a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.minecraftforge.net/en/1.16.x/">Minecraft Forge Doc 1.16.x</a>、<a target="_blank" rel="noopener external nofollow noreferrer" href="https://boson.v2mcdev.com/introducation/intro.html">Boson 1.16（导论部分）</a></p>
+<p><i>注意：以 MC 版本 1.16.5 为例</i>（同一大版本 1.16.x 的操作方式变化不大）</p>
+<p><i>本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！</i></p>
+<hr>
+<span id="more"></span>
+<h2 id="Chapter-0-Forge-导论"><a href="#Chapter-0-Forge-导论" class="headerlink" title="Chapter 0. Forge 导论"></a>Chapter 0. Forge 导论</h2><h3 id="0-1-Forge-历史与定义"><a href="#0-1-Forge-历史与定义" class="headerlink" title="0.1 Forge 历史与定义"></a>0.1 Forge 历史与定义</h3><ul>
+<li><p><code>Minecraft</code> 其中发行版的一个大类是由 <code>Java</code>写的<strong>商业</strong>软件，这意味着：</p>
+<ul>
+<li><code>Minecraft</code> 容易反编译和修改：由于 <code>Java</code> 半解释型语言的特性（但凡换成 C++ 就很可能不会有今天 Mod 丰富的生态了，毕竟 Mojang 当年一直不给官方 API）；</li>
+<li>代码本身是闭源的、被混淆的：这毕竟是一款商业软件。</li>
+</ul>
+</li>
+<li><p>为了给 <code>Minecraft</code> 增添更多的游戏特性，大家千方百计地寻找添加代码的办法。最终 <code>MCP</code>（Mod Coder Pack）项目诞生了，它<strong>规避了没有官方 API 的问题，通过反编译、反混淆直接修改 <code>Minecraft jar</code> 包中的内容</strong>。其发展过程中，人们研究各类的名称的产生如下：</p>
+<ul>
+<li><p><code>notch</code> 名：<code>Minecraft</code> 各种类直接反编译、反混淆之后的名称，通常是无意义的字母数字组合。</p>
+<blockquote>
+<p>例如 <code>j</code> 就是一个典型的 <code>notch</code> 名；</p>
+</blockquote>
+</li>
+<li><p><code>srg</code> 名：与 <code>notch</code> 名一一对应。极大的好处是<strong>在一个版本里是不会变动的</strong>，这意味着类名渐渐可读起来，有相应的前缀后缀来区分。之所以叫做<code>srg名</code>，是为了纪念MCP项目开发的领导者Searge；</p>
+<blockquote>
+<p>例如 <code>notch</code> 名 <code>j</code> 对应 <code>srg</code> 名的 <code>func_70114_g</code>。</p>
+</blockquote>
+</li>
+<li><p><code>mcp</code> 名：这是当年 <code>MCP</code> 项目的 mod 开发者使用的最多的名称。在<code>mcp</code> 名中，<strong>代码已经是可读的了</strong>。和我们正常写java程序中的名称没什么两样，但是也会变动。</p>
+<blockquote>
+<p>例如，<code>notch</code> 名为 <code>j</code> 的函数，其 <code>srg</code> 名为 <code>func_70114_g</code>，其 <code>mcp</code> 名是 <code>getCollisionBox</code>；</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>随着时间推移和生态的扩展，大家发现这么做很不行，因为直接修改 Jar 文件写 mod 的方式太过于粗暴了，而且 Mod 和 Mod 之间的兼容性可以说基本没有。于是，<code>Forge</code> 项目就诞生了。</p>
+</li>
+<li><p><code>Forge</code> 是通过修改 <code>Minecraft</code> 方式实现的<strong>第三方的 API</strong>，给广大 mod 开发者提供了标准化的接口的指引。而Forge本身也在 <code>Minecraft</code> 1.13 版本到来之后经历了一次重写，引入了大量函数式编程的API。</p>
+<blockquote>
+<p>随着时间的发展，<code>MCP</code> 项目现在已经死亡了，除了 <code>Forge</code> 这套API，<code>Fabric</code> 也风头正盛。</p>
+</blockquote>
+</li>
+<li><p><code>Forge</code> 的工作原理也采用了 <code>MCP</code>  的思路。在为指定版本的 <code>Minecraft</code> 安装完 <code>Forge</code> 之后，游戏的运行过程中，所有的内容都会反编译成 <code>srg</code> 运行，你编译好的 mod 同样也会被混淆成 <code>srg</code>，保证它可以正常运行。</p>
+<blockquote>
+<p>用 <code>srg</code> 名就是因为它每个版本不变。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="0-2-Minecraft-的架构"><a href="#0-2-Minecraft-的架构" class="headerlink" title="0.2 Minecraft 的架构"></a>0.2 Minecraft 的架构</h3><p>除了了解 <code>Forge</code> 的历史和定义，<code>Minecraft</code> 的架构和运作方式在 Mod 开发中也绝对是必要的。</p>
+<ul>
+<li><p><code>Minecraft</code> 是一种 C/S 架构，整体逻辑如下：</p>
+<ul>
+<li>服务端：负责游戏的逻辑，数据的读写。</li>
+<li>客户端：接受用户的输入输出，根据来自服务端的数据来渲染游戏画面。</li>
+</ul>
+<p><img src="struct.png" height="400px"></p>
+</li>
+<li><p>Tips 1. 这里客户端和服务端的区分<strong>仅是逻辑上的区分</strong>。</p>
+<ul>
+<li>实际上如果你处于单人模式，那么你的电脑上会<strong>同时存在</strong>服务端和客户端，而且他们处于不同的线程（<code>Server thread</code> &amp; <code>Render thread</code>）；</li>
+<li>但是当你连接某个服务器时，你的电脑上只存在客户端，服务端被转移到了远程的一台服务器上。</li>
+</ul>
+</li>
+<li><p>Tips 2. 客户端、服务端<strong>各存在一份数据模型</strong>。不过「客户端数据模型」只是「服务端数据模型」一个副本，虽然它们都有独立的游戏 <code>Tick</code>，也共享很多相同的代码，但是最终逻辑还是以服务端为准。</p>
+</li>
+<li><p>Tips3. 客户端和服务端是存在于不同线程的，所以它们不可避免地需要同步数据。而数据同步都是通过<strong>网络数据包</strong>实现的。</p>
+<blockquote>
+<p>在大部分时候原版已经实现好了数据同步的方法，我们只需要调用已经实现好的方法就行。</p>
+<p>但是在某些情况下，原版没有实现对应的功能，或者不适合使用原版提供的功能，我们就得自己创建和发送网络数据包来完成数据的同步。【可能需要计算机网络基础、<code>Java</code> 网络编程基础】</p>
+</blockquote>
+</li>
+<li><p>在代码中，<strong>区分服务器端和客户端</strong>的方式：<code>World</code> 中有一个 <code>isRemote</code> 字段，开发时判断它就行。</p>
+</li>
+</ul>
+<h3 id="0-3-Minecraft-的运行模式"><a href="#0-3-Minecraft-的运行模式" class="headerlink" title="0.3 Minecraft 的运行模式"></a>0.3 Minecraft 的运行模式</h3><ul>
+<li><strong>离散事件驱动模式</strong>，详见数据结构书籍。这个模式包含了 3 个概念：<ul>
+<li>事件：“当方块被破坏” 这个就是一个事件，“当玩家死亡” 这个也是一个事件，甚至 “当渲染模型时” 这个也是一个事件；</li>
+<li>事件处理器：用来处理 “事件” 的函数。例如可以注册一个事件处理器来处理 “玩家死亡事件”，里面的内容是 “放置一个墓碑”；</li>
+<li>总线：总线是连接 “事件” 和 “事件处理器” 的工具，当 “事件” 发生的时候，“事件” 的信息将会被发送到总线上，然后总线会选择监听了这个 “事件” 的 “事件处理器”，执行这个事件处理器。</li>
+</ul>
+</li>
+<li>在Minecraft中，所写的逻辑基本上都是事件处理。</li>
+<li>在Forge开发里有两条总线，<code>Mod</code> 总线和 <code>Forge</code> 总线，所有和初始化相关的事件都是在 <code>Mod</code> 总线内，其他所有事件都在 <code>Forge</code> 总线内。</li>
+</ul>
+<h3 id="0-4-重要概念准备"><a href="#0-4-重要概念准备" class="headerlink" title="0.4 重要概念准备"></a>0.4 重要概念准备</h3><ul>
+<li><p>注册：如果想往 <code>Minecraft</code> 里添加一些内容，那么你必须做的一件事就是注册。注册是一种机制，告诉游戏本身，有哪东西可以使用。你注册时需要的东西基本上可以分成两个部分：<strong>一个注册名</strong>和<strong>一个实例</strong>；</p>
+</li>
+<li><p>资源地址（<code>ResourceLocation</code>）：<code>Minecraft</code> 管理、定位资源（音频 / 图片）的方式是<strong>采用特殊格式的字符串</strong>。格式为：<code>&lt;domain&gt;:&lt;UNIX-Style relative path&gt;</code>。</p>
+<ul>
+<li>域可以是 <code>minecraft</code>（原版资源），也可以是 mod 的名称。相对路径是相对于 mod 根目录下的 <code>assets</code> 目录而言（如果是原版资源，即域名为 <code>minecraft</code>，那么相对于 <code>.minecraft/assets</code>）;</li>
+<li>例如：<code>minecraft:textures/block/stone.png</code>，<code>mod1:textures/Alex.png</code>；</li>
+</ul>
+</li>
+<li><p>模型和材质：在游戏中 <code>3D</code> 的对象基本上都有它的模型，模型和材质组合在一起规定了一个对象具体的样子。模型相当于是骨头，材质相当于是皮肤。在大部分时候，你的材质都是 png 图片【可能需要平面设计 和 PS 的相关功底】。</p>
+<blockquote>
+<p>注意保证<strong>材质背景是不透明的</strong>，也不要在材质中使用<strong>半透明像素</strong>，会有不可预知的问题。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="0-5-开发环境"><a href="#0-5-开发环境" class="headerlink" title="0.5 开发环境"></a>0.5 开发环境</h3><blockquote>
+<p><code>Minecraft Forge</code> 是由 <code>Gradle</code> 管理的项目，而 <code>Forge</code> 官方写了一个叫做 <code>ForgeGradle</code>（以后简称FG）的插件来负责整个 mod 开发环境的配置，本节主要介绍这个环境的配置和使用；</p>
+</blockquote>
+<ul>
+<li><p>前提</p>
+<ol>
+<li><code>JDK 8</code>（1.16.x 兼容版本）和 <code>64 bit JVM</code>；请确保您的操作系统已经安装并配置好环境变量 <code>JAVA_HOME</code>、<code>CLASS_PATH</code>；</li>
+<li>官网获得 <code>MDK(Mod Development Kit)</code>：我们这里 1.16.5 选择官网推荐的 <code>forge-36.2.34</code> <a target="_blank" rel="noopener external nofollow noreferrer" href="https://files.minecraftforge.net/net/minecraftforge/forge/index_1.16.5.html">Downloads for Minecraft Forge for Minecraft 1.16.5</a>；</li>
+<li>Java 开发 IDE，可以选 VSCode / Eclipse / IDEA，本文<strong>以 IDEA 为例</strong>进行。</li>
+</ol>
+</li>
+<li><p>开发准备工作</p>
+<ol>
+<li><p>这里我们将下载的 MDK 解压到一个空目录下；</p>
+<blockquote>
+<p>FG 项目结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">├─ .gitattributes        # Git 用来记录某些文件属性</span><br><span class="line">├─ .gitignore            # Git 用来忽略版本控制的记录文件</span><br><span class="line">├─ build.gradle            # Gradle 构建脚本</span><br><span class="line">├─ changelog.txt        # Forge 项目版本迭代情况</span><br><span class="line">├─ CREDITS.txt            # Forge 项目致谢和 credits</span><br><span class="line">├─ gradle.properties    # Gradle 属性文件，用来定义其他变量和设置</span><br><span class="line">├─ gradlew                # Unix 类系统执行 Gradle wrapper 的 shell</span><br><span class="line">├─ gradlew.bat            # Windows 系统 ~</span><br><span class="line">├─ LICENSE.txt            # Forge 项目证书</span><br><span class="line">├─ README.txt            # 基本安装指导说明书</span><br><span class="line">│</span><br><span class="line">├─ gradle/</span><br><span class="line">│   └─wrapper/            # 这里包含了 Gradle Wrapper，这里使用的是 7.4.2</span><br><span class="line">│        ├─ gradle-wrapper.jar</span><br><span class="line">│        └─ gradle-wrapper.properties</span><br><span class="line">│</span><br><span class="line">├─ run/                # 在构建项目后会出现，相当于 .minecraft</span><br><span class="line">|</span><br><span class="line">└─src/                    # 源文件目录</span><br><span class="line">└─main/                # main 分组的源文件目录</span><br><span class="line">  ├─java/            # main 分组的 java 源文件</span><br><span class="line">  │              # 这里是 java 的 package，将来在这里写 mod</span><br><span class="line">  │</span><br><span class="line">  └─resources/        # main 分组的资源目录</span><br><span class="line">      ├─ pack.mcmeta    # 被 minecraft 用来识别数据和资源包的文件</span><br><span class="line">      │</span><br><span class="line">      └─META-INF/    # Forge 资源 metadata 信息文件存放目录</span><br><span class="line">           └─ mods.toml    # mod 声明的文件</span><br></pre></td></tr></table></figure>
+<p><strong>其中最为重要的几个分别为</strong>：</p>
+<ul>
+<li><code>build.gradle</code>、<code>gradlew.bat</code>、<code>gradlew</code>、<code>gradle/</code> 目录；</li>
+</ul>
+<p>只要有了上面几个的数据，就能创建一个新 <code>mod</code> 项目；</p>
+</blockquote>
+</li>
+<li><p>把上面说的重要的几个文件复制到新目录，以后这里是 mod 项目的根目录了（这么做是为了减少文件干扰，毕竟我们不需要版本控制，对吧）；</p>
+</li>
+<li><p>用 IDEA 打开这个新目录，即可自动下载依赖配件、设置项目；如果中途出现错误，99% 是因为网络错误。请翻*GFW，或者上网找国内源解决；</p>
+</li>
+<li><p>打开后，在 IDEA Terminal 下执行 <code>gradlew genIntellijRuns</code>（如果是 eclipse/vscode，那么后面一个词分别是 <code>genEclipseRuns</code> 和 <code>genVSCodeRuns</code>），它会进一步下载游戏需要的资源，并且设置 <code>Run Configure</code>；</p>
+</li>
+</ol>
+</li>
+<li><p>mod 的 gradle 脚本个性化：刚入门，介绍简单的个性化方式，主要是编辑 <code>build.gradle</code> 的内容。</p>
+<ul>
+<li><p><strong>注意，在不知道含义的情况下，不能编辑其中的 <code>buildscript &#123;&#125;</code> 块。这些代码对于 <code>ForgeGradle</code> 来说是必须的</strong>；</p>
+</li>
+<li><p><strong>更改构建的结果文件名</strong>：编辑 <code>archivesBaseName</code> 的值；</p>
+</li>
+<li><p><strong>更改 <code>maven</code> 构建系统的根目录</strong>：编辑 <code>group</code> 的值；</p>
+</li>
+<li><p><strong>更改 mod 版本信息</strong>：编辑 <code>version</code> 的值；</p>
+</li>
+<li><p><strong>将其中所有 “examplemod” 都替换为自己 mod id（自己定，唯一，只能有小写字母，不能有大写/空格/其他字符，切记！！！）</strong>；</p>
+</li>
+<li><p><strong>设置项目名称映射（mappings）</strong>：在 <code>minecraft&#123;&#125;</code> 块中，第一个就是 <code>mappings</code>，默认官方的 mappings。但是，官方的<strong>没有参数和 <code>javadocs</code> 提示</strong>。如果之后用的不习惯，可以换成以前 <code>MCP</code> 的 mappings（现在已经停止维护）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">minecraft &#123;</span><br><span class="line">    <span class="comment">// 这是最后一次 mappings 的更新</span></span><br><span class="line">    mappings channel: <span class="string">&#x27;snapshot&#x27;</span>, version: <span class="string">&#x27;20210309-1.16.5&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<blockquote>
+<p><strong>注意：修改完 <code>build.gradle</code> 脚本后需要重新进行前面的步骤进行设置</strong>；</p>
+</blockquote>
+</li>
+<li><p>forge 项目的构建和测试</p>
+<ul>
+<li><p>当 mod 开发结束后，根目录运行 <code>gradlew build</code>，会向 <code>build/libs</code> 中构建 <code>[archivesBaseName]-[version].jar</code>，您可以直接将这个包放在安装了 forge 的 minecraft 游戏的 <code>mod</code> 目录中，即可加载；</p>
+</li>
+<li><p>当然，每写一次就要加入游戏目录的操作不现实。所以测试中，可以使用 <code>Run Configure</code> 来运行测试的 Minecraft 服务器 + 客户端，<strong>这时会加入开发目录（之前说过，<code>src/main/java</code>）的所有 mod jar 包</strong>；</p>
+<blockquote>
+<p>具体命令：启动服务器 <code>gradlew runServer</code>，自动绑定在 <code>localhost</code> 的指定端口；启动客户端 <code>gradlew runClient</code>；</p>
+<p><strong>测试时建议就用上面的测试服务器环境哦~ 别去网络上正式的服务器测试</strong>😂</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="0-6-Mod-结构设计"><a href="#0-6-Mod-结构设计" class="headerlink" title="0.6 Mod 结构设计"></a>0.6 Mod 结构设计</h3><ul>
+<li><p>和普通 Java 项目一样，设定好 top level package，然后为 mod 起一个唯一的名字；比如，我的 top level package 名叫做 <code>com.test</code>，然后我起个包名 <code>helloMC</code>，于是叫 <code>com.test.helloMC</code>；</p>
+<blockquote>
+<p>还是补充一下，如果以后做 Java Web，top level package 的名字需要是自己有的域名前缀，例如我有 <code>xxx.org</code>，那么为这个域名开发 Java Web 服务的规范就是 top level package <code>org.xxx</code>；</p>
+</blockquote>
+</li>
+<li><p><code>mods.toml</code> 文件设计：上面说过，这个文件定义了 mod 的元信息（metadata），<strong>可以被 mod 使用者在游戏添加 mod 的界面看到</strong>；</p>
+<ul>
+<li><p>一个信息文件能够描述多个 mod；</p>
+</li>
+<li><p><code>mods.toml</code> 的语言是 <code>TOML</code>（可以理解为和 <code>YAML</code> 差不多的东西，语法不一样），必须要被存放于 <code>src/main/resources/META-INF/</code> 下；</p>
+</li>
+<li><p>一个 <code>mods.toml</code> 最基本的模板如下：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The name of the mod loader type to load - for regular FML @Mod mods it should be javafml</span></span><br><span class="line">   <span class="attr">modLoader</span>=<span class="string">&quot;javafml&quot;</span></span><br><span class="line">   <span class="comment"># A version range to match for said mod loader - for regular FML @Mod it will be the forge version</span></span><br><span class="line">   <span class="comment"># Forge for 1.16.5 is version 36</span></span><br><span class="line">   <span class="attr">loaderVersion</span>=<span class="string">&quot;[36,)&quot;</span></span><br><span class="line">   <span class="comment"># The license for your mod. This is mandatory and allows for easier comprehension of your redistributive properties.</span></span><br><span class="line">   <span class="comment"># Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.</span></span><br><span class="line">   <span class="attr">license</span>=<span class="string">&quot;All Rights Reserved&quot;</span></span><br><span class="line">   <span class="comment"># A URL to refer people to when problems occur with this mod</span></span><br><span class="line">   <span class="attr">issueTrackerURL</span>=<span class="string">&quot;github.com/MinecraftForge/MinecraftForge/issues&quot;</span></span><br><span class="line">   <span class="comment"># If the mods defined in this file should show as separate resource packs</span></span><br><span class="line">   <span class="attr">showAsResourcePack</span>=<span class="literal">false</span></span><br><span class="line">    </span><br><span class="line">   <span class="section">[[mods]]</span></span><br><span class="line">     <span class="attr">modId</span>=<span class="string">&quot;examplemod&quot;</span></span><br><span class="line">     <span class="attr">version</span>=<span class="string">&quot;1.0.0.0&quot;</span></span><br><span class="line">     <span class="attr">displayName</span>=<span class="string">&quot;Example Mod&quot;</span></span><br><span class="line">     <span class="attr">updateJSONURL</span>=<span class="string">&quot;minecraftforge.net/versions.json&quot;</span></span><br><span class="line">     <span class="attr">displayURL</span>=<span class="string">&quot;minecraftforge.net&quot;</span></span><br><span class="line">     <span class="attr">logoFile</span>=<span class="string">&quot;logo.png&quot;</span></span><br><span class="line">     <span class="attr">credits</span>=<span class="string">&quot;I&#x27;d like to thank my mother and father.&quot;</span></span><br><span class="line">     <span class="attr">authors</span>=<span class="string">&quot;Author&quot;</span></span><br><span class="line">     <span class="attr">description</span>=<span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">     Lets you craft dirt into diamonds. This is a traditional mod that has existed for eons. It is ancient. The holy Notch created it. Jeb rainbowfied it. Dinnerbone made it upside down. Etc.</span></span><br><span class="line"><span class="string">     &#x27;&#x27;&#x27;</span></span><br><span class="line">    </span><br><span class="line">     <span class="section">[[dependencies.examplemod]]</span></span><br><span class="line">       <span class="attr">modId</span>=<span class="string">&quot;forge&quot;</span></span><br><span class="line">       <span class="attr">mandatory</span>=<span class="literal">true</span></span><br><span class="line">       <span class="attr">versionRange</span>=<span class="string">&quot;[36,)&quot;</span></span><br><span class="line">       <span class="attr">ordering</span>=<span class="string">&quot;NONE&quot;</span></span><br><span class="line">       <span class="attr">side</span>=<span class="string">&quot;BOTH&quot;</span></span><br><span class="line">    </span><br><span class="line">     <span class="section">[[dependencies.examplemod]]</span></span><br><span class="line">       <span class="attr">modId</span>=<span class="string">&quot;minecraft&quot;</span></span><br><span class="line">       <span class="attr">mandatory</span>=<span class="literal">true</span></span><br><span class="line">       <span class="attr">versionRange</span>=<span class="string">&quot;[1.16.5,1.17)&quot;</span></span><br><span class="line">       <span class="attr">ordering</span>=<span class="string">&quot;NONE&quot;</span></span><br><span class="line">       <span class="attr">side</span>=<span class="string">&quot;BOTH&quot;</span></span><br></pre></td></tr></table></figure>
+<p>以下是必须要填写的信息列表：</p>
+<table>
+    <tr style="text-align: center;">
+        <th>Property</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>modid</td>
+        <td>string</td>
+        <td>mandatory</td>
+        <td>The modid this file is linked to (also the modid in build.gradle).</td>
+    </tr>
+    <tr>
+        <td>version</td>
+        <td>string</td>
+        <td>mandatory</td>
+        <td>The version of the mod. It should be just numbers separated by dots, ideally conforming to Forge’s Semantic Versioning structure.</td>
+    </tr>
+    <tr>
+        <td>displayName</td>
+        <td>string</td>
+        <td>mandatory</td>
+        <td>The user-friendly name of this mod.</td>
+    </tr>
+    <tr>
+        <td>updateJSONURL</td>
+        <td>string</td>
+        <td>&quot;&quot;</td>
+        <td>The URL to a version JSON.</td>
+    </tr>
+    <tr>
+        <td>displayURL</td>
+        <td>string</td>
+        <td>&quot;&quot;</td>
+        <td>A link to the mod’s homepage.</td>
+    </tr>
+    <tr>
+        <td>logoFile</td>
+        <td>string</td>
+        <td>&quot;&quot;</td>
+        <td>The filename of the mod’s logo. It must be placed in the root resource folder, not in a subfolder.</td>
+    </tr>
+    <tr>
+        <td>credits</td>
+        <td>string</td>
+        <td>&quot;&quot;</td>
+        <td>A string that contains any acknowledgements you want to mention.</td>
+    </tr>
+    <tr>
+        <td>authors</td>
+        <td>string</td>
+        <td>&quot;&quot;</td>
+        <td>The authors of this mod.</td>
+    </tr>
+    <tr>
+        <td>description</td>
+        <td>string</td>
+        <td>mandatory</td>
+        <td>A description of this mod.</td>
+    </tr>
+    <tr>
+        <td>dependencies</td>
+        <td>[list]</td>
+        <td>[]</td>
+        <td>A list of dependencies of this mod.</td>
+    </tr>
+</table>
+</li>
+</ul>
+</li>
+<li><p><code>@Mod</code> annotation：在编写 mod 中，这个标识是用来提示 <code>Forge Mod Loader</code>，<strong>这个类是一个 Mod entry point</strong>；另外，这个标识的值需要是 <code>modid</code>（在 <code>build.gradle</code> 和 <code>mods.toml</code> 都写过）；</p>
+</li>
+<li><p><strong>一个建议</strong>（不强制）：比起将源文件散落在文件夹中，使用 <code>sub-packages</code> 的结构可读性更强；例如像物体（items）、方块（blocks）、数据实体（tile entities，或者其他 sub-packages）应该放在 <code>common</code> 包，而屏幕（Screens）、渲染器（Renderers）应该放在 <code>client</code> 下；</p>
+<blockquote>
+<p>这里补充一下什么是 <code>tile entities</code>，后面用到详细说。</p>
+<p>Tile Entities就像简化的实体一样，绑定到Block上。 它们用于存储动态数据，执行基于tick的任务以及动态渲染。 </p>
+<p>原本 Minecraft的一些例子是：处理库存（箱子），熔炉上的冶炼逻辑或信标的区域效应。 mod中存在更高级的示例，例如采石场，分拣机，管道和显示器。</p>
+<p>注意：不要滥用！如果使用不当会导致卡顿；</p>
+</blockquote>
+</li>
+<li><p>类名命名规范：<strong>在您创建的类名之后加上它们的父类名（即是什么），可以让读者更能理解这个类在干什么</strong>；</p>
+<blockquote>
+<p>这其实是所有语言、所有场景开发的共同的规范。</p>
+<p>例如，一个自定义物品 <code>PowerRing</code>，它的类继承于 <code>Item</code>，因此最好定为 <code>PowerRingItem</code>;</p>
+<p>再如一个自定义方块 <code>NotDirt</code>，继承于 <code>Block</code>，因此命名为 <code>NotDirtBlock</code>；</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="0-7-Mod-更新系统"><a href="#0-7-Mod-更新系统" class="headerlink" title="0.7 Mod 更新系统"></a>0.7 Mod 更新系统</h3><p>Forge 提供了一个可选的、轻量级的更新检查的框架，在作者提交更新后，使用 mod 的用户会在游戏中 mod 管理的按钮上看到更新，并且会写入 <code>changelogs.txt</code>，但不会自动下载升级；</p>
+<p>为了集成这个功能，只需设置上面 <code>mods.toml</code> 的可选参数 <code>updateJSONURL</code>，这个 URL 可以指向您提供 “update json” 的网站服务器或者 github 上（只要别人能访问到）；</p>
+<p>而这个 “update json” 的格式为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;homepage&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;homepage/download page for your mod&gt;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;&lt;mcversion&gt;&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;&lt;modversion&gt;&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;changelog for this version&gt;&quot;</span><span class="punctuation">,</span> </span><br><span class="line">    <span class="comment">// List all versions of your mod for the given Minecraft version, along with their changelogs</span></span><br><span class="line">    ...</span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;promos&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;&lt;mcversion&gt;-latest&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;modversion&gt;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="comment">// Declare the latest &quot;bleeding-edge&quot; version of your mod for the given Minecraft version</span></span><br><span class="line">    <span class="attr">&quot;&lt;mcversion&gt;-recommended&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&lt;modversion&gt;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="comment">// Declare the latest &quot;stable&quot; version of your mod for the given Minecraft version</span></span><br><span class="line">    ...</span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>值得注意的是：</p>
+<ul>
+<li><code>homepage</code> 的地址在使用者的 mod 需要更新时会显示出来，注意隐私；</li>
+<li>Forge 使用一套内置算法来判断当前版本和 update JSON 的版本哪个更新，大多数情况下应该没问题，如果有疑惑可以查阅 <code>ComparableVersion</code> 类或 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://semver.org/">Semantic Versioning</a>；</li>
+<li>上面的 <code>changelog</code> 字符串可以使用 <code>\n</code>，也可以给用户提供一个网站让他们在网站上详细看；</li>
+</ul>
+<h3 id="0-8-Mod-进阶调试"><a href="#0-8-Mod-进阶调试" class="headerlink" title="0.8 Mod 进阶调试"></a>0.8 Mod 进阶调试</h3><p>Minecraft 自身提供了一个 Debug Profiler，能够分析出耗时的代码块，这对于 mod 开发者和服务器管理员非常有用；</p>
+<p>开始分析命令：<code>/debug start</code>，结束分析命令：<code>/debug end</code>；</p>
+<ul>
+<li><p>建议最少给 Debug Profiler 的分析留出 1 min 时间，时间越多，分析约准确；</p>
+</li>
+<li><p>要分析的实体（Entities）需要在当前世界中存在，不然分析不到它；</p>
+</li>
+</ul>
+<p>在结束分析后，会自动生成 <code>profile-results-yyyy-mm-dd_hh.mi.ss.txt</code>，</p>
+<p>文件格式：<code>&lt;the depth of the section&gt; | &lt;the name of the section&gt; - &lt;the percentage of time it took in relation to it’s parent&gt;/&lt;how much time it took from the entire tick&gt;</code></p>
+<h3 id="0-9-第一个-Mod：跑通流程"><a href="#0-9-第一个-Mod：跑通流程" class="headerlink" title="0.9 第一个 Mod：跑通流程"></a>0.9 第一个 Mod：跑通流程</h3><p>上面说了很多内容，现在让我们以一个没有内容的测试 mod 来实际跑一遍：</p>
+<p><strong>step 1.</strong> 在 <code>src/main/java</code> 下创建一个包，例如 <code>com.test</code>，创建 Java 类 <code>HelloMC</code>；</p>
+<p><strong>step 2.</strong> 根据 0.6 节中介绍的 modid，<strong>需要用 <code>@Mod(&lt;modid&gt;)</code> 修饰 mod 的 entry point 类</strong>，保持：<strong>@Mod 修饰值、<code>mods.toml</code> 的 <code>modid</code>、<code>build.gradle</code> 的 <code>examplemod</code> 三者一致</strong>。因此，我们需要给 <code>HelloMC</code> 加 <code>@Mod()</code> annotation。为了方便，我们另外创建一个类，专门存储全局变量，就定为 <code>Utils</code>（你也可以不用，看自己的编码习惯）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// File: HelloMC.java</span></span><br><span class="line"><span class="keyword">package</span> com.test.HelloMC;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> net.minecraftforge.fml.common.Mod;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Mod(Utils.MOD_ID)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloMC</span> &#123;</span><br><span class="line">    <span class="comment">// 这里先空着，因为没学</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// File: Utils.java</span></span><br><span class="line"><span class="keyword">package</span> com.test.Utils;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Utils</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">MOD_ID</span> <span class="operator">=</span> <span class="string">&quot;mymod&quot;</span>;        <span class="comment">// 自己写 modid</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>step 3.</strong> 现在去写 <code>mods.toml</code>，注意填写 <code>mod_id</code>：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 上面使用的 @Mod 就在这个 modLoader 中，和 loaderVersion 不用改</span></span><br><span class="line">   <span class="attr">modLoader</span>=<span class="string">&quot;javafml&quot;</span></span><br><span class="line">   <span class="attr">loaderVersion</span>=<span class="string">&quot;[36,)&quot;</span></span><br><span class="line">   <span class="comment"># 自己选证书：https://choosealicense.com/.</span></span><br><span class="line">   <span class="attr">license</span>=<span class="string">&quot;All Rights Reserved&quot;</span></span><br><span class="line">   <span class="comment"># 自己定义 issue 提问网站，可选</span></span><br><span class="line">   <span class="attr">issueTrackerURL</span>=<span class="string">&quot;https://github.com/MinecraftForge/MinecraftForge/issues&quot;</span></span><br><span class="line">   <span class="comment"># 暂时用不到，不管它</span></span><br><span class="line">   <span class="attr">showAsResourcePack</span>=<span class="literal">false</span></span><br><span class="line"></span><br><span class="line">   <span class="section">[[mods]]</span></span><br><span class="line">     <span class="attr">modId</span>=<span class="string">&quot;yourID&quot;</span></span><br><span class="line">     <span class="attr">version</span>=<span class="string">&quot;1.0.0.0&quot;</span></span><br><span class="line">     <span class="attr">displayName</span>=<span class="string">&quot;Example Mod&quot;</span></span><br><span class="line">     </span><br><span class="line">     <span class="attr">updateJSONURL</span>=<span class="string">&quot;minecraftforge.net/versions.json&quot;</span>    <span class="comment"># 中间这块都是可选的</span></span><br><span class="line">     <span class="attr">displayURL</span>=<span class="string">&quot;minecraftforge.net&quot;</span></span><br><span class="line">     <span class="attr">logoFile</span>=<span class="string">&quot;logo.png&quot;</span></span><br><span class="line">     <span class="attr">credits</span>=<span class="string">&quot;I&#x27;d like to thank my mother and father.&quot;</span></span><br><span class="line">     <span class="attr">authors</span>=<span class="string">&quot;Author&quot;</span></span><br><span class="line">     </span><br><span class="line">     <span class="attr">description</span>=<span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">     Lets you craft dirt into diamonds. This is a traditional mod that has existed for eons. It is ancient. The holy Notch created it. Jeb rainbowfied it. Dinnerbone made it upside down. Etc.</span></span><br><span class="line"><span class="string">     &#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下面的依赖是必要的，别碰</span></span><br><span class="line">     <span class="section">[[dependencies.yourID]]</span></span><br><span class="line">       <span class="attr">modId</span>=<span class="string">&quot;forge&quot;</span></span><br><span class="line">       <span class="attr">mandatory</span>=<span class="literal">true</span></span><br><span class="line">       <span class="attr">versionRange</span>=<span class="string">&quot;[36,)&quot;</span></span><br><span class="line">       <span class="attr">ordering</span>=<span class="string">&quot;NONE&quot;</span></span><br><span class="line">       <span class="attr">side</span>=<span class="string">&quot;BOTH&quot;</span></span><br><span class="line"></span><br><span class="line">     <span class="section">[[dependencies.yourID]]</span></span><br><span class="line">       <span class="attr">modId</span>=<span class="string">&quot;minecraft&quot;</span></span><br><span class="line">       <span class="attr">mandatory</span>=<span class="literal">true</span></span><br><span class="line">       <span class="attr">versionRange</span>=<span class="string">&quot;[1.16.5,1.17)&quot;</span></span><br><span class="line">       <span class="attr">ordering</span>=<span class="string">&quot;NONE&quot;</span></span><br><span class="line">       <span class="attr">side</span>=<span class="string">&quot;BOTH&quot;</span></span><br></pre></td></tr></table></figure>
+<p><strong>step 4.</strong> 再到 <code>build.gradle</code> 中，将所有 <code>examplemod</code> 换成自己的 modid，修改个性化内容，然后构建！</p>
+<p><strong>step 5.</strong> 启动 IDEA 上的任务设置 “RunClient”，进入游戏查看自己的 mod 是否已经显示！</p>
+<h3 id="0-10-事件系统"><a href="#0-10-事件系统" class="headerlink" title="0.10 事件系统"></a>0.10 事件系统</h3><p>早在 0.3 节说明运行模式的时候，我们提到了 <code>Mod</code> 总线和 <code>Forge</code> 总线，这里在开发前必须要说清楚。Forge 自己的事件系统内是独立于 Minecraft 的事件系统的。</p>
+<p>使用 Forge 事件系统的方法有 2 种，先看个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestEventHandler</span> &#123;</span><br><span class="line">    <span class="meta">@SubscribeEvent</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">pickupEvent</span><span class="params">(EntityItemPickupEvent event)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Item picked up!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里定义了一个类 <code>TestEventHandler</code>，里面有个实例方法 <code>pickupEvent()</code>。注意 <code>@SubscribeEvent</code> 标记，<strong>它的作用就是指示下方的方法为事件处理器</strong>，而它监听的事件类型由它的参数决定（<code>EntityItemPickupEvent</code>，实体捡起物品这个事件）。</p>
+<p>但是只是让他声明为事件处理器还不够，还需要在合适的位置将含有事件处理器的类<strong>实例化</strong>，并<strong>注入事件总线中</strong>。是 <code>Forge</code> 总线还是 <code>Mod</code> 总线？</p>
+<ul>
+<li><p><code>Mod</code> 总线：负责游戏的生命周期事件，也就是<strong>初始化过程的事件</strong>；注册方法：<code>FMLJavaModLoadingContext.get().getModEventBus().register(&lt;subscribed_event_obj&gt;)</code>；</p>
+</li>
+<li><p><code>Forge</code> 总线：负责的就是除了生命周期事件外的所有事件；注册方法：<code>MinecraftForge.EVENT_BUS.register(&lt;subscribed_event_obj&gt;)</code>；</p>
+</li>
+</ul>
+<p>显然，上面 “实体捡起物品” 的事件在初始化过程之外，所以加入 <code>Forge</code> 总线：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MinecraftForge.EVENT_BUS.register(<span class="keyword">new</span> <span class="title class_">TestEventHandler</span>());</span><br></pre></td></tr></table></figure>
+<p>显然这样注册的方法比较麻烦，被称为 “实例注册方式”。还有一种：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Mod</span>.EventBusSubscriber(modid = <span class="string">&quot;mymod&quot;</span>, bus = Bus.FORGE, value = Dist.CLIENT)</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyStaticClientOnlyEventHandler</span> &#123;</span><br><span class="line">    <span class="meta">@SubscribeEvent</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">drawLast</span><span class="params">(RenderWorldLastEvent event)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Drawing!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不管传给注解的参数（都是可选的），我们发现，这个类中的事件处理器是<strong>静态的</strong>（另注：由于是渲染事件，所以仅客户端）。这里，我们就可以在整个类前加上注解 <code>@Mod.EventBusSubscriber([modid, bus, value])</code>，表示将类中的所有事件处理器都加入指定 modid、总线、端中。</p>
+<p>这里补充，如果是 <code>Mod</code> 总线，那么 <code>bus = Bus.MOD</code>，更多信息可以转到 <code>@Mod.EventBusSubscriber()</code> 的源码查看。</p>
+<h2 id="Chapter-1-创建物品"><a href="#Chapter-1-创建物品" class="headerlink" title="Chapter 1. 创建物品"></a>Chapter 1. 创建物品</h2><h3 id="1-1-第一个物品"><a href="#1-1-第一个物品" class="headerlink" title="1.1 第一个物品"></a>1.1 第一个物品</h3><p>本节了解，创建一个物品就 3 步【所有物品都是这样】：</p>
+<ol>
+<li>创建自己的物品类，一般继承于原版的物品的类 <code>Item</code>；</li>
+<li>在合适的位置实例化这个物品；</li>
+<li>将此物品对象注册进游戏；</li>
+</ol>
+<p>我们先以一个原版游戏中没有 “黑曜石锭” 为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ObsidianIngot</span> <span class="keyword">extends</span> <span class="title class_">Item</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ObsdianIngot</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(<span class="keyword">new</span> <span class="title class_">Properties</span>().group(ItemGroup.MATERIALS));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里我们就写了一个构造函数，向父类的构造函数传递了一个 <code>Properties</code> 类的对象，而这个 <code>Properties</code> 对象调用了 <code>group()</code>，<strong>表示设置物品所在组为 <code>Materials</code> 组（杂项栏）</strong>。</p>
+<p>传给父类的 <code>Properties</code> 对象的作用是规定了物品的一些属性，比如：是不是食物，或者这个物品在创造模式的哪一个物品栏。这里的 <code>group()</code> 方法就是设置了物品在创造模式的杂项栏。</p>
+<p>如果不调用 <code>group()</code> 方法设置，那么这个物品就不会出现在创造模式物品栏，只能用 <code>/give</code> 获取；</p>
+<p>然后是实例化 + 注册。现在的 <code>Forge</code> 引入了 <code>DeferredRegister</code>的机制：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ItemRegistry</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> DeferredRegister&lt;Item&gt; item_reg = </span><br><span class="line">        DeferredRegister.create(ForgeRegistires.ITEMS, Utils.MOD_ID);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> RegistryObject&lt;Item&gt; obsdianIngot = </span><br><span class="line">        item_reg.register(<span class="string">&quot;obsidian_ingot&quot;</span>, ObsidianIngot::<span class="keyword">new</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先使用 <code>DeferredRegister</code> 泛型类的静态方法 <code>create(&lt;ForgeRegistries.TYPE&gt;, &lt;mod_id&gt;)</code> 向 <code>mod_id</code> 的 mod 创建了一个 <code>DeferredRegister&lt;Type&gt;</code>  对象，表示<strong>这是专门注册 <code>Type</code> 类型实体的类</strong>。</p>
+<p>紧接着告诉这个对象要注册 “注册名为 ‘obsdian_ingot’（不能大写）、其对象构造方法为 <code>ObsidianIngot::new</code>” 的一个类的 <code>supplier</code>。</p>
+<p>最后，由于这个 <code>DeferredRegister</code> 泛型类帮助我们注册物品需要依赖<strong>注入事件</strong>。显然注册是一种初始化的事件，所以将 <code>DeferredRegister</code> 对象注入 <code>Mod</code> 总线（我们以 0.9 中的项目为例）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Mod(Utils.MOD_ID)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloMC</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">HelloMC</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// DeferredRegister 的 register 方法如果参数是总线，就将自己注入总线中</span></span><br><span class="line">        ItemRegistry.item_reg.register(</span><br><span class="line">            <span class="comment">// 这里前面说过，获取 Mod 总线</span></span><br><span class="line">            FMLJavaModLoadingContext.get().getModEventBus()</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行后会发现新的、没有材质的物品出现在创造模式的物品栏中。</p>
+<h3 id="1-2-物品的模型和材质"><a href="#1-2-物品的模型和材质" class="headerlink" title="1.2 物品的模型和材质"></a>1.2 物品的模型和材质</h3><p>一个物品被注册后，还应该指定它的模型和材质。这种指定方式也是固定的，记忆即可。下面以上面的 <code>ObsidianIngot</code> 为例。</p>
+<p>第一步，在 <code>src/main/resources</code> 创建 <code>assets</code> 目录，表示这个 mod 存储资源的位置。并将目录补充为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">resources/</span><br><span class="line">├── META-INF/</span><br><span class="line">│   └── mods.toml</span><br><span class="line">├── assets/</span><br><span class="line">│   └── mymod/        # 你的 modid</span><br><span class="line">│       ├── models/</span><br><span class="line">│       │   └── item/    # MC 中要求这个目录名，不能改，表示 item（物品）类型</span><br><span class="line">│       └── textures/</span><br><span class="line">│           └── item/</span><br><span class="line">└── pack.mcmeta</span><br></pre></td></tr></table></figure>
+<p>一定要创建 <code>pack.mcmeta</code>，这相当于为 mod <strong>规定了资源包</strong>。只有这么做，MC 才能发现 <code>assets</code> 中的资源。格式也是 <code>JSON</code>，模板：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span> </span><br><span class="line">  <span class="attr">&quot;pack&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;pack_format&quot;</span><span class="punctuation">:</span> <span class="number">10</span><span class="punctuation">,</span>    <span class="comment">// 看官网，pack_format = 10 时支持 MC 1.20 以下的版本</span></span><br><span class="line">    <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;My Resource Pack&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;language&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;LANG_COUNTRY&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;My Custom Language&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;region&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Country/Region name&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;bidirectional&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>第二步，在 <code>models/item</code> 的目录中创建 <code>obsidian_ingot.json</code>，文件名需要和之前<strong>物品注册名</strong>相同。</p>
+<p><code>item</code>（物品类）模型的 JSON 文件的模板如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="comment">// 父模型，即由什么模型加载而来</span></span><br><span class="line">    <span class="attr">&quot;parent&quot;</span><span class="punctuation">:</span> <span class="string">&quot;item/generated&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;textures&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="comment">// 指定了最底层的材质（格式在 0.4 中已经叙述）</span></span><br><span class="line">        <span class="attr">&quot;layer0&quot;</span><span class="punctuation">:</span> <span class="string">&quot;mymod:item/obsidian_ingot&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>在 <code>textures/item</code> 的目录中放入自己设计的材质 <code>obsidian_ingot.png</code>（游戏中 1:1，<strong>仅贴图最好不要大于 32×32 像素</strong>），文件名也是物品注册名。</p>
+<p>最后启动游戏就会发现游戏自动读取了模型和材质。</p>
+<p>注：自己制作模型的网站戳 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://blockbench.net/">这里</a>；</p>
+<h4 id="补充：BlockBench-笔记"><a href="#补充：BlockBench-笔记" class="headerlink" title="补充：BlockBench 笔记"></a>补充：BlockBench 笔记</h4><ul>
+<li>绑骨：按照父级模型生长方向移动、旋转等操作，可以用作设计动画；</li>
+<li>顶点识别；</li>
+<li>隐藏的菜单：x/y/z 轴翻转；</li>
+<li>缩放参数：可以在不改变材质的情况下改变模型大小，允许小数；</li>
+<li>大纲视图的锁定：可以防止误操作；</li>
+<li>背景图的作用大部分是用来拾色的；</li>
+<li>后期添加模型过大，放不下空白材质时，可以为材质调整大小；</li>
+</ul>
+<h3 id="1-3-Item-类和-ItemStack-类"><a href="#1-3-Item-类和-ItemStack-类" class="headerlink" title="1.3 Item 类和 ItemStack 类"></a>1.3 <code>Item</code> 类和 <code>ItemStack</code> 类</h3><p>前面两节叙述了加入普通自定义物品（<code>item</code>）的大致流程。现在深入一下更抽象的层面，考虑这些物品背后的类，以便我们进一步对它们进行自定义。</p>
+<p>首先，很方便理解的是 <code>Item</code> 类，就是规定每种物品属性的类。细心的同学可能会提问，我们之前创建的 <code>ObsidianIngot</code> 这个类在游戏的框中显示的数量呢？一组应该是多少个呢？<code>Item</code> 类都没有定义。</p>
+<p>这是因为，设计者考虑到 <code>item</code> 的有些信息不会因为数量、耐久等参数的改变而改变，例如：</p>
+<ul>
+<li>使用/放置（左键/右键）的行为；</li>
+<li>在客户端上显示的名称及 Tooltip；</li>
+<li>合成配方；</li>
+<li>et cetera；</li>
+</ul>
+<p>这些抽象的属性都在 <code>Item</code> 类中得到定义；而数量、是否有/有多少耐久等信息，就单独提出去打包为一个类，其名曰 <code>ItemStack</code>。游戏中，玩家的物品栏、背包、手持物品等，<strong>都是 <code>ItemStack</code> 的实例</strong>。</p>
+<p>所以，可以将 <code>ItemStack</code> 和 <code>Item</code> 的关系看作<strong>类的聚集</strong>，在对 <code>ItemStack</code> 可以调用 <code>getItem()</code> 实例方法来获得其中含有的 <code>Item</code> 对象。</p>
+<h4 id="享元"><a href="#享元" class="headerlink" title="享元"></a>享元</h4><p>另外有个极其重要的概念——“<strong>享元（Flyweight Pattern）</strong>”，即<strong>一种特定物品只对应一个实例</strong>，而 <code>Item</code> 就是一个享元。这意味着，以 <code>Apple</code> 类为例，你在游戏里见到<strong>所有</strong>苹果都是 <code>Apple</code> 类的唯一实例。正因如此，我们在编写 mod 中，可以直接用 <code>==</code>（即  <code>&lt;ItemStack_obj&gt;.getItem() == &lt;Item_obj&gt;</code>）来判断 <code>Item</code> 种类，不用担心 <code>==</code> 比较的是地址。</p>
+<h4 id="Item-AIR"><a href="#Item-AIR" class="headerlink" title="Item.AIR"></a><code>Item.AIR</code></h4><p>还有一件事，由于 <code>ItemStack</code> 是 <code>non-null</code> 的属性，永远是非空引用，所以 <strong>MC 中 “空的” 栏的 <code>ItemStack</code> 所含的 <code>Item</code> 对象是个特殊对象：<code>Items.AIR</code></strong>。判断 <code>ItemStack</code> 对应的栏目物品是否为空时，应该使用专用的实例函数 <code>isEmpty()</code>，不能直接判断是否为 <code>null</code>。</p>
+<h3 id="1-4-自定义物品组"><a href="#1-4-自定义物品组" class="headerlink" title="1. 4 自定义物品组"></a>1. 4 自定义物品组</h3><p>物品组可以形象地理解为创造模式物品栏的分栏。我们在最开始就提到的类 <code>ItemGroup</code>，所以自定义物品组很简单——就写一个继承于 <code>ItemGroup</code> 类的子类就行。</p>
+<p>这个继承的类只需要写<strong>两个地方</strong>，一个是构造函数，直接使用父类的即可，<strong>第一个参数是物品组的名称 <code>String</code></strong>。（这个组就以 “ObsidianGroup” 为例）</p>
+<p>另一个是重写类里面的 <code>createIcon()</code> 实例方法（实际用途是创建物品栏的图标），要求返回一个 <code>ItemStack</code> 实例（毕竟需要将物品呈现在物品栏中），这个也很简单，用 <code>ItemStack</code> 构造函数构造个实例就行。<strong><code>ItemStack</code> 构造函数的第一参数就是已注册的 <code>Item</code> 实例对象</strong>。</p>
+<blockquote>
+<p>从哪获取已注册的 <code>Item</code> 实例？简单，之前我们注册完物品后，<code>DeferredRegister::register</code> 方法不是返回了一个 <code>RegisterObject&lt;Item&gt;</code>，它就是包裹了注册信息的 <code>Item</code>，直接用 <code>get()</code> 实例方法就能返回已注册的 <code>Item</code> 实例。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ObsidianGroup</span> <span class="keyword">extends</span> <span class="title class_">ItemGroup</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ObsidianGroup</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(<span class="string">&quot;obsidian_group&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> ItemStack <span class="title function_">createIcon</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// ItemRegistry.obsidianIngot 对象在 1.1 中定义，忘了回去看</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ItemStack</span>(ItemRegistry.obsidianIngot.get());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个简单的物品组类就做好了。但是想要将它显示在游戏里，还要将它在合适的位置实例化。</p>
+<p>我们再定义一个类，专门存放 mod 中实例化的 <code>ItemGroup</code> 的类，就叫 <code>ModGroup</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ModGroup</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">ItemGroup</span> <span class="variable">og_group</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObsidianGroup</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样在物品类初始化的时候，用 <code>Properties::group()</code> 实例方法将物品加入 <code>og_group</code> 这个实例即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ObsidianIngot</span> <span class="keyword">extends</span> <span class="title class_">Item</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ObsidianIngot</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(<span class="keyword">new</span> <span class="title class_">Properties</span>().group(ModGroup.itemGroup));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1-5-食物"><a href="#1-5-食物" class="headerlink" title="1.5 食物"></a>1.5 食物</h3><p>食物就是一种特殊的 <code>Item</code>，也继承于 <code>Item</code> 来创建，只是比普通 <code>Item</code> 多几个属性（包括专门的类 <code>Food</code> 作为属性）。举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ObsidianApple</span> <span class="keyword">extends</span> <span class="title class_">Item</span> &#123;</span><br><span class="line">    <span class="comment">// 定义食物的属性，使用 Food 类</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Food</span> <span class="variable">food</span> <span class="operator">=</span> (</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Food</span>.Builder().saturation(<span class="number">10</span>)</span><br><span class="line">                          .hunger(<span class="number">20</span>)</span><br><span class="line">                          <span class="comment">// 使用接口创建 Supplier&lt;EffectInstance&gt;</span></span><br><span class="line">                          .effect(() -&gt; <span class="keyword">new</span> <span class="title class_">EffectInstance</span>(Effects.POISON, <span class="number">3</span>*<span class="number">20</span>, <span class="number">1</span>), <span class="number">1</span>)</span><br><span class="line">                          .build();</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>为 Java 基础补充知识：<code>Java</code> <code>Supplier</code>是一个功能接口，代表结果的提供者，<strong>存在于 <code>java.util.function</code> 包</strong>。常用方法是 <code>get()</code>，源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Supplier</span>&lt;T&gt; &#123;</span><br><span class="line">    T <span class="title function_">get</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以用来返回一个<strong>特定</strong>的结果对象。我们可以用 <code>lambda</code> 表达式，例如上面 <code>() -&gt; new EffectInstance(Effects.POISON, 3*20, 1)</code> 创建一个调用返回新 <code>EffectInstance</code> 对象的匿名函数。这个格式得到的左值就是 <code>supplier</code>。</p>
+<p>也可以定义一个完整的匿名函数：<code>() -&gt; &#123; return XXX; &#125;</code></p>
+</blockquote>
+<p>其中，<code>Food::Builder()</code> 静态方法初始化 <code>Food.Builder</code> 类实例，用来在 <code>Food</code> 属性对象生成前设置好参数，支持 <code>saturation()</code>、<code>hunger()</code>、<code>effect()</code> 方法。</p>
+<p>需要说明的是，其中 <code>effect()</code> 方法的<strong>第一参数</strong>是 <code>Supplier&lt;EffectInstance&gt;</code>，<strong>第二参数</strong>是<strong>触发的概率</strong>。<code>EffectInstance</code> 类的初始化方法第一参数是 <strong><code>Effects</code> 类的枚举量</strong>（含有 MC 中几乎所有效果），第二参数是效果持续的游戏 Tick 时间，第三参数是对应的药水等级。</p>
+<blockquote>
+<p>一个游戏刻 <code>Tick</code> 就是主程序循环一次的时间，固定是 <code>0.05 s</code>；上面的 <code>3*20</code> 就是 3 秒。</p>
+</blockquote>
+<p>最后的 <code>Food.Builder::build()</code> 方法将 <code>Food.Builder</code> 及其中的设置构造为 <code>Food</code> 类的实例，可以在初始化物品时对 <code>Properties</code> 对象使用 <code>food()</code> 方法指定（和 <code>group()</code> 一样）。</p>
+<p>接下来的物品注册、模型和材质都与普通 <code>Item</code> 相差无几。</p>
+<h3 id="1-6-近战武器-和-工具"><a href="#1-6-近战武器-和-工具" class="headerlink" title="1.6 近战武器 和 工具"></a>1.6 近战武器 和 工具</h3><p><strong>MC 原版 1.16.5 的近战武器可以认为只有剑</strong>，如果想要自定义近战物品，就可以按剑的类的做法来做（入门不介绍攻击动画的制作，就复用剑的攻击动画）。</p>
+<p><strong>MC 原版 1.16.5 的工具就是耳熟能详几件：稿子、铲子、斧头、锄头</strong>。</p>
+<p>首先，细心的同学可以发现，木头、石头、铁、黄金和钻石种类的武器面板基础数据（除去附魔等加成的效率、耐久、伤害……）是不同的，并且损坏后修复的材料不同。但它们都是 “剑 / 稿 / 斧 / 锄 / 铲” 这个属性，所以这些额外的数据<strong>可以抽象为一个单独的类 / 枚举类型来管理</strong>，在初始化时再传给 “剑 / 稿 / 斧 / 锄 / 铲” 这个类。在 MC 中，它就是<strong>枚举类型 <code>ItemTier</code></strong>，即 “工具等级”（Tiered adj. 阶梯式的、分层的）。</p>
+<p>官方选择了<strong>接口类</strong>来设计 <code>ItemTier</code>，而由于 Java 的枚举类型在能够大量定义常量的同时，允许添加方法，因此我们只需写一个枚举类来 <code>implements</code> 它。举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">ModItemTier</span> <span class="keyword">implements</span> <span class="title class_">ItemTier</span> &#123;</span><br><span class="line">    <span class="comment">// 规范来说，enum 内部先定义实例</span></span><br><span class="line">    OBSIDIAN(<span class="number">3</span>, <span class="number">2000</span>, <span class="number">10.0F</span>, <span class="number">4.0F</span>, <span class="number">30</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> harvestLevel;        <span class="comment">// 精准采集等级</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> maxUses;            <span class="comment">// 最大耐久值</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">float</span> efficiency;        <span class="comment">// 效率值</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">float</span> attackDamage;    <span class="comment">// 伤害</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> enchantability;    <span class="comment">// 附魔能力</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 构造方法就是将属性值全部传进去</span></span><br><span class="line">    ModItemTier(<span class="type">int</span> harvestIn, <span class="type">int</span> maxUsesIn, <span class="type">float</span> effIn, <span class="type">float</span> attIn, <span class="type">int</span> enchantabilityIn) &#123;</span><br><span class="line">        <span class="built_in">this</span>.harvestLevel = harvestIn;</span><br><span class="line">        <span class="built_in">this</span>.maxUses = maxUsesIn;</span><br><span class="line">        <span class="built_in">this</span>.efficiency = effIn;</span><br><span class="line">        <span class="built_in">this</span>.attackDamage = attIn;</span><br><span class="line">        <span class="built_in">this</span>.enchantability = enchantabilityIn;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 下面的部分别看它长，就是把 get 方法简单覆盖一下 -------------------|</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getHarvestLevel</span><span class="params">()</span> &#123; <span class="keyword">return</span> <span class="built_in">this</span>.harvestLevel; &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getMaxUses</span><span class="params">()</span> &#123; <span class="keyword">return</span> <span class="built_in">this</span>.maxUses; &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">float</span> <span class="title function_">getEfficiency</span><span class="params">()</span> &#123; <span class="keyword">return</span> <span class="built_in">this</span>.efficiency; &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">float</span> <span class="title function_">getAttackDamage</span><span class="params">()</span> &#123; <span class="keyword">return</span> <span class="built_in">this</span>.attackDamage; &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getEnchantability</span><span class="params">()</span> &#123; <span class="keyword">return</span> <span class="built_in">this</span>.enchantability; &#125;</span><br><span class="line">    <span class="comment">// ------------------------------------------------------------|</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 之前提到的，修复材料需要单独写一下</span></span><br><span class="line">    <span class="comment">// 但具体的合成表还需要以后写</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Ingredient <span class="title function_">getRepairMaterial</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Ingredient.fromItems(ItemRegistry.obsidianIngot.get());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>别问为什么要重新写属性并且 <code>override</code>。因为这是个 <code>enum</code> 类型，不存在继承的说法，只能 <code>implements</code>  方法。</p>
+<p>再来看 “剑 / 稿 / 斧 / 锄 / 铲” 类的继承关系：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Item --&gt; TieredItem (有工具等级的 item) --&gt; SwordItem</span><br><span class="line">                |</span><br><span class="line">                └─--&gt;    ToolItem	// 这里是下一节要说的 “工具”，也有工具等级</span><br><span class="line">                            ├─----------&gt; PickaxeItem</span><br><span class="line">                            ├─----------&gt; ShovelItem</span><br><span class="line">                            ├─----------&gt; AxeItem</span><br><span class="line">                            └─----------&gt; HoeItem</span><br></pre></td></tr></table></figure>
+<p>这里简单到爆炸，只需要掌握这些类的初始化方法就行，以剑为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">SwordItem</span><span class="params">(ItemTier tier_obj, <span class="type">int</span>, <span class="type">float</span>, Properties prop)</span>;</span><br></pre></td></tr></table></figure>
+<p>像这里以黑曜石剑为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ObsidianSword</span> <span class="keyword">extends</span> <span class="title class_">SwordItem</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ObsidianSword</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 这里的 OBSIDIAN 是之前定义 enum ModItemTier 时创建的实例</span></span><br><span class="line">        <span class="comment">// ItemGroup.COMBAT 是战斗物品组，对应创造模式物品栏“铁剑”图标一栏</span></span><br><span class="line">        <span class="built_in">super</span>(ModIterTier.OBSIDIAN, <span class="number">3</span>, -<span class="number">2.4F</span>, <span class="keyword">new</span> <span class="title class_">Properties</span>().group(ItemGroup.COMBAT));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>SwordItem</code> 构造函数的第一参数 <code>ItemTier</code> 后面的两个参数分别是<strong>攻击伤害、攻击速度</strong>；</p>
+<p>之后的模型、材质、物品注册也是完全和普通 <code>item</code> 相同。</p>
+<p> 稿子、铲子、斧头、锄头也一样。</p>
+<p>注意：以上数据面板理论上只要不溢出都可以自行设置。但如果想要写成好的 Mod，这边建议自己试试平衡性，再调整数值。</p>
+<blockquote>
+<p>你问为什么不介绍 “弓” 这种远程武器？这大概是因为 minecraft java 到处是高耦合度的代码（尤其是弓这个动作复杂的 item），哪怕仅修改拉弓速度都要引入 7~8 个包，故不再这里叙述。实在想要改，建议直接改材质 + 附魔；</p>
+</blockquote>
+<h3 id="1-7-可穿戴装备"><a href="#1-7-可穿戴装备" class="headerlink" title="1.7 可穿戴装备"></a>1.7 可穿戴装备</h3><p>和近战武器/工具类似，可穿戴装备也有 “工具等级” 来管理和装备位置无关的数据，这就是 <code>IArmorMaterial</code> <strong>接口类</strong>，我们模仿 1.6 中的 <code>ModItemTier</code> 用一个枚举类来自定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">ObsidianArmorMaterial</span> <span class="keyword">implements</span> <span class="title class_">IArmorMaterial</span> &#123;</span><br><span class="line">    OBSIDIAN(</span><br><span class="line">        <span class="string">&quot;obsidian&quot;</span>, <span class="number">40</span>, <span class="keyword">new</span> <span class="title class_">int</span>[]&#123;<span class="number">5</span>,<span class="number">8</span>,<span class="number">10</span>,<span class="number">5</span>&#125;, <span class="number">20</span>, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, <span class="number">2.0F</span>, <span class="number">0.0F</span>, () -&gt; &#123;</span><br><span class="line">            <span class="keyword">return</span> Ingredient.fromItems(ItemRegistry.obsidianIngot.get());</span><br><span class="line">        &#125;</span><br><span class="line">    );</span><br><span class="line">    <span class="comment">// 下面是 IArmorMaterial 需要拥有的属性：</span></span><br><span class="line">                                                    <span class="comment">// 最大耐久数值数组</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span>[] MAX_DAMAGE_ARRAY = <span class="keyword">new</span> <span class="title class_">int</span>[]&#123;<span class="number">13</span>,<span class="number">15</span>,<span class="number">16</span>,<span class="number">11</span>&#125;;</span><br><span class="line">    <span class="comment">// 这个名字是给渲染端用的（也就是客户端），也是找材质用的名字。请确保此处、注册名、材质名三者写的是一个名字</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> maxDamageFactor;                <span class="comment">// 最大耐久衰减因数</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span>[] damageReductionAmountArray;    <span class="comment">// 减伤数组（保护效果）</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> enchantability;                <span class="comment">// 附魔能力</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> SoundEvent soundEvent;            <span class="comment">// 穿着音效</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">float</span> toughness;                    <span class="comment">// 文档没说，可以自己尝试</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">float</span> knockbackResistance;        <span class="comment">// 击退抵抗数值</span></span><br><span class="line">    <span class="comment">// 这个 LazyValue 可以理解为 Forge 包里面内含的一种容器，实现懒加载。泛型参数是懒加载的结果，而它初始化参数是对应泛型的 Supplier</span></span><br><span class="line">    <span class="comment">// 这个属性相当于 ItemTier 中的 getRepairMaterial()</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> LazyValue&lt;Ingredient&gt; repairMaterial;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 构造函数还是就把之前的属性给它们赋值一遍</span></span><br><span class="line">    ObsidianArmorMaterial(</span><br><span class="line">        String armorName, <span class="type">int</span> maxDamageF, <span class="type">int</span>[]damageReductionArray,</span><br><span class="line">        <span class="type">int</span> enchantAbility, SoundEvent se, <span class="type">float</span> tough, <span class="type">float</span> knockResist,</span><br><span class="line">        Supplier&lt;Ingredient&gt; repairMaterialSupplier</span><br><span class="line">    ) &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = armorName; <span class="built_in">this</span>.maxDamageFactor = maxDamageF;</span><br><span class="line">        <span class="built_in">this</span>.damageReductionAmountArray = damageReductionArray;</span><br><span class="line">        <span class="built_in">this</span>.enchantability = enchantAbility;</span><br><span class="line">        <span class="built_in">this</span>.soundEvent = se; <span class="built_in">this</span>.toughness = tough;</span><br><span class="line">        <span class="built_in">this</span>.knockbackResistance = knockResist;</span><br><span class="line">        <span class="built_in">this</span>.repairMaterial = <span class="keyword">new</span> <span class="title class_">LazyValue</span>&lt;&gt;(repairMaterialSupplier);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 下面实现 IArmorMaterial 接口，只要给出所有的 get 方法就行。注意名字和参数。</span></span><br><span class="line">    <span class="comment">// 注意，getName 因为是为客户端准备的函数，所以加上 annotation @OnlyIn 就行</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getDurability</span><span class="params">(EquipmentSlotType slotIn)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> MAX_DAMAGE_ARRAY[slotIn.getIndex()] * <span class="built_in">this</span>.maxDamageFactor;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getDamageReductionAmount</span><span class="params">(EquipmentSlotType slotIn)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.damageReductionAmountArray[slotIn.getIndex()];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getEnchantability</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.enchantability;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> SoundEvent <span class="title function_">getSoundEvent</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.soundEvent;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> Ingredient <span class="title function_">getRepairMaterial</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.repairMaterial.getValue();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@OnlyIn(Dist.CLIENT)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">float</span> <span class="title function_">getToughness</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.toughness;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">float</span> <span class="title function_">getKnockbackResistance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.knockbackResistance;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着，和其他 item 一样设置可穿戴装备对应的对象，并且注册。</p>
+<p>但是！一般情况我们无需继承不同的类，只需要创建 <code>ArmorItem</code> 类的不同实例，就能获得不同部位的 item 对象。这多半是因为可穿戴装备是盔甲，都设计成一套，例如注册时：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 回忆一下，item_reg 是之前在 ItemRegistry 类中定义的 DeferredRegister 类的实例</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> RegistryObject&lt;Item&gt; obsidianHelmet = item_reg.register(<span class="string">&quot;obsidian_helmet&quot;</span>, () -&gt; <span class="keyword">new</span> <span class="title class_">ArmorItem</span>(ModArmorMaterial.OBSIDIAN, EquipmentSlotType.HEAD, (<span class="keyword">new</span> <span class="title class_">Item</span>.Properties()).group(ModGroup.itemGroup)));</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> RegistryObject&lt;Item&gt; obsidianChestplate = item_reg.register(<span class="string">&quot;obsidian_chestplate&quot;</span>, () -&gt; <span class="keyword">new</span> <span class="title class_">ArmorItem</span>(ModArmorMaterial.OBSIDIAN, EquipmentSlotType.CHEST, (<span class="keyword">new</span> <span class="title class_">Item</span>.Properties()).group(ModGroup.itemGroup)));</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> RegistryObject&lt;Item&gt; obsidianLeggings = item_reg.register(<span class="string">&quot;obsidian_leggings&quot;</span>, () -&gt; <span class="keyword">new</span> <span class="title class_">ArmorItem</span>(ModArmorMaterial.OBSIDIAN, EquipmentSlotType.LEGS, (<span class="keyword">new</span> <span class="title class_">Item</span>.Properties()).group(ModGroup.itemGroup)));</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> RegistryObject&lt;Item&gt; obsidianBoots = item_reg.register(<span class="string">&quot;obsidian_boots&quot;</span>, () -&gt; <span class="keyword">new</span> <span class="title class_">ArmorItem</span>(ModArmorMaterial.OBSIDIAN, EquipmentSlotType.FEET, (<span class="keyword">new</span> <span class="title class_">Item</span>.Properties()).group(ModGroup.itemGroup)));</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>现在传给 <code>DeferredRegister&lt;Item&gt;::register()</code> 的第二参数不再是类自带的 <code>new</code> 方法，而是临时写的匿名函数，利用已存在的类 <code>ArmorItem</code> 的构造方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第一参数是之前定义的 可穿戴装备的“等级枚举类”</span></span><br><span class="line"><span class="comment">// 第二参数是盔甲的部位，会针对性读取材质的某一区域</span></span><br><span class="line"><span class="comment">// 第三参数是原始的 item 对象的 supplier</span></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">ArmorItem</span><span class="params">(IArmorMaterial material, EquipmentSlotType type, Supplier&lt;Item&gt; item)</span>;</span><br></pre></td></tr></table></figure>
+<p>现在最后一件事需要注意，<strong>就是盔甲的材质添加和其他 item 不一样</strong>。</p>
+<p><strong>首先</strong>从前面共用一个类可以看出，这里<strong>盔甲的材质也在一个图中</strong>。说 “一个图” 不是很准确，准确来说是<strong>穿着状态的盔甲全套一组图，物品栏中的盔甲又是另一组图</strong>。所以这里需要两组材质图，分布在不同 “<code>layer</code>” 中。因此，如果想自己创作，还需要专门的软件，例如上面提到的 blockbench；</p>
+<p><strong>其次</strong>，minecraft 自己把盔甲<strong>穿着</strong>的材质写死到 <code>minecraft:/</code> 资源作用域下，这意味着，我们不能在原来的地方加材质图，应该新建一个 <code>minecraft</code> 目录；而同时盔甲在物品栏的贴图也要自己设计，和普通 item 一样加 model json 和 扁平材质：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">resources/</span><br><span class="line">├── META-INF/</span><br><span class="line">│   └── mods.toml</span><br><span class="line">├── assets/</span><br><span class="line">│   ├── mymod/        # 你的 modid，之前材质存放的地方（作用域为 mymod:/）</span><br><span class="line">│   |   ├── models/</span><br><span class="line">│   |   │   └── item/                    # 盔甲物品栏图标模型 json 存放位置</span><br><span class="line">│   |   └── textures/</span><br><span class="line">│   |       └── item/                    # 盔甲物品栏材质图片存放位置</span><br><span class="line">|    |</span><br><span class="line">|    └── minecraft/	# 新建的目录，材质作用域是 minecraft:/</span><br><span class="line">|            └── textures/</span><br><span class="line">|                    └── models/</span><br><span class="line">|                            └── armor/	# 盔甲穿着材质图片存放位置</span><br><span class="line">|                                    └── ...</span><br><span class="line">|            </span><br><span class="line">└── pack.mcmeta</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>，盔甲材质图命名格式：<code>&lt;Ingredient名称ID&gt;_layer_1</code>（穿着贴图）和 <code>&lt;Ingredient名称ID&gt;_layer_2</code>（物品栏贴图）；</p>
+<h3 id="1-8-Item-属性重写"><a href="#1-8-Item-属性重写" class="headerlink" title="1.8 Item 属性重写"></a>1.8 Item 属性重写</h3><p>现在回忆一下，在 <code>minecraft</code> 中拉弓，是不是随着时间延长，弓的贴图会变化？这是怎么做到的呢？<strong>这里利用了模型 JSON 中的 <code>&quot;overrides&quot;</code> 项的设定</strong>，我们来看原版 minecraft 弓的模型 JSON 的一部分：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span> </span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    </span><br><span class="line">    <span class="attr">&quot;overrides&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;predicate&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;pulling&quot;</span><span class="punctuation">:</span> <span class="number">1</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;model&quot;</span><span class="punctuation">:</span> <span class="string">&quot;item/bow_pulling_0&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;predicate&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;pulling&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;pull&quot;</span><span class="punctuation">:</span> <span class="number">0.65</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;model&quot;</span><span class="punctuation">:</span> <span class="string">&quot;item/bow_pulling_1&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;predicate&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;pulling&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;pull&quot;</span><span class="punctuation">:</span> <span class="number">0.9</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;model&quot;</span><span class="punctuation">:</span> <span class="string">&quot;item/bow_pulling_2&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>在 <code>overrides</code> 配置项中，可以看到许多组类似这样：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;predicate&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;pulling&quot;</span><span class="punctuation">:</span> <span class="number">1</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;model&quot;</span><span class="punctuation">:</span> <span class="string">&quot;item/bow_pulling_0&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>的组，这好理解，<code>predicate</code> 项就是编程语言中的 IF（如果判断），在其中的是<strong>条件对</strong>，如果满足了条件对，那么模型和材质会采用同组中的 <code>model</code> 项对应的材质。</p>
+<p>按照这个原理，我们可以设计一种 “根据堆叠数量变色” 的特殊 item。这种 item 的类的定义和普通 item 一样，但<strong>注册</strong>有所差别：<strong>需要向 <code>MOD</code> 总线中添加 <code>propertyOverrideRegistry</code> 的特殊事件</strong>，用来初始化并在游戏中监听物品变化，及时覆盖材质。</p>
+<p>假设我们注册好的对象叫：<code>RegisterObject&lt;Item&gt; magicIngot</code>，那么需要写这么个类来作为属性覆盖的事件处理器：</p>
+<blockquote>
+<p><strong>这是我们第一次向总线中加入事件，不知道含义的可以回到 0.10 事件系统 这节复习一下</strong>。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Mod</span>.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PropertyRegistry</span> &#123;</span><br><span class="line">    <span class="meta">@SubscribeEvent</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">propertyOverrideRegistry</span><span class="params">(FMLClientSetupEvent event)</span> &#123;</span><br><span class="line">        event.enqueueWork(</span><br><span class="line">            () -&gt; &#123;</span><br><span class="line">                ItemModelProperties.registerProperty(</span><br><span class="line">                    ItemRegistry.magicIngot.get(),</span><br><span class="line">                    <span class="keyword">new</span> <span class="title class_">ResourceLocation</span>(Utils.MOD_ID, <span class="string">&quot;size&quot;</span>),</span><br><span class="line">                    (itemStack, clientWorld, livingEntity) -&gt; itemStack.getCount()</span><br><span class="line">                );</span><br><span class="line">            &#125;</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先 <code>@Mod</code> 和 <code>@SubscribeEvent</code> 就是经典的静态的事件注册方法，在 0.10 中介绍过；</p>
+<p>那么在接收 <code>FMLClientSetupEvent</code> 事件中，方法 <code>propertyOverrideRegistry</code> 做了什么？</p>
+<p>首先了解 <code>FMLClientSetupEvent</code> 是在 Java FML（Forge Model Loader）加载时必然触发的事件，所以这里的意思是<strong>在 Java FML 加载的时候运行 <code>PropertyRegistry#propertyOverrideRegistry</code> 这个方法</strong>，方法体就一行 <code>event.enqueueWork(Supplier&lt;?&gt;)</code>，这个可以理解为运行里面的 <code>enqueueWork</code> 的 supplier，我们唯一要做的就是把 overrides 这个 item 的情况注册一下。看看注册 item overrides 的函数声明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ItemModelsProperties.registerProperty(</span><br><span class="line">    RegisterObject&lt;Item&gt;	registered_item,</span><br><span class="line">    ResourceLocation        resourceLocation,</span><br><span class="line">    Supplier&lt;?&gt;                supplier	<span class="comment">// ? 为 游戏中想要监测的属性类型</span></span><br><span class="line">);                                        <span class="comment">// supplier 就是调用获取数据的匿名函数</span></span><br></pre></td></tr></table></figure>
+<p>注意，从上面的实例代码可以看出，这里的 <code>ResourceLocation</code> 的作用就是将获取的数据绑定到指定的资源名称，方便在接下来的 JSON 文件中使用并 <code>overrides</code>；它的初始化函数第二参数是资源名称，<strong>必须要记住</strong>，它和外面的 JSON 文件 <code>predicate</code> 条件中的键的名称要一致（如果用到的话）；</p>
+<p>上面示例中的 <code>itemStack.getCount()</code> 就是获取 itemStack 的堆叠数量。</p>
+<p>最后来看补充的模型文件：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;parent&quot;</span><span class="punctuation">:</span> <span class="string">&quot;item/generated&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;textures&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;layer0&quot;</span><span class="punctuation">:</span> <span class="string">&quot;item/iron_ingot&quot;</span>        <span class="comment">// 这里投机取巧，普通模式就用了铁锭的材质</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span>                                    <span class="comment">// 下面是 overrides 添加的部分</span></span><br><span class="line">    <span class="attr">&quot;overrides&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;predicate&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;&lt;modid&gt;:size&quot;</span><span class="punctuation">:</span>    <span class="number">16</span>		<span class="comment">// 这里注意，&lt;modid&gt; 替换为自己的 modid</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span>                            <span class="comment">// size 就是要求记住的、之前注册的名称</span></span><br><span class="line">            <span class="attr">&quot;model&quot;</span><span class="punctuation">:</span> <span class="string">&quot;item/gold_ingot&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>最后放上相应的 texture 试运行一下，应该能见到预期的效果。</p>
+<h2 id="Chapter-EX-1-Localization-amp-Language"><a href="#Chapter-EX-1-Localization-amp-Language" class="headerlink" title="Chapter EX-1. Localization &amp; Language"></a>Chapter EX-1. Localization &amp; Language</h2><p>这一章不是必要的，主要讲述如何给之前的物品添加名称，并且提供语言支持。前面的章节创建的 item 名称都是内部的类名，开发者也许懂，但使用者可能会不理解。</p>
+<p>这是 minecraft 为了提升可维护性，方便本地化，默认是没有物体名称，item 只有自己的<strong>编号（<code>transitionKey</code>）</strong>，也就是之前看到的和类名/包名/属性名很像的 <code>XXX.XXX.XXX</code>；</p>
+<p>实际命名和语言的本地化则需要开发者自己完成，有两者方法，第一种比较简单，用 JSON 文件组成<strong>从前面的编号到名字的映射工作</strong>；第二种是使用 <code>I18n.format</code> 的方法，以后用到再提。</p>
+<p>前者使用比较容易，首先找到前面说的 item 的编号（在 <code>Item</code> 类内部，大家可以自己到源码中找一找）；下一步，是创建一个 <code>lang</code> 目录，位置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">resources/</span><br><span class="line">├── META-INF/</span><br><span class="line">│   └── mods.toml</span><br><span class="line">├── assets/</span><br><span class="line">│   ├── mymod/        # 你的 modid，之前材质存放的地方（作用域为 mymod:/）</span><br><span class="line">│   |   ├── models/</span><br><span class="line">│   |   ├── textures/</span><br><span class="line">|    |	└── lang/	# 这里是新建的 lang 目录</span><br><span class="line">|    |</span><br><span class="line">|    └── minecraft/</span><br><span class="line">|            </span><br><span class="line">└── pack.mcmeta</span><br></pre></td></tr></table></figure>
+<p>在 <code>lang/</code> 中写一个简体中文的 JSON map，举个例子：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// file: zh_cn.json</span></span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;item.XXX.obsidian_ingot&quot;</span><span class="punctuation">:</span> <span class="string">&quot;黑曜石锭&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;item.XXX.obsidian_apple&quot;</span><span class="punctuation">:</span><span class="string">&quot;黑曜石苹果&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;item.XXX.obsidian_sword&quot;</span><span class="punctuation">:</span><span class="string">&quot;黑曜石剑&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;itemGroup.obsidian_group&quot;</span><span class="punctuation">:</span> <span class="string">&quot;黑曜石物品栏&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>键是之前说的 item 编号，后面是名字/翻译内容；</p>
+<p>当然如果想让自己的 mod 国际化，还可以写 <code>zh_tw.json</code>、<code>en_us.json</code>，具体还有哪些语言可用，可以参阅 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://minecraft-zh.gamepedia.com/index.php?title=%E8%AF%AD%E8%A8%80&variant=zh#%E5%8F%AF%E7%94%A8%E8%AF%AD%E8%A8%80">wiki</a>；</p>
+<p>To be continued……</p>
+<p>—-EOF—-</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://sjtuxhw.asia">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sjtuxhw.asia/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/">https://sjtuxhw.asia/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://sjtuxhw.asia" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myBlog/tags/Java/">Java</a><a class="post-meta__tags" href="/myBlog/tags/Minecraft/">Minecraft</a><a class="post-meta__tags" href="/myBlog/tags/Forge/">Forge</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/minecraft1.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/myBlog/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/myBlog/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myBlog/2023/09/17/CSAPP-Notes-Chapter1-3/" title="CSAPP Notes Chapter1~3"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">CSAPP Notes Chapter1~3</div></div></a></div><div class="next-post pull-right"><a href="/myBlog/2023/08/30/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%B8%89%EF%BC%89/" title="从C++入门Qt（三）"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/qt3.jpg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">从C++入门Qt（三）</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/myBlog/2023/04/28/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Java 学习笔记（1）"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/java1.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="title">Java 学习笔记（1）</div></div></a></div><div><a href="/myBlog/2023/05/03/%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E6%9E%81%E7%AE%80%E7%9A%84Java%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" title="开发一个极简的Java网络爬虫"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/java-crawler.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-03</div><div class="title">开发一个极简的Java网络爬虫</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/myBlog/img/favicon.ico" onerror="this.onerror=null;this.src='/myBlog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SJTU-XHW</div><div class="author-info__description">A blog to document learning and life</div></div><div class="card-info-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">45</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.asia/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! ‎|•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Chapter-0-Forge-%E5%AF%BC%E8%AE%BA"><span class="toc-text">Chapter 0. Forge 导论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#0-1-Forge-%E5%8E%86%E5%8F%B2%E4%B8%8E%E5%AE%9A%E4%B9%89"><span class="toc-text">0.1 Forge 历史与定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0-2-Minecraft-%E7%9A%84%E6%9E%B6%E6%9E%84"><span class="toc-text">0.2 Minecraft 的架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0-3-Minecraft-%E7%9A%84%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="toc-text">0.3 Minecraft 的运行模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0-4-%E9%87%8D%E8%A6%81%E6%A6%82%E5%BF%B5%E5%87%86%E5%A4%87"><span class="toc-text">0.4 重要概念准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0-5-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83"><span class="toc-text">0.5 开发环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0-6-Mod-%E7%BB%93%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-text">0.6 Mod 结构设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0-7-Mod-%E6%9B%B4%E6%96%B0%E7%B3%BB%E7%BB%9F"><span class="toc-text">0.7 Mod 更新系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0-8-Mod-%E8%BF%9B%E9%98%B6%E8%B0%83%E8%AF%95"><span class="toc-text">0.8 Mod 进阶调试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0-9-%E7%AC%AC%E4%B8%80%E4%B8%AA-Mod%EF%BC%9A%E8%B7%91%E9%80%9A%E6%B5%81%E7%A8%8B"><span class="toc-text">0.9 第一个 Mod：跑通流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0-10-%E4%BA%8B%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-text">0.10 事件系统</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chapter-1-%E5%88%9B%E5%BB%BA%E7%89%A9%E5%93%81"><span class="toc-text">Chapter 1. 创建物品</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%89%A9%E5%93%81"><span class="toc-text">1.1 第一个物品</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E7%89%A9%E5%93%81%E7%9A%84%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%9D%90%E8%B4%A8"><span class="toc-text">1.2 物品的模型和材质</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%EF%BC%9ABlockBench-%E7%AC%94%E8%AE%B0"><span class="toc-text">补充：BlockBench 笔记</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-Item-%E7%B1%BB%E5%92%8C-ItemStack-%E7%B1%BB"><span class="toc-text">1.3 Item 类和 ItemStack 类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%AB%E5%85%83"><span class="toc-text">享元</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Item-AIR"><span class="toc-text">Item.AIR</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%89%A9%E5%93%81%E7%BB%84"><span class="toc-text">1. 4 自定义物品组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-%E9%A3%9F%E7%89%A9"><span class="toc-text">1.5 食物</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-%E8%BF%91%E6%88%98%E6%AD%A6%E5%99%A8-%E5%92%8C-%E5%B7%A5%E5%85%B7"><span class="toc-text">1.6 近战武器 和 工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-%E5%8F%AF%E7%A9%BF%E6%88%B4%E8%A3%85%E5%A4%87"><span class="toc-text">1.7 可穿戴装备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-8-Item-%E5%B1%9E%E6%80%A7%E9%87%8D%E5%86%99"><span class="toc-text">1.8 Item 属性重写</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chapter-EX-1-Localization-amp-Language"><span class="toc-text">Chapter EX-1. Localization &amp; Language</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评"><img src="https://cdn.sjtuxhw.top/cover_imgs/anime_bokumachi.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="《只有我不在的城市》番评"/></a><div class="content"><a class="title" href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评">《只有我不在的城市》番评</a><time datetime="2023-10-01T14:20:47.000Z" title="发表于 2023-10-01 10:20:47">2023-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/09/17/CSAPP-Notes-Chapter1-3/" title="CSAPP Notes Chapter1~3"><img src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes Chapter1~3"/></a><div class="content"><a class="title" href="/myBlog/2023/09/17/CSAPP-Notes-Chapter1-3/" title="CSAPP Notes Chapter1~3">CSAPP Notes Chapter1~3</a><time datetime="2023-09-17T23:47:15.000Z" title="发表于 2023-09-17 19:47:15">2023-09-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="MC-Forge开发笔记（一）"><img src="https://cdn.sjtuxhw.top/cover_imgs/minecraft1.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="MC-Forge开发笔记（一）"/></a><div class="content"><a class="title" href="/myBlog/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="MC-Forge开发笔记（一）">MC-Forge开发笔记（一）</a><time datetime="2023-09-06T01:04:06.000Z" title="发表于 2023-09-05 21:04:06">2023-09-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/08/30/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%B8%89%EF%BC%89/" title="从C++入门Qt（三）"><img src="https://cdn.sjtuxhw.top/cover_imgs/qt3.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="从C++入门Qt（三）"/></a><div class="content"><a class="title" href="/myBlog/2023/08/30/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%B8%89%EF%BC%89/" title="从C++入门Qt（三）">从C++入门Qt（三）</a><time datetime="2023-08-30T23:05:14.000Z" title="发表于 2023-08-30 19:05:14">2023-08-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/08/16/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%BA%8C%EF%BC%89/" title="从C++入门Qt（二）"><img src="https://cdn.sjtuxhw.top/cover_imgs/qt2.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="从C++入门Qt（二）"/></a><div class="content"><a class="title" href="/myBlog/2023/08/16/%E4%BB%8EC-%E5%85%A5%E9%97%A8Qt%EF%BC%88%E4%BA%8C%EF%BC%89/" title="从C++入门Qt（二）">从C++入门Qt（二）</a><time datetime="2023-08-17T03:15:11.000Z" title="发表于 2023-08-16 23:15:11">2023-08-16</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 By SJTU-XHW | tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/myBlog/js/utils.js"></script><script src="/myBlog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo-ax33bluz4-alex-andrews-projects.vercel.app/',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo-ax33bluz4-alex-andrews-projects.vercel.app/',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+      GLOBAL_CONFIG_SITE.isPost && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://twikoo-ax33bluz4-alex-andrews-projects.vercel.app/',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <div class='name'><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom.innerHTML= result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script src="/myBlog/js/jquery-3.7.0.min.js"></script><script src="/myBlog/js/rightmenu.js"></script><div class="aplayer no-destroy" data-id="6898044781" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false"></div><script src="/myBlog/js/mourn.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="/myBlog/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/myBlog/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>

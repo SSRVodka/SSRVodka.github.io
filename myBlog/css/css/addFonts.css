@@ -1,0 +1,16 @@
+@font-face {
+    font-family: "Figtree";
+    src: url("https://cdn.sjtuxhw.top/fonts/Figtree-VariableFont_wght.ttf") format("ttf");
+}
+
+@font-face {
+    font-family: "Noto serif";
+    src: url("https://cdn.sjtuxhw.top/fonts/NotoSerifSC-Regular.subset.woff2") format("woff2"),
+    	 url("https://cdn.sjtuxhw.top/fonts/NotoSerifSC-Regular.subset.otf") format("otf");
+}
+
+@font-face {
+    font-family: "MonoLisa";
+    src: url("https://cdn.sjtuxhw.top/fonts/MonoLisa-Regular.otf") format("otf");
+}
+
