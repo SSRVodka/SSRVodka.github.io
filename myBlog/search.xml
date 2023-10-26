@@ -418,11 +418,11 @@
             
             <tag> Discrete-Math </tag>
             
-            <tag> Graph </tag>
-            
             <tag> Logic </tag>
             
             <tag> Set-Theory </tag>
+            
+            <tag> Graph </tag>
             
         </tags>
       
@@ -451,11 +451,11 @@
             
             <tag> Discrete-Math </tag>
             
+            <tag> Graph </tag>
+            
             <tag> External-Search </tag>
             
             <tag> B+Tree </tag>
-            
-            <tag> Graph </tag>
             
         </tags>
       
