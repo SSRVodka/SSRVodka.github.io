@@ -1,0 +1,564 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>浅析 TTY Subsystem | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="written by SJTU-XHW References: 参考文献见文章末尾。 本人学识有限，解析难免有错，恳请读者能够批评指正，本人将不胜感激！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅析 TTY Subsystem">
+<meta property="og:url" content="https://sjtuxhw.top/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="written by SJTU-XHW References: 参考文献见文章末尾。 本人学识有限，解析难免有错，恳请读者能够批评指正，本人将不胜感激！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/tty.jpg">
+<meta property="article:published_time" content="2024-01-15T12:12:02.000Z">
+<meta property="article:modified_time" content="2024-01-15T12:25:46.307Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="Programming">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/tty.jpg"><link rel="shortcut icon" href="/myBlog/img/favicon.ico"><link rel="canonical" href="https://sjtuxhw.top/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myBlog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?64dd3b0c09c8af7b916f8249d32097e2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = {
+  root: '/myBlog/',
+  algolia: undefined,
+  localSearch: {"path":"/myBlog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '浅析 TTY Subsystem',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-01-15 07:25:46'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/myBlog/css/mouseConfig.css"><link rel="stylesheet" href="/myBlog/css/valineBg.css"><link rel="stylesheet" href="/myBlog/css/rightmenu.css"><link rel="stylesheet" href="/myBlog/css/custom_music.css"><link rel="stylesheet" href="/myBlog/css/addFonts.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/myBlog/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/myBlog/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">48</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.sjtuxhw.top/cover_imgs/tty.jpg')"><nav id="nav"><span id="blog-info"><a href="/myBlog/" title="SJTU-XHW's blog"><img class="site-icon" src="/myBlog/img/head_icon.png"/><span class="site-name">SJTU-XHW's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">浅析 TTY Subsystem</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-01-15T12:12:02.000Z" title="发表于 2024-01-15 07:12:02">2024-01-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-01-15T12:25:46.307Z" title="更新于 2024-01-15 07:25:46">2024-01-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">5.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>18分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/myBlog/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/#post-comment"><span id="twikoo-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><i>written by SJTU-XHW</i></p>
+<p><i>References: 参考文献见文章末尾。</i></p>
+<p><i>本人学识有限，解析难免有错，恳请读者能够批评指正，本人将不胜感激！</i></p>
+<hr>
+<span id="more"></span>
+<h2 id="为什么讨论-TTY"><a href="#为什么讨论-TTY" class="headerlink" title="为什么讨论 TTY"></a>为什么讨论 TTY</h2><p>在 Linux 系统中，TTY 是一个相当有名的子系统。当你输入 <code>ls -l /dev</code> 的时候，你能看到许许多多以 <code>tty</code> 为前缀的字符设备，这就是对 TTY 子系统在文件上的抽象。</p>
+<p>虽然我们无论是命令行还是 GUI 使用 Linux 的时候，TTY 似乎对我们无感，但是，当我因为一个小问题在互联网上查了很多关于 TTY 资料，却仍然很难找到一个完整的知识资料的时候，我发现这个 TTY 子系统的重要性被很多人忽视了。在整理了相关资料后，我愿意相信，搞清楚 Linux 的 TTY 子系统，属实是入门 Linux 系统的必由之路。</p>
+<p><strong>尤其是，如果你想要写一些更接近 Linux 底层的、I/O interactive 方面的应用程序，那么 <code>TTY</code> 的知识就显得更加重要。</strong></p>
+<p>前段时间，我在写 CSAPP 的 shell lab，工作量不大所以很快就完成了。但是文档里有句话让我不解，“这个 tiny shell <strong>不需要支持</strong>运行类似 <code>vim</code> 和 <code>tmux</code> 的程序，它们会对你的终端进行一些修改”。出于 “你不让我做，我偏要做” 的心态，我迅速拿着已经完工的 <code>tsh</code> 运行 <code>vim</code>，结果，<strong><code>vim</code> 被第 22 号信号挂起了</strong>。我尝试用内置指令 <code>fg</code> 将任务调向前台，也无济于事：</p>
+<p><img src="imgs/fail.png"></p>
+<p>很自然地，我查看了一下 22 号信号，发现是一个我未曾谋面的信号：<code>SIGTTOU</code>。很快啊，英文文档 “啪” 的一下就来了，我没有闪，只看见字里行间密密麻麻地挤满一个单词：<code>TTY</code>。</p>
+<p>Google 了很多文章之后我才发现，我们一直使用的<strong>命令行（CLI）</strong>都建立在一个无形的机制之上，这个机制接收并且传递我们在终端软件窗口的字符指令，建立起用户和操作系统的 “调度 和 沟通” 的桥梁。这，我以前一直是没有关注的。</p>
+<p>于是我明白，想要了解这之中究竟发生了什么、想要解决这个问题，就有必要了解一下 Linux TTY 了。</p>
+<blockquote>
+<p>对历史不感兴趣的同学请跳过下面一节。</p>
+</blockquote>
+<h2 id="TTY-的成长之路"><a href="#TTY-的成长之路" class="headerlink" title="TTY 的成长之路"></a>TTY 的成长之路</h2><p>实际上，TTY 在 OS 中的迭代和发展史谈不上 “elegant”，甚至可以用 “蜿蜒曲折” 来形容。</p>
+<p>在 1869 年，一种机器叫做 “<strong>股票行情自动收录器</strong>”（stock ticker）在当时金融系统不断发展的资本主义世界诞生了。它的样貌可以描述一下——一个电驱动的机械装置，包含一台机械打字机（typewriter）、一捆的电线，还有一长串用以打孔的纸带组成，它工作时的样貌如下图<sup><a href="#fn_1" id="reffn_1">1</a></sup>：</p>
+<div class="group-picture"><div class="group-picture-container"><div class="group-picture-row"><div class="group-picture-column" style="width: 50%;"><img src="imgs/tick1.png" width="300px" align=center></div><div class="group-picture-column" style="width: 50%;"><img src="imgs/tick2.png" width="300px" align=center></div></div></div></div>
+<p>它的使用和早期的计算机一样（不过更早），都需要有一个操作员在一旁输入指令、处理输出纸带，<strong>最终可以达成 “远距离实时广播股票价格” 的任务</strong>，是不是有点像影视剧里的电报？</p>
+<p>不过这个机器很快就演变为一个更快、基于 ASCII 编码的机械结构。知道它的名字的人可能会多一点：<strong>teletype</strong>（电传打字机，简称 TTY）。那么 teletype 在当时时如何完成给通信的另一方传输消息的功能的呢？答案是，连接上当时最大的 “网络”——<strong>Telex</strong>，专门用来在各个资本家之间传输商业电报。</p>
+<p>你可能会好奇，这个时候的计算机是什么情况？很遗憾，这个时候计算机还超级大、超级原始，似乎和 teletype 没啥交集。但是没过几年，当计算机的设计和架构发展到，已经可以支持执行多任务（multitask）的时候，一个重要的能力，却也是等待解决的问题就来了：<strong>计算机可以与用户进行实时交互了</strong>。这意味着，之前 “将打孔写程序的纸带传入机器” 的<strong>旧批处理模型（old batch processing model）</strong>就可以被人机交互所代替，从而大大减小操作员运行计算机的工作量<sup><a href="#fn_2" id="reffn_2">2</a></sup>。</p>
+<p>那么，如何实现与机器的直接交互？（传纸带肯定不够高效的🤡 于是大佬们将视线转向当时市场中一个随处可见的机器——teletype 电传打字机。他们打算用 teletype 连接上计算机，这样只需要打打字向计算机发指令就可以达到交互和执行命令的效果。</p>
+<p>有个难题是，当时市面上的 teletype 没有一个 “行业标准”，每个厂家生产的机器都略有不同。在计算机科学的视角来看，这好办，封装嘛，设计一个统一的 <strong>从 teletype 输入到 计算机的软件层适配接口</strong>（硬件层好说，就串口电信号而已，主要是软件驱动）就行，下次无论 teletype 生产厂家设计什么样的机型，只要计算机的系统支持这个接口规范，那不拿来就能用？</p>
+<p>在当时的 Unix 世界中（当时 Unix 已经出现），一种方法是让 OS Kernel 来实现这层接口，处理所有有关于 teletype 输入的底层细节，例如字长（word length）、串口波特率（baud rate）、流控制（flow control）、校验（parity，学过数电的同学会比较清楚这里面的机制）、基础的行 buffer 编辑能力等等。</p>
+<p>在 20 世纪 70 年代晚期，基于 teletype 和 OS 处理接口的一类新型输入终端出现了（例如 VT-100），它们在 teletype 的基础上包装了屏幕，支持闪烁的命令行光标、有色彩的输出信息等等，被人们称为 <strong>video terminals</strong>。</p>
+<p>不过，到了今天，我们可以发现所有实体的 teletypes、video terminals 都已经 “灭绝” 了，你只能在一些博物馆，或者硬件发烧友的收藏中寻得它们的踪迹。</p>
+<p>由于历史习惯的原因，当今你能看到所有的 Unix 类系统中还有 “TTY”，不过它们都是对以往的 video terminals 在软件上的模拟而已。正如一位外国网友所说：</p>
+<blockquote>
+<p>The legacy from the old cast-iron beasts is still lurking beneath the surface<sup><a href="#fn_3" id="reffn_3">3</a></sup>.</p>
+<p>这头钢铁巨兽（teletypes）的意志仍蛰伏在如今的 OS 的外表之下<sup><a href="#fn_3" id="reffn_3">3</a></sup>。</p>
+</blockquote>
+<h2 id="用户视角下的-TTY-old-versions"><a href="#用户视角下的-TTY-old-versions" class="headerlink" title="用户视角下的 TTY: old versions"></a>用户视角下的 TTY: old versions</h2><p>想要了解现代 Linux 系统中的 TTY 机制，我们还需要将时间拨回很早以前——人们使用实体 teletype 输入的时候。我们将 teletype 这个输入计算机指令以实现人机交互的设备称之为 <strong>终端（terminal）</strong>。当时的软硬件结构是这样的：</p>
+<p><img src="imgs/case1.png"></p>
+<p>teletype 是用一捆捆电线连接到计算机的一个叫 <strong>UART</strong>（Universal Asynchronous Receiver and Transmitter，通用异步收发器）的硬件设备上的。</p>
+<p>对应地，内核里就写了一个驱动 UART driver，用来管理从物理 terminal 设备上发来的电信号 bytes，处理一些细节例如前一节提到的 bytes 校验、流控制。</p>
+<p>一开始，UART driver 是直接将初步处理好的 bytes 流直接传给一些正在运行的进程，但是显然这种方法需要弥补几个缺陷：</p>
+<p><strong>1. 行编辑能力（Line Editing）</strong></p>
+<p>正常人在敲键盘（当时是敲打字机）的时候，无法避免的可能会打错。所以，肯定得有 backspace 退格的功能对吧？这个功能当然可以交给接收信号的进程自己来处理，但是计算机科学讲究不能混淆抽象层级，而且这也不符合 Unix 的设计哲学——运行在其上的程序应该越简单越好（只关心自己的业务逻辑）。</p>
+<p>所以为了方便考虑，当时的人们直接把这个功能也放到了操作系统内核里了。这时，操作系统就需要提供一个编辑内容的缓冲区（editing buffer），并且支持一些基本的编辑指令（退格、擦除单词、清空一行等），这些软件功能模块被叫做 <strong>line discipline</strong>（好家伙，这是在内核里写了一个行编辑器），它的地位如本节开头的图所示。</p>
+<p>不过，不同的上层应用程序对于它们接收的输入流肯定有各种各样的自定义的要求，因此 line discipline 除了提供正常的行编辑功能（cooked or canonical mode），还提供 <strong>raw mode</strong>（对输入流不做处理）。因此这些 advanced application（例如本身就是编辑器软件、邮件客户端、shells，以及自己调用 <code>curses</code> 和 <code>readline</code> 的程序）常常将系统的 line discipline 设置为 raw mode，然后自己执行对流的控制。</p>
+<p>正如上面所说，OS Kernel 提供了多种不同的 line disciplines，不过<strong>一次只有一个 line discipline attach 到指定的串口设备上</strong>（对于旧时设备，如上图，串口设备是 UART driver）。默认的 line discipline 会提供基本的行编辑功能，叫做 <code>N_TTY</code>（<code>driver/char/n_tty.c</code>），还有另外种类的 line disciplines 控制例如鼠标串口等。</p>
+<p><strong>2. 会话管理（Session Management）</strong></p>
+<p>还有一个很重要的一点是，对于一个用户而言可能他（她）需要同时运行多个程序，然后一次与它们之中的一个程序交互。总的来说，用户需要：</p>
+<ul>
+<li><p>如果一个应用程序陷入死循环，那么用户可能会需要向其发信号（kill / suspend……）；</p>
+</li>
+<li><p>一个后台程序如果需要向终端（terminal）写数据，那么它们需要被 <strong>suspend 直至前台进程处理结束，或者前台程序已经为其准备好了写终端的环境</strong>。</p>
+<blockquote>
+<ol>
+<li><p>为什么需要 suspend？不然所有后台程序都能随意更改终端，那不乱套了！其实，再想想，你在后台运行一个 <code>echo &quot;Hello&quot;</code> 好像也不会挂起？这个问题与之前的不相悖，我们后面讨论；</p>
+</li>
+<li><p>这个 suspend 的机制就是借助了 OS Kernel 发送的 <code>SIGTTOU</code> 机制，后面详细说。</p>
+</li>
+</ol>
+</blockquote>
+</li>
+<li><p>用户向当前 terminal 输入，肯定只能发送给当前的 “前台”（foreground）进程。</p>
+</li>
+</ul>
+<p>常见的 OS 都会 implement 一个 TTY driver（<code>drivers/char/tty_io.c</code>）来实现上述需要（具体地位前本章开头的图片）。TTY driver 也是个软件，但和一般的 “进程” 不一样：它是个 “passive object”，这意味着它像一个库，只有一些数据域（data fields）和一些方法（methods），等待其他进程的主动调用 / 内核中断 handler 调用。</p>
+<p>于是，人们通常将 <strong>UART driver</strong>（常用来直接读取串口设备、进行简单 parity 和 flow control）、<strong>line discipline 实例</strong>（用来作为 editing buffer，处理简单的行编辑命令）、<strong>TTY driver</strong>（多个进程间读取 terminal 的会话管理）三元组（triplet）称为一个 <strong>TTY device（TTY 设备）</strong>。</p>
+<p>因此，Unix 操作系统对上层的应用程序抽象的 terminal 就是 <code>TTY</code> 设备文件，存放于 <code>/dev</code>。</p>
+<blockquote>
+<p>顺便提一句，Unix 系统想要对 TTY 设备文件写入的用户需要是这个 TTY 设备文件的拥有者（owner）。我们经常使用 <code>shell</code> 的 login mode 登陆服务器时，内部会执行 <code>login</code> 程序，其工作之一便是以 <code>root</code> 权限将 shell 接下来需要使用的 <code>/dev/ttyN</code> 的拥有者换为登陆用户，以便登录用户能够读写 terminal；</p>
+</blockquote>
+<h2 id="用户视角下的-TTY-modern-versions"><a href="#用户视角下的-TTY-modern-versions" class="headerlink" title="用户视角下的 TTY: modern versions"></a>用户视角下的 TTY: modern versions</h2><p>我们了解了以前计算机是如何将 teletype 连接到计算机上并与之交互的，现在我们再将视野转移到现代计算机（desktop system，一般是图形化的）。</p>
+<p>还是讨论现代 Unix 系统，这个时候输入输出模型可以抽象为如下图形：</p>
+<p><img src="imgs/case2.png"></p>
+<p>此时 TTY driver 和 line discipline 的 作用和以往版本的作用几乎相近，但是现在已经不存在 teletype 了，取而代之的是 键盘 和 显示屏，因此就没有 UART 和实体 terminal 什么事了。</p>
+<p>取而代之的，是一个在 <strong>terminal emulator 中模拟的 video terminal</strong>（可以理解为<strong>一个包括了字符帧缓存（frame buffer of characters）和图形属性）的复杂状态机</strong>）。</p>
+<p>它的作用是接收来自键盘驱动的预处理信号，将其传给对应得 line discipline，并将输出数据渲染到 VGA 显示器上。</p>
+<p>等等！不太对，我们一直讨论的是 terminal emulator，因此有下面 2 种问题：</p>
+<ul>
+<li>目前这台计算机还只能简单字符输入和显示，相当于只实现了命令行子系统（console subsystem）；</li>
+<li>emulator 位于<strong>内核中</strong>，不够灵活（rigid），在抽象层级上说，为了可维护性和可扩展性，应该将其挪到用户态空间中（userland）；</li>
+</ul>
+<p>事实上，为了解决上面的问题，TTY device 的设计更加抽象了：</p>
+<p><img src="imgs/case3.png"></p>
+<p>我们发现，line discipline、TTY driver 的结构都不需要变嘛，因为它们还需要提供基本的行缓冲、会话管理的功能。因此，人们在内核中设计出了 <strong>pseudo terminal（<code>pty</code>，伪终端）</strong>，用于对接支持 <code>xterm</code>（Unix 中一种默认的终端模拟器）的桌面程序。</p>
+<blockquote>
+<p>注意，如果你在一个 <code>xterm</code> 桌面进程中调用了 <code>screen</code>、<code>tmux</code> 等程序，那么就是 pseudo terminal 套 pseudo terminal 的复杂结构，这里不讨论。</p>
+</blockquote>
+<h2 id="TTY-与-进程"><a href="#TTY-与-进程" class="headerlink" title="TTY 与 进程"></a>TTY 与 进程</h2><p>了解了 <code>TTY</code> 的发展和构成，那么 process 是如何和 PTY 对接的呢？为了讨论这个问题，我们需要复习一些进程、shell job control 的知识。</p>
+<h3 id="补充-1：Unix-Processes"><a href="#补充-1：Unix-Processes" class="headerlink" title="补充 1：Unix Processes"></a>补充 1：Unix Processes</h3><p>大部分学过 CSAPP 的同学可能对进程已经有了初步了解，尤其是在考完了 ICS 之后对其理解更为深刻…… 不过 CSAPP 关于进程的知识并不是操作系统的全部，我们下面补充一点。</p>
+<p>一个 Linux Process 通常有 <strong>5 种状态</strong>：</p>
+<p><img src="imgs/process.png"></p>
+<ul>
+<li><p><code>R</code>：Running / Runnable（On OS run queue），此状态的进程正在 CPU 上运行，或者做好被 CPU 调度的一切准备；</p>
+</li>
+<li><p><code>D</code>：Uninterruptible sleep（waiting for some events），此状态的进程因为某些指令正在等待某些事件，大部分原因是 <strong>I/O 事件</strong>，通常不会被 CPU 调度；</p>
+<blockquote>
+<p>例如，程序执行到 <code>read</code> 等系统调用时，等待 I/O 设备触发 CPU 中断引脚；</p>
+</blockquote>
+</li>
+<li><p><code>S</code>：Interruptible sleep（waiting for some events or signals），此状态的进程因为某些指令正在等待某些事件，或者等待某类信号，通常不会被 CPU 调度；</p>
+<blockquote>
+<p>例如，程序执行到 <code>pause</code>、<code>sleep</code> 等系统调用时，挂起等待信号 / 系统计时器中断；</p>
+</blockquote>
+</li>
+<li><p><code>T</code>：Stopped，外部造成的暂停执行，只有 2 种可能：<strong>shell 的 job control signal，或者 debugger 断点</strong>；</p>
+</li>
+<li><p><code>Z</code>：Zombie，已经终止的子进程，但是父进程存在，并且没有回收它；</p>
+</li>
+</ul>
+<p>进程组的知识不再赘述，与大家在 CSAPP 中接触到的一样。</p>
+<h3 id="补充-2：Shell-Job-Control"><a href="#补充-2：Shell-Job-Control" class="headerlink" title="补充 2：Shell Job Control"></a>补充 2：Shell Job Control</h3><p>在 CSAPP 的 shell lab 中，我们进一步深化了对课本中 shell 的理解。通常情况下，一个 shell 承担了一个重要的工作：对用户的程序管理为 <strong>前台、后台</strong> 两种形式，方便用户指定和操作。这种管理方法就称为 <strong>job control</strong>。</p>
+<p>正如 CSAPP 一书中对 job control 的说明，shell 的进程管理应该呈现如下的模式：</p>
+<p><img src="imgs/process_group.png" height="300px"></p>
+<p>当用户通过 shell 登陆，或者仅启动 shell 时，shell 作为系统中的一个进程，会单独设置自己的进程组（自己进程组号改为与自身进程号一致，防止与父进程联系，导致收到父进程的信号）；</p>
+<p>此后，通过 shell 创建的所有进程（执行的所有程序）都会在 <code>execve</code> 前设置单独的进程组号，方便 shell 统一管理。前台、后台进程的子进程一般都在自己的进程组里。其中前台进程只有一个，后台进程有多个。</p>
+<p>但是！CSAPP 中没有说明的一点是，<strong>前台进程是如何与用户输入建立联系的？更准确地说，前台进程如何准确 attach 到当前的 pseudo terminal 上的？</strong></p>
+<h3 id="补充-3：Shell-Sessions（重要）"><a href="#补充-3：Shell-Sessions（重要）" class="headerlink" title="补充 3：Shell Sessions（重要）"></a>补充 3：Shell Sessions（重要）</h3><p>实际上，Linux 上除了进程、进程组，还有一个重要的机制 <strong>会话（Session，其实 Windows 上也有）</strong>。对应的，每个进程也有一个 session ID（<code>sid</code>），其机制如下：</p>
+<ul>
+<li><p>一个 <code>session</code> 一般包含了多个进程，不过其中有且仅有一个进程是特殊的，被称为 <strong>session leader</strong>，它一般是创建这个 session 的进程；</p>
+<blockquote>
+<p>注：Session Leader 可以在进程信息中看到。</p>
+<p>大家不妨运行 <code>ps aux</code> 查看一下当前进程的状况，比如：</p>
+<p><img src="imgs/ps.jpg" height="300px"></p>
+<p>中间红框的一列描述的就是各个进程的状态。其中可能出现的 <code>D</code>、<code>R</code>、<code>S</code>、<code>T</code>、<code>Z</code> 称为 <strong>标识符</strong>，就是之前介绍的含义。还有一类标识符 <code>I</code> 表示 Idle Kernel Thread（空闲的内核线程）<sup><a href="#fn_4" id="reffn_4">4</a></sup>；</p>
+<p>不过除此以外还有一些修饰符，例如：</p>
+<ul>
+<li><code>&lt;</code> 表示该进程的优先级较高（一般是 <code>root</code> 用户指定）；</li>
+<li><code>N</code> 表示该进程优先级较低（一般是普通用户创建，并且主动 Sleep 的时间很长）；</li>
+<li><code>s</code>（小写）<strong>表示该进程为 session leader</strong>；</li>
+<li><code>l</code> 表示该进程中的程序是多线程的；</li>
+<li><code>+</code> <strong>表示该进程在 shell 指定的前台进程组（foreground process group）中</strong>；</li>
+</ul>
+</blockquote>
+</li>
+<li><p>每个新创建的进程的 <code>sid</code> 与父进程相同（<strong>与父进程共用一个 session</strong>）；</p>
+</li>
+<li><p>一个 pseudo terminal 只能与一个 session 建立联系；与当前 <code>pty</code> 建立联系的 session 中，只有 session leader 有权控制 <code>pty</code> 和 session 的联系；</p>
+<blockquote>
+<p>这里的 “联系” 需要开发者（例如 shell 开发者）<strong>显式提醒 <code>TTY driver</code> foreground process group 的 group id</strong> 才能完成。<strong>使用系统调用 <code>tcsetpgrp</code></strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* set the specific process group as the foreground process group. */</span></span><br><span class="line"><span class="comment">/* `fd` must be the controlling terminal of the calling process,</span></span><br><span class="line"><span class="comment"> * and still be associated with its session. */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">tcsetpgrp</span><span class="params">(<span class="type">int</span> fd, <span class="type">pid_t</span> pgrp)</span>;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+<li><p>如果 <strong>后台进程组的程序想要读 <code>stdin</code> 或写 <code>stdout</code></strong>（指向当前 session 对应的 <code>pty</code>），那么 OS Kernel 会向该进程发送 <code>SIGTTIN / SIGTTOU</code> 信号（default action 是终止进程），要求该后台进程等待；</p>
+<blockquote>
+<p>某些情况下，即便是后台进程组也可以直接向当前 session 写，例如在终端上执行命令： <code>echo Hello &amp;</code>，则会直接打印内容。</p>
+<p>这与终端的设定有关。首先 OS 和 <code>TTY device</code> 的设计者们意识到以下的用户需求：</p>
+<ol>
+<li>用户<strong>不希望</strong>后台进程读取当前 terminal 的输入；</li>
+<li>用户<strong>可能允许</strong>后台进程向当前 terminal 输出；</li>
+<li>用户<strong>可能不希望</strong>后台进程更改当前 terminal 的设置（包括串口比特率、line discipline、输出策略等等）；</li>
+</ol>
+<p>因此针对以上需求，设计者们设定：</p>
+<ol>
+<li><strong>OS 不允许后台进程从当前 <code>pty</code> 读入，kernel 一定会对调用读入操作的进程发送 <code>SIGTTIN</code> 信号</strong>；</li>
+<li><strong>OS 默认允许后台进程向当前 <code>pty</code> 输出。允许用户修改这一行为</strong>；</li>
+<li><strong>OS 默认不允许后台进程修改当前 <code>pty</code> 设置，kernel 一定会对该进程发送 <code>SIGTTOU</code> 信号</strong>；</li>
+</ol>
+<p>另外补充一句，用户可以通过 <code>stty</code> 指令来查看、修改当前终端设置。例如：</p>
+<ul>
+<li><code>stty [-a/--all]</code>：打印当前终端设置；</li>
+<li><code>stty tostop/-tostop</code>：设置<strong>不允许 / 允许后台进程向当前 <code>pty</code> 输出</strong>，默认允许；</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p>到这里，我们终于能够解释文章一开始的问题了——为什么 <code>tsh</code> 中运行 <code>vim</code>，<code>vim</code> 会收到 <code>SIGTTOU</code> 了。这是因为 <strong>CSAPP 的 shell lab 对 “前台进程” 的处理方式有问题，它没有真正将要在前台执行的进程加入前台进程组</strong>。</p>
+<h3 id="Conclusion-TTY-amp-Process-with-SIGNALs"><a href="#Conclusion-TTY-amp-Process-with-SIGNALs" class="headerlink" title="Conclusion: TTY &amp; Process with SIGNALs"></a>Conclusion: TTY &amp; Process with SIGNALs</h3><p>现在，所有必须的知识已经集齐了，我们来看看 <code>TTY</code> 与进程交互的总体机制。</p>
+<p>之前提到过 Unix 中的一切 I/O 设备都被抽象为 Unix files，这也包括 TTY device。与其他文件一样，一个进程想要进行读写前必须进行一些初始化操作，这个初始化就要求进程与内核间通信，所以<strong>信号</strong>是不可避免的。</p>
+<blockquote>
+<p>Tips. 在 <code>ioctl</code> C 库中含有许多与 <code>TTY</code> 设备读写相关的操作。</p>
+</blockquote>
+<p>我们以涉及修改 <code>pty</code> 设置的一串动作来举个例子。</p>
+<p><strong>step 1.</strong> 假设你在一个 login shell 中执行 <code>vim</code>，那么：</p>
+<p>当前 shell 为 <code>vim</code> 创建一个进程（<code>fork &amp; execve</code>）和进程组（<code>setgid</code>），通知 <code>TTY device</code> 将该进程标记为前台进程组（<code>tcsetpgrp</code>）；</p>
+<p>所以你会看到如下图，启动 <code>vim</code> 后，<code>vim</code> 进程所在组成为 foreground process group（进程状态 <code>S+</code>）；而 shell（这里是 <code>zsh</code>）进程则由 <code>Ss+</code> 转为 <code>Ss</code>（不再是前台进程，但仍是 session leader），并且它们都位于同一个 session 中（指向同一个 <code>pts</code>，即 <code>pts/1</code>）：</p>
+<p><img src="imgs/vim.png" height="350px"></p>
+<p><strong>step 2.</strong> 假设你在 <code>vim</code> 运行时按下 <code>Ctrl + Z</code> 将 <code>vim</code> 转向后台挂起，那么：</p>
+<p>触发 Asynchronous Exception（ECF），<code>vim</code> 作为前台进程组直接收到 OS Kernel 发送的 <code>SIGTSTP</code> 信号。在 <code>vim</code> 的 <code>SIGTSTP</code> signal handler 中，<code>vim</code> 做挂起前的准备工作（例如通过向 <code>TTY device</code> 输出特定序列，将光标移动到上次位置、恢复打开前的命令行内容等等）。最后 <code>vim</code> 向自己进程组发送 <code>SIGSTOP</code>，正式将自己的进程组挂起到后台；</p>
+<p>此时，<code>vim</code> 父进程（之前的 shell）收到 <code>SIGCHLD</code> 信号，shell 进入对应的 handler 进行处理（例如打印 <code>[1]+ Stopped</code> 信息给用户等工作），并且将自己的进程设置为前台进程组（<code>tcsetpgrp</code>）；</p>
+<blockquote>
+<p><strong>这个时候，如果你试图以后台形式运行 <code>vim</code>（例如 <code>bg</code>），那么 <code>vim</code> 会收到 kernel 的 <code>SIGTTOU</code> 信号，继续挂起</strong>（因为 <code>vim</code> 会更改终端设置，例如 line discipline 等等）；</p>
+</blockquote>
+<p><strong>step 3.</strong> 假设此时你使用 <code>fg</code> 将 <code>vim</code> 转到前台继续执行，那么：</p>
+<p>shell 会恢复上一次的 <code>pty</code> 设置、通知 <code>TTY device</code> 当前的前台进程为 <code>vim</code> 所在进程、向 <code>vim</code> 进程发送 <code>SIGCONT</code> 继续。于是 <code>vim</code> 恢复运行、重绘界面；</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>当然，<code>TTY device</code> 在与进程交互时，还有更多可用的操作和行为，例如 flow control、blocking I/O，以及文中没有详细介绍的 <code>pty</code> 终端设置，等等。感兴趣的童鞋可以查阅 Linux 的官方文档、本文所引用的参考资料，或者是 man 文档。更多问题或勘误欢迎交流 ~</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><sup><a href="#fn_1" id="reffn_1">1</a></sup>:<a target="_blank" rel="noopener external nofollow noreferrer" href="https://en.wikipedia.org/wiki/Ticker_tape">Ticker tape - Wikipedia</a><br><sup><a href="#fn_2" id="reffn_2">2</a></sup>: <a target="_blank" rel="noopener external nofollow noreferrer" href="https://en.wikipedia.org/wiki/Batch_processing">Batch processing - Wikipedia</a><br><sup><a href="#fn_3" id="reffn_3">3</a></sup>: <a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.linusakesson.net/programming/tty/">The TTY demystified (linusakesson.net)</a></p>
+<p><sup><a href="#fn_4" id="reffn_4">4</a></sup>:<a target="_blank" rel="noopener external nofollow noreferrer" href="https://stackoverflow.com/questions/14315923/why-does-linux-kernel-need-idle-thread">smp - Why does linux kernel need idle thread? - Stack Overflow</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/">https://sjtuxhw.top/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myBlog/tags/Programming/">Programming</a><a class="post-meta__tags" href="/myBlog/tags/Linux/">Linux</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/tty.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/myBlog/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/myBlog/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/myBlog/2024/01/13/%E6%94%BE%E5%81%87%EF%BC%81%E5%90%90%E6%A7%BD%EF%BC%81/" title="放假！吐槽！"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/tease.jpg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">放假！吐槽！</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/myBlog/2023/09/17/CSAPP-Notes-Part-1/" title="CSAPP Notes Part 1"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-17</div><div class="title">CSAPP Notes Part 1</div></div></a></div><div><a href="/myBlog/2023/11/11/CSAPP-Notes-Part-2/" title="CSAPP Notes Part 2"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_p2.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-11</div><div class="title">CSAPP Notes Part 2</div></div></a></div><div><a href="/myBlog/2023/04/28/GNU-Tutor/" title="GNU-Tutor"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/GNU-Tutor.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="title">GNU-Tutor</div></div></a></div><div><a href="/myBlog/2023/04/28/Git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Git学习笔记"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/git.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="title">Git学习笔记</div></div></a></div><div><a href="/myBlog/2023/04/28/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Java 学习笔记（1）"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/java1.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="title">Java 学习笔记（1）</div></div></a></div><div><a href="/myBlog/2023/06/18/Matlab-%E5%A4%8D%E4%B9%A0/" title="Matlab 复习"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/matlab.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-18</div><div class="title">Matlab 复习</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/myBlog/img/favicon.ico" onerror="this.onerror=null;this.src='/myBlog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SJTU-XHW</div><div class="author-info__description">A blog to document learning and life</div></div><div class="card-info-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">48</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.top/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! ‎|•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AE%A8%E8%AE%BA-TTY"><span class="toc-text">为什么讨论 TTY</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TTY-%E7%9A%84%E6%88%90%E9%95%BF%E4%B9%8B%E8%B7%AF"><span class="toc-text">TTY 的成长之路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E8%A7%86%E8%A7%92%E4%B8%8B%E7%9A%84-TTY-old-versions"><span class="toc-text">用户视角下的 TTY: old versions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E8%A7%86%E8%A7%92%E4%B8%8B%E7%9A%84-TTY-modern-versions"><span class="toc-text">用户视角下的 TTY: modern versions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TTY-%E4%B8%8E-%E8%BF%9B%E7%A8%8B"><span class="toc-text">TTY 与 进程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%85-1%EF%BC%9AUnix-Processes"><span class="toc-text">补充 1：Unix Processes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%85-2%EF%BC%9AShell-Job-Control"><span class="toc-text">补充 2：Shell Job Control</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%85-3%EF%BC%9AShell-Sessions%EF%BC%88%E9%87%8D%E8%A6%81%EF%BC%89"><span class="toc-text">补充 3：Shell Sessions（重要）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Conclusion-TTY-amp-Process-with-SIGNALs"><span class="toc-text">Conclusion: TTY &amp; Process with SIGNALs</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Summary"><span class="toc-text">Summary</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/" title="浅析 TTY Subsystem"><img src="https://cdn.sjtuxhw.top/cover_imgs/tty.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="浅析 TTY Subsystem"/></a><div class="content"><a class="title" href="/myBlog/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/" title="浅析 TTY Subsystem">浅析 TTY Subsystem</a><time datetime="2024-01-15T12:12:02.000Z" title="发表于 2024-01-15 07:12:02">2024-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/01/13/%E6%94%BE%E5%81%87%EF%BC%81%E5%90%90%E6%A7%BD%EF%BC%81/" title="放假！吐槽！"><img src="https://cdn.sjtuxhw.top/cover_imgs/tease.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="放假！吐槽！"/></a><div class="content"><a class="title" href="/myBlog/2024/01/13/%E6%94%BE%E5%81%87%EF%BC%81%E5%90%90%E6%A7%BD%EF%BC%81/" title="放假！吐槽！">放假！吐槽！</a><time datetime="2024-01-13T19:33:01.000Z" title="发表于 2024-01-13 14:33:01">2024-01-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/11/11/CSAPP-Notes-Part-2/" title="CSAPP Notes Part 2"><img src="https://cdn.sjtuxhw.top/cover_imgs/csapp_p2.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes Part 2"/></a><div class="content"><a class="title" href="/myBlog/2023/11/11/CSAPP-Notes-Part-2/" title="CSAPP Notes Part 2">CSAPP Notes Part 2</a><time datetime="2023-11-11T14:18:11.000Z" title="发表于 2023-11-11 09:18:11">2023-11-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评"><img src="https://cdn.sjtuxhw.top/cover_imgs/anime_bokumachi.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="《只有我不在的城市》番评"/></a><div class="content"><a class="title" href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评">《只有我不在的城市》番评</a><time datetime="2023-10-01T14:20:47.000Z" title="发表于 2023-10-01 10:20:47">2023-10-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2023/09/17/CSAPP-Notes-Part-1/" title="CSAPP Notes Part 1"><img src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes Part 1"/></a><div class="content"><a class="title" href="/myBlog/2023/09/17/CSAPP-Notes-Part-1/" title="CSAPP Notes Part 1">CSAPP Notes Part 1</a><time datetime="2023-09-17T23:47:15.000Z" title="发表于 2023-09-17 19:47:15">2023-09-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/myBlog/js/utils.js"></script><script src="/myBlog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+      GLOBAL_CONFIG_SITE.isPost && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://twikoo.sjtuxhw.top',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <div class='name'><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom.innerHTML= result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script src="/myBlog/js/jquery-3.7.0.min.js"></script><script src="/myBlog/js/rightmenu.js"></script><div class="aplayer no-destroy" data-id="6898044781" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false"></div><script src="/myBlog/js/mourn.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="/myBlog/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/myBlog/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>
