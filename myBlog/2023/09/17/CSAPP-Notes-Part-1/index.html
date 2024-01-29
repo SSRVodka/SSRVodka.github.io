@@ -581,10 +581,10 @@
 </ul>
 <blockquote>
 <p>这样规定就会发现，浮点数<strong>恰好可以溢出到 $\pm\infty$</strong>，而且错误数恰为 $NaN$；</p>
-<p>Visualization： <img src="imgs/float_visualization.png"></p>
+<p>Visualization： <img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/float_visualization.png"></p>
 <p>想要理解上面规定的原因还可以用少量的数位来模拟，<strong>你会发现之前的设定非常巧妙</strong>：</p>
 <p>（这里以 $s$: 1-bit，$exp$: 4-bits，$frac$: 3-bits 为例）</p>
-<p><img src="imgs/float_range.png" height="350"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/float_range.png" height="350"></p>
 </blockquote>
 </li>
 <li><p>Special Properties of IEEE Encoding</p>
@@ -831,7 +831,7 @@
 <li><p>什么是缓存？<strong>大致定义是 a temporary memory used to hold the most recently accessed data</strong>;</p>
 </li>
 <li><p>2015 年的 Intel 芯片架构</p>
-<p><img src="imgs/chip_in_2015.png" height="400"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/chip_in_2015.png" height="400"></p>
 <ul>
 <li><code>DDR</code> 接口是连接到主存储器（DRAM，Dynamic Random Access Memory）的通道；</li>
 <li><code>PCI</code> 接口是与外围设备（peripheral devices）的连接通道；</li>
@@ -972,7 +972,7 @@
 <p>上面使用 <code>objdump</code> 可以得到真正意义上的汇编代码（从机器代码转换而来），此外还有一种方法：使用 <code>gdb</code>。</p>
 <p>如果使用 <code>gdb</code> 打开目标可执行文件，运行 <code>disassemble &lt;funcName&gt;</code> 就可以对可执行文件中对应的函数区域进行反汇编。但只显示这些指令的地址 + 翻译指令，不显示字节级的编码。</p>
 <h3 id="3-3-Assembly-Basics"><a href="#3-3-Assembly-Basics" class="headerlink" title="3.3 Assembly Basics"></a>3.3 Assembly Basics</h3><h4 id="3-3-1-The-names-for-integer-registers"><a href="#3-3-1-The-names-for-integer-registers" class="headerlink" title="3.3.1 The names for integer registers"></a>3.3.1 The names for integer registers</h4><p>下面列举 x86-64 architecture 的 <strong>整数型寄存器（Integer Register）</strong>。</p>
-<p><img src="imgs/registers_in_x86_64.png" height="400px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/registers_in_x86_64.png" height="400px"></p>
 <p>如图，这些寄存器共有 16 个，名字大致分为 2 类，一类是字母表示的（ax/bx/…），另一类是数字表示的（8/9/…）。</p>
 <p>目前一个 x86-64 架构的 integer register 总大小有 64-bit。鉴于对以前 32-bit 机器和程序的向前兼容（backwards compatibility），汇编语言允许使用一个寄存器的<strong>不同部分</strong>，怎么用取决于指令。</p>
 <p>对于字母类名称的寄存器（如上图左），如果使用<strong>前缀 <code>%r</code></strong>（例如 <code>%rax</code>），那么这个整型寄存器将保存 <strong>64-bit</strong> 大小的整型数据（即使用全部空间）；如果使用<strong>前缀 <code>%e</code></strong>（例如 <code>%eax</code>），那么这个整型寄存器将保存 <strong>32-bit</strong> 大小的整型数据（即从低位开始使用 32 bits，又称为 <strong>low-order 32-bit</strong>）。</p>
@@ -984,7 +984,7 @@
 <p>在早期 IA32 架构下 32-bit 处理器只用到了 8 个寄存器，它们的名字分别是：</p>
 <p><code>%eax</code>、<code>%ecx</code>、<code>%edx</code>、<code>%ebx</code>、<code>%esi</code>、<code>%edi</code>、<code>%esp</code>、<code>%ebp</code>（都是 <code>%e</code> 前缀,意味着存 32-bit 整型）</p>
 <p>此位，这些寄存器还能引用 <strong>low-order 16-bits</strong>（它们是最开始出现的 16-bit 寄存器，没有 <code>e/r</code> 前缀，引用的名称为 <code>%ax</code>、<code>%cx</code>、<code>%bx</code>……），甚至是 <strong>low-order 8-bits 和 high-order 8-bits</strong>（分别是 <code>%al</code> 和 <code>%ah</code> 等，如下图）。这里不讲述这些旧版本机器的低位寄存器位置的操作指令，不过在下一章会提到操作 <strong>low-order 8-bits</strong> 的操作指令，因为会涉及汇编条件控制。</p>
-<p><img src="imgs/IA32_registers.png" height="350px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/IA32_registers.png" height="350px"></p>
 <p>很早以前，各个寄存器的名字有特定含义，代表它们的目的。例如 <code>a</code> 代表 accumulate，<code>c</code> 代表 counter，<code>d</code> 代表 data，<code>b</code> 代表 base，<code>si</code> 代表 source index，<code>di</code> 代表 destination index，<code>sp</code> 代表 stack pointer，<code>bp</code> 代表 base pointer。</p>
 <p>现在这些寄存器就是普通的存取数据的结构，名字也就没有特定的含义了——<strong>除了名字是 <code>sp</code> 的寄存器</strong>。它在目前的 x86-64 架构中也有一个非常具体的目的，就是上面说的，stack pointer，<strong>栈指针</strong>。</p>
 <p>至于后面数字表示的寄存器，<strong>是后来从 IA32 架构升级到 64 位（x86-64）时，芯片可以在一个时钟周期处理 64-bit 的数据了，旧的寄存器设计不够用了，所以新添加上去的，因为没有特定用途，就以数字进行命名</strong>。</p>
@@ -1473,7 +1473,7 @@
 </ul>
 <p>当然，现代的编译器对于 switch 语句的翻译绝不是一系列的 if-else 语句的翻译，而是利用了一个数据结构：<strong>跳表（Jump Table Structure）</strong>；</p>
 <p>如下图，switch-case 语句就像一串代码块，每个 case 就是一个块。编译时，switch-case 块会整体一起编译（如下图 Jump Targets），转为汇编指令后，每个块的汇编指令所对应的<strong>地址</strong>会被存储在一个跳表中（如下图 Jump Table）。这样在根据条件调用相应代码块时，只需要 goto 跳表中的对应地址（ray indexing）就能完成任务，无需一个个比对条件。</p>
-<p><img src="imgs/jump_table.png" height="300px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/jump_table.png" height="300px"></p>
 <p>那么，汇编代码是如何在跳表中找到合适的地址的呢？举个例子：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">long</span> <span class="title function_">switch_eg</span><span class="params">(<span class="type">long</span> x, <span class="type">long</span> y, <span class="type">long</span> z)</span> &#123;</span><br><span class="line">    <span class="type">long</span> w = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">switch</span> (x) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">        w = y * z;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">        w = y / z;</span><br><span class="line">        <span class="comment">/* Fall Through */</span></span><br><span class="line">    <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">        w += z;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">5</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">6</span>:</span><br><span class="line">        w -= z;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        w = <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> w;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>上面的例子对应的汇编代码可以是（一部分代码）：</p>
@@ -1600,7 +1600,7 @@
 </li>
 </ul>
 <p>因此，Passing Control 的过程主要由两个特殊寄存器、一个栈支持；运行的动态如下（地址信息是虚拟的）：</p>
-<p><img src="imgs/procedure_control_1.png" height="200px"><img src="imgs/procedure_control_2.png" height="200px"><img src="imgs/procedure_control_3.png" height="200px"><img src="imgs/procedure_control_4.png" height="200px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/procedure_control_1.png" height="200px"><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/procedure_control_2.png" height="200px"><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/procedure_control_3.png" height="200px"><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/procedure_control_4.png" height="200px"></p>
 <h4 id="5-3-2-Passing-Data"><a href="#5-3-2-Passing-Data" class="headerlink" title="5.3.2 Passing Data"></a>5.3.2 Passing Data</h4><p>其实在此之前的前几章，我们已经看到了，汇编程序使用约定俗称的寄存器（“Caller-Saved Resgiter”）来完成函数参数、返回值的传递：</p>
 <ul>
 <li><p><code>%rdi</code>、<code>%rsi</code>、<code>%rdx</code>、<code>%rcx</code>、<code>%r8</code>、<code>%r9</code> 这都是 Caller-Saved Register，约定<strong>从前到后</strong>（顺序可以记下来）用来存放函数的六个参数，供被调用方使用；</p>
@@ -1619,7 +1619,7 @@
 <p>栈帧的结构如何？是如何管理的？其中究竟放了些什么？</p>
 <ul>
 <li><p>Structure：大家在 C++ 程序设计课程上应该接触过 “变量作用域”，这个时候应该强调了不同函数的局部变量会存在它的栈帧中。所以可以想象，栈帧就是一段一段堆叠在 stack 上的片段，每个未返回的函数独享一个栈帧；</p>
-<p><img src="imgs/stack_structure.png" height="300px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/stack_structure.png" height="300px"></p>
 <p><strong>并且 <code>%rsp</code> 就在之前说的栈顶，还有一个普通寄存器 <code>%rbp</code> 可以用来存放两个栈帧交界的位置（只有在一些特殊情况下编译器才会使用它，平时会当作普通寄存器使用）</strong>；</p>
 <p>所以大多数情况下，没有 <code>%rbp</code> 指示，汇编程序员甚至不知道下一层栈帧在哪里，<strong>这只能靠代码自身管理（大部分情况下编译器知道需要分配多少栈帧、销毁多少栈帧），并且正确释放栈帧（本节的一个例子会演示代码如何自身管理栈帧）</strong>；</p>
 <blockquote>
@@ -1627,7 +1627,7 @@
 </blockquote>
 <p>也正因如此，递归所需的所有基础结构都由栈的原则所保证；</p>
 <p>对于 <strong>x86-64 Linux</strong> 这一特定机器 + 操作系统而言，栈帧的<strong>详细结构</strong>应该是这样的：</p>
-<p><img src="imgs/stack_structure_detail.png" height="350px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/stack_structure_detail.png" height="350px"></p>
 <ul>
 <li><p>之前在 <strong>Passing Control</strong> 中提到 <code>call</code> 指令压入的返回地址存在 Caller Frame 的最上层，下面压着 <strong>Caller 传给 Callee 的参数</strong>（Arguments 7+）；</p>
 </li>
@@ -1668,7 +1668,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">incr:</span><br><span class="line">    movq	(%rdi), %rax</span><br><span class="line">    addq	%rax, %rsi</span><br><span class="line">    movq	%rsi, (%rdi)</span><br><span class="line">    ret</span><br><span class="line"></span><br><span class="line">call_incr:</span><br><span class="line">    subq	$16, %rsp</span><br><span class="line">    movq	$15213, 8(%rsp)</span><br><span class="line">    movl	$3000, %esi</span><br><span class="line">    leaq	8(%rsp), %rdi</span><br><span class="line">    call	incr</span><br><span class="line">    addq	8(%rsp), %rax</span><br><span class="line">    addq	$16, %rsp</span><br><span class="line">    ret</span><br></pre></td></tr></table></figure>
 <p>其实函数 <code>incr</code> 的汇编代码很简单，重点不在这，而是调用它的函数 <code>call_incr</code> 以及过程中的处理情况。我们将一步步分析其中的情况。</p>
 <p>首先，当上层的 caller 刚刚调用 <code>call call_incr</code> 指令、还没有为 <code>call_incr</code> 分配栈帧时，栈中的情况如下图所示：</p>
-<p><img src="imgs/procedure_example_1.png" height="150px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/procedure_example_1.png" height="150px"></p>
 <p>此时栈顶仍然是上层 caller 的 <code>call</code> 指令刚压入的 return address；随后机器读取 <code>%rip</code> 中保存的 <code>call_incr</code> 的地址开始执行 <code>call_incr</code> 函数；</p>
 <p>现在请注意上面的 <code>call_incr</code> 汇编代码。</p>
 <p>第一步是将 <code>%rsp</code> 的值减去 16，这意味着一口气在栈中分配了 16 bytes 空间，作为 <code>call_incr</code> 的栈帧（此时 <code>%rsp</code> 理所当然在最上层）；</p>
@@ -1676,7 +1676,7 @@
 <p>程序一般在栈上分配的空间会比实际需求多一点，这是因为有一些内部的约定，要求保持内存对齐，例如汇编中典型的 <code>.align</code> 伪指令。这个分配的值是由编译器计算得出的。</p>
 </blockquote>
 <p>第二步向 <code>%rsp + 8</code> 的 memory 地址写入常数 15213，这就相当于向栈顶的下面 8 bytes 的位置写入该常数；现在栈中的情况如下图所示：</p>
-<p><img src="imgs/procedure_example_2.png" height="150px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/procedure_example_2.png" height="150px"></p>
 <p>以上的第 1~2 步对应着源码的 <code>long v1 = 15213;</code> 这一步。</p>
 <p>第三步将 <code>%rsi</code>（<code>%esi</code>）写入 32-bit 的 3000 整型（还记得之前说的特性吗？高 32-bit 会自动被置 0），因为 <code>%rsi</code> 将来会作为调用函数的第二参数；</p>
 <p>第四步还记得吗？找到 <code>%rsp + 8</code> 作为地址对应的 memory 引用（这里就是之前栈中存放常数 15213 的位置）<strong>的地址</strong>（也就是存放 15213 的地址）赋给 <code>%rdi</code>，这就相当于 <code>&amp;v1</code> 给了调用函数的第一参数；</p>
@@ -1686,11 +1686,11 @@
 <p>接下来汇编调用了 <code>call incr</code>，干了 3 件事：<code>%rsp</code> 减 8，存储 return address（这里的是 <code>call incr</code> 下一行指令的地址），并且向 <code>%rip</code> 写入 <code>incr</code> 的起始地址。</p>
 <p>于是程序进入了 <code>incr</code> 函数，这比较简单，其中的内存分配、变量设置就不说了。直接跳到 <code>incr</code> 函数的 <code>ret</code> 指令，此时经过内部的代码控制，<code>%rsp</code> 应该回到了之前 <code>call_incr</code> 函数栈帧的顶部（存放 return address 的位置）。于是 <code>ret</code> 也做了 3 件事：将 return address 取出来，<code>%rsp</code> 加 8，并向 <code>%rip</code> 写入刚刚取得的地址——也就是 <code>call_incr</code> 函数中 <code>call incr</code> 指令的下一行。</p>
 <p>此时，栈的情况如下图所示（18213 是因为 <code>incr</code> 函数修改了 <code>long *p</code> 参数，还有，别搞混了，这个图里的 return address 是调用 <code>call_incr</code> 的上层 caller 的栈帧中的东西）：</p>
-<p><img src="imgs/procedure_example_3.png" height="150px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/procedure_example_3.png" height="150px"></p>
 <p>程序进入 <code>call_incr</code> 汇编的最后两步：把 <code>%rax</code>（<code>incr</code> 函数返回值，也就是 <code>v2</code>）加上 <code>%rsp + 8</code> 地址上的内容（18213，也就是新的 <code>v1</code>）作为函数返回值，<strong>并且把 <code>%rsp</code> 加上 16，释放了之前分配给 <code>call_incr</code> 函数的栈帧</strong>（所以你看看，编译器是不是知道之前分配了多少栈帧空间？是不是不需要 <code>%rbp</code> 的指示？）。函数到此结束，栈中的情况如下：</p>
-<p><img src="imgs/procedure_example_4.png" height="100px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/procedure_example_4.png" height="100px"></p>
 <p>最后的一句 <code>ret</code> 会读取上层 caller 放的 return address，将 <code>%rsp</code> 减 8，并且将 <code>%rip</code> 写入 return address，下一步程序将回到调用 <code>call_incr</code> 的上层 caller 的函数体中。栈的情况如下：</p>
-<p><img src="imgs/procedure_example_5.png" height="100px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/procedure_example_5.png" height="100px"></p>
 <hr>
 <h3 id="5-4-Register-Saving-Conventions"><a href="#5-4-Register-Saving-Conventions" class="headerlink" title="5.4 Register Saving Conventions"></a>5.4 Register Saving Conventions</h3><p>之前无论是 5.3.2 讲述传递数据的方法，还是介绍 ABI 的约定，又或是早在 3.3.1 中介绍寄存器的使用，我们无数次提及 register 约定俗成的用法。为了加深印象、补充更多内容，我们这里再梳理一遍。</p>
 <p>传递数据的时候，调用方（caller）和被调用方（callee）共同使用这所有的 16 个寄存器。那么，怎么保证 “在 caller 中保存特定数据的某些寄存器，在调用 callee 之后，callee 没有改变这些寄存器，并且还能看作原来的值，继续使用” 呢？</p>
@@ -1728,7 +1728,7 @@
 <p>相反，如果保存在 callee-saved register 中，那么 caller 被调用后一开始统一保存上一层的 callee-saved register 的值，caller 返回前统一恢复上一层的 callee-saved register 的值，中间 caller 还能自由使用这些 callee-saved register，多次使用速度快，并且不用担心调用下一层函数会影响其中的值，岂不美哉！</p>
 </blockquote>
 <p>因此，在 <code>call_incr2</code> 调用 <code>incr</code> 之前，栈的情况如下图所示：</p>
-<p><img src="imgs/procedure_example2_1.png" height="150px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/procedure_example2_1.png" height="150px"></p>
 <hr>
 <p>总结：<strong>什么时候栈上会出现 Saved-Register 数据？答：当 caller 需要修改 callee-saved register 来保存某些值的时候，caller 会把数据保存到它的栈帧上。</strong>仅此一种情况。</p>
 <h3 id="5-5-Illustration-of-Recursion"><a href="#5-5-Illustration-of-Recursion" class="headerlink" title="5.5 Illustration of Recursion"></a>5.5 Illustration of Recursion</h3><blockquote>
@@ -1844,7 +1844,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="imgs/nested_array.png" height="200px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/nested_array.png" height="200px"></p>
 <ul>
 <li>Multi-Level Array<ul>
 <li>另一种二维数组的声明方式是 <code>T* A[R];</code>，随后在初始化中（在栈中）/ new 上（在堆中）数组的各个元素。</li>
@@ -1853,7 +1853,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="imgs/multi_level_array.png" height="200px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/multi_level_array.png" height="200px"></p>
 <hr>
 <p>我们继续利用之前 <code>zip_dig</code> 的例子，我们分别声明两种类型的二维数组：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> PCOUNT 4</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> UCOUNT 3</span></span><br><span class="line"></span><br><span class="line">zip_dig pgh[PCOUNT] = &#123;                    <span class="comment">// Nested array</span></span><br><span class="line">    &#123;<span class="number">1</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">6</span>&#125;,</span><br><span class="line">    &#123;<span class="number">1</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>&#125;,</span><br><span class="line">    &#123;<span class="number">1</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">7</span>&#125;,</span><br><span class="line">    &#123;<span class="number">1</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">1</span>&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="type">int</span> *univ[UCOUNT] = &#123; mit, cmu, ucb &#125;;    <span class="comment">// Multi-level array</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 这里分别是使用它们的两个函数</span></span><br><span class="line"><span class="type">int</span>* <span class="title function_">get_pgh_zip</span><span class="params">(<span class="type">int</span> index)</span> &#123; <span class="keyword">return</span> pgh[index]; &#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">get_univ_digit</span><span class="params">(<span class="type">size_t</span> index, <span class="type">size_t</span> digit)</span> &#123; <span class="keyword">return</span> univ[index][digit]; &#125;</span><br></pre></td></tr></table></figure>
@@ -1897,7 +1897,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">set_val:</span><br><span class="line">.L11:</span><br><span class="line">    movslq	16(%rdi), %rax</span><br><span class="line">    movl	%esi, (%rdi,%rax,4)</span><br><span class="line">    movq	24(%rdi), %rdi</span><br><span class="line">    testq	%rdi, %rdi</span><br><span class="line">    jne		.L11</span><br><span class="line">    ret</span><br></pre></td></tr></table></figure>
 <p>第一步可以认为 <code>movslq</code> 就是 <strong>取 <code>Src</code> 的 32-bit 数据，符号扩展为 64-bit 数据后放入 <code>Dst</code></strong>，作用是将地址为 <code>%rdi + 16</code>（即 <code>r + 4 * sizeof(int)</code>）的 memory 引用的值覆盖到 <code>%rax</code> 上去。完成了源码的 <code>int i = r-&gt;i;</code> 这一步；</p>
 <p>从这里可以看出，编译器将 <code>int a[4]</code>、<code>int i</code> 和 <code>struct rec* next</code> 这三个成员排在一起，<strong>是没有间隔的，如下图。但某些场合下编译器指定可能会出现间隔</strong>，这是是为了<strong>内存对齐的原因，下面马上会讨论结构体的内存对齐</strong>。</p>
-<p><img src="imgs/struct_example.png" height="150px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/struct_example.png" height="150px"></p>
 <p>第二步 <code>movl</code> 将 <code>%esi</code>（<code>%rsi</code> 的 low-order 32-bit）的值赋给地址为 <code>%rdi + 4 * %rax</code>（即 <code>r + sizeof(int) * i</code>）的 memory 引用，完成了 <code>r-&gt;a[i] = val;</code> 这步；</p>
 <p>第三部让 <code>%rdi</code> 的值变为 “地址为 <code>%rdi + 24</code> 的 memory 引用的值”，相当于 <code>r = r-&gt;next;</code></p>
 <p>剩下的部分就是完成 while 循环的判断任务。</p>
@@ -1905,9 +1905,9 @@
 <p>那么为什么要对结构体进行内存对齐？又是如何进行内存对齐的？再来看另外一个例子：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">S1</span> &#123;</span></span><br><span class="line">    <span class="type">char</span> c;</span><br><span class="line">    <span class="type">int</span> i[<span class="number">2</span>];</span><br><span class="line">    <span class="type">double</span> v;</span><br><span class="line">&#125; *p;</span><br></pre></td></tr></table></figure>
 <p>对于这个结构体而言，如果每个成员紧紧挨在一起，那么在内存中的排布是这样的：</p>
-<p><img src="imgs/struct_example2_unaligned.png" height="60px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/struct_example2_unaligned.png" height="60px"></p>
 <p>但实际上编译器会在其中插入一些空数据块，让内存排布变成这样：</p>
-<p><img src="imgs/struct_example2_aligned.png" height="125px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/struct_example2_aligned.png" height="125px"></p>
 <p>这就是因为，x86-64（和其他很多架构的机器）规定了结构体内存对齐的规则。为什么要有这样的规则？这其实是 <strong>硬件效率问题</strong>。</p>
 <p>对于当今大多数机器的内存系统而言，实际从硬件内存中一次读取的数据量大约 64 bytes，本身称为一个读取的<strong>数据块</strong>，大小取决于机器硬件中的各种宽度。所以，如果因为没有对齐的地址，而导致读取时特定的数据跨越了两个数据块的边界，那么很可能会导致操作系统需要采取一些额外的步骤来处理这种情况，从而大大降低处理效率。</p>
 <p>除了上面的这种原因，还有种原因是，如果这些未对齐的结构体组成了数组，那么想要<strong>索引</strong>这些数组的计算将会非常复杂，<strong>使用起来也非常不方便</strong>。</p>
@@ -1935,13 +1935,13 @@
 <p>再例如：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">S2</span> &#123;</span></span><br><span class="line">    <span class="type">double</span> v;</span><br><span class="line">    <span class="type">int</span> i[<span class="number">2</span>];</span><br><span class="line">    <span class="type">char</span> c;</span><br><span class="line">&#125; *p;</span><br></pre></td></tr></table></figure>
 <p>这个结构体的内存对齐方式如下：</p>
-<p><img src="imgs/struct_example2_aligned_tail.png" height="125px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/struct_example2_aligned_tail.png" height="125px"></p>
 <p>因为其中含有 <code>double</code> 数据类型，所以总体大小必须是 8 的整数倍；又因为整体长度不是 8 的整数倍（<code>p + 17</code>），所以尾部补充空数据块到 <code>p + 24</code>;</p>
 <h4 id="6-2-3-Accessing-Arrays-of-Structure"><a href="#6-2-3-Accessing-Arrays-of-Structure" class="headerlink" title="6.2.3 Accessing Arrays of Structure"></a>6.2.3 Accessing Arrays of Structure</h4><p>更进一步地，如果有一个结构体数组，并且结构体是被正确定义的，那么编译器就能很容易地确定各个结构体的大小、成员位置和数组的大小，从而在其他使用到的场合为其正确地分配空间、索引成员；</p>
 <p>来看下面的例子：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">S3</span> &#123;</span></span><br><span class="line">    <span class="type">short</span> i;</span><br><span class="line">    <span class="type">float</span> v;</span><br><span class="line">    <span class="type">short</span> j;</span><br><span class="line">&#125; a[<span class="number">10</span>];</span><br></pre></td></tr></table></figure>
 <p>如果你使用 <code>sizeof(S3)</code> 的话，你会发现值是 12，说明编译器生成的空数据块的大小也计算在内。具体的结构如下图所示，在 <code>i</code> 和 <code>v</code> 成员间、结构体尾部都有分配空数据块：</p>
-<p><img src="imgs/struct_example3.png" height="125px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/struct_example3.png" height="125px"></p>
 <p>还有使用它的函数：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">short</span> <span class="title function_">get_j</span><span class="params">(<span class="type">int</span> idx)</span> &#123; <span class="keyword">return</span> a[idx].j; &#125;</span><br></pre></td></tr></table></figure>
 <p>对照 <code>S3</code> 结构体的内存分布图，你就会发现这个函数的汇编代码也没有那么难以理解：</p>
@@ -1997,7 +1997,7 @@
 <li>或 1 个 单精度浮点数（<code>float</code>，没存满，有剩余空间）；</li>
 <li>或 1 个 双精度浮点数（<code>double</code>，没存满，有剩余空间）；</li>
 </ul>
-<p><img src="imgs/xmm_registers.png" height="400px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/xmm_registers.png" height="400px"></p>
 <p>这意味着浮点数寄存器<strong>既可以处理整型，又可以处理浮点数类型</strong>；<strong>既可以处理一个数的运算，又可以多个数并行运算</strong>。</p>
 <p>这种一次计算单个数的指令被称为 <strong>Scalar Operations（标量运算）</strong>，一次并行计算多个数的指令被称为 <strong>SIMD Operations（单指令多数据运算）</strong>。</p>
 <p>具体的命令长什么样子的呢？还是经典的 <strong>名称+后缀</strong> 命名方法，所以如果你能读懂命名方法，那就不用记忆太多的指令了。</p>
@@ -2017,7 +2017,7 @@
 <p>所以举个例子，<code>addpd</code> 就是双精度浮点数的 SIMD 加法运算指令嘛！</p>
 <p>运算的参数和之前的整型寄存器运算一样，<code>&lt;Src&gt;, &lt;Dst&gt;</code>;</p>
 <p>运算的内存表示就是如图：</p>
-<p><img src="imgs/sse_fp_addition.png" height="400px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/sse_fp_addition.png" height="400px"></p>
 <p>除此以外，FP 还有 <strong>2 点</strong>需要注意：</p>
 <ol>
 <li><p>FP Registers 的 Saving Conventions：</p>
@@ -2103,7 +2103,7 @@
 <h2 id="Chapter-7-Machine-Level-Programming-Ⅴ-Advanced"><a href="#Chapter-7-Machine-Level-Programming-Ⅴ-Advanced" class="headerlink" title="Chapter 7. Machine Level Programming Ⅴ - Advanced"></a>Chapter 7. Machine Level Programming Ⅴ - Advanced</h2><h3 id="7-1-Memory-Layout-in-x86-64"><a href="#7-1-Memory-Layout-in-x86-64" class="headerlink" title="7.1 Memory Layout in x86-64"></a>7.1 Memory Layout in x86-64</h3><p>内存（虚拟内存）本质上就是一个很大的字节数组。而之前观察 memory 的角度要么是从汇编 Simple Memory Address Mode 的访问角度，要么是从 x86-64 的程序栈的角度来看内存的。本节将从<strong>更为宏观、更为完整</strong>的角度介绍 <strong>x86-64 Linux 的完整内存布局</strong>。</p>
 <p>首先，从 64 位系统的特征上来说，x86-64 系统上的程序所能访问的内存空间应该是 $2^{64}$ bits（大约 $16\times10^{18}$ bits），但由于当前存储技术的种种限制，当前的硬件限制我们只能使用最高 47 位的地址（大约 $128\times10^{12}$ bits，128 TB）。</p>
 <p>在这个限制下，我们看一看系统提供给程序的运行内存的结构：</p>
-<p><img src="imgs/memory.png" height="400px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/memory.png" height="400px"></p>
 <ul>
 <li><p>最底层的 128 MB 是栈区（<code>0x0000 7FFF FFFF 0000</code>，即 $2^{47}-4096$ 至 <code>0x0000 7FFF F800 0000</code>），实际 x86-64 栈的<strong>实际最大大小</strong>在 8 MB 左右，向低地址增长。栈的结构参考 5.2 和 5.3。</p>
 <blockquote>
@@ -2131,7 +2131,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">char</span> big_array[<span class="number">8388608L</span>];        <span class="comment">/* 1&lt;&lt;24, 16 MB */</span></span><br><span class="line"><span class="type">char</span> huge_array[<span class="number">1073741824L</span>];    <span class="comment">/* 1&lt;&lt;31, 2 GB */</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> global = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">useless</span><span class="params">()</span> &#123; <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">void</span> *phuge1, *psmall2, *phuge3, *psmall4;</span><br><span class="line">    <span class="type">int</span> local = <span class="number">0</span>;</span><br><span class="line">    phuge1 = <span class="built_in">malloc</span>(<span class="number">1L</span> &lt;&lt; <span class="number">28</span>);    <span class="comment">/* 256 MB */</span></span><br><span class="line">    psmall2 = <span class="built_in">malloc</span>(<span class="number">1L</span> &lt;&lt; <span class="number">8</span>);    <span class="comment">/* 256 B */</span></span><br><span class="line">    phuge3 = <span class="built_in">malloc</span>(<span class="number">1L</span> &lt;&lt; <span class="number">32</span>);    <span class="comment">/* 4 GB */</span></span><br><span class="line">    psmall4 = <span class="built_in">malloc</span>(<span class="number">1L</span> &lt;&lt; <span class="number">8</span>);    <span class="comment">/* 256 B */</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>通过 GDB 调试可以发现，在 Linux 内存中，<code>big_array</code>、<code>huge_array</code> 和 <code>global</code> 这三个全局变量分布在大致 <code>0x600000</code> 的低地址的位置，位于 <strong>Data 区</strong>；局部变量 <code>local</code> 在地址 <code>0x7FFE 0000 0000</code> 的大致位置，位于<strong>内存栈区</strong>；对于函数 <code>main()</code> 和 <code>useless()</code> 而言，它们的地址在 <code>0x400000</code> 附近，位于 <strong>Text 区</strong>；</p>
 <p>而对于 <code>phuge1</code>、<code>psmall2</code>、<code>phuge3</code>、<code>psmall4</code> 来说略有特殊。它们是使用 <code>malloc</code> 分配在堆里的，但是它们的位置差别较大：<strong>占用空间很大的 <code>phuge1</code> 和 <code>phuge3</code> 位于更靠近栈区的堆中，而占用空间较小的 <code>psmall2</code> 和 <code>psmall4</code> 则位于更靠近 Data 区的堆中</strong>。大致情况如下图：</p>
-<p><img src="imgs/memory_pos.png" height="350px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/memory_pos.png" height="350px"></p>
 <p>奇怪的是，<code>malloc</code> 大数据量的堆在上方和 shared libraries 紧贴，向低地址增长；而普通数据的堆在 Data 区的下方向高地址增长。可以预见，当两块 heap 碰头的时候，<code>malloc</code> 会返回空指针。</p>
 <p>这个规律目前还没有解释，等到以后的章节慢慢了解。</p>
 <h3 id="7-2-Buffer-Overflow"><a href="#7-2-Buffer-Overflow" class="headerlink" title="7.2 Buffer Overflow"></a>7.2 Buffer Overflow</h3><p>在 Chapter 0-0.3 的越界实验中，我们就讨论过内存缓冲区溢出的问题。当时造成的后果是结构体中的其他成员的数据被修改。本节会详细解释内存缓冲区溢出的各个方面的影响和应当措施。</p>
@@ -2161,7 +2161,7 @@
 <p>首先观察，一开始系统为 <code>echo</code> 函数的栈帧分配了 24 bytes（<code>0x18</code>）的空间，<strong>因此，如果输入的输出加入超过了所有的栈空间，进入没有被分配的 memory 时，就会报告 segmentation fault</strong>。</p>
 <p>所以，（<strong>当没有使用 <code>gcc</code> 栈保护机制时</strong>）安全问题通常就出现在 “溢出内容超过了原来分配的位置，但是没有超过栈的总体空间” 这种情况下。这时系统不会抛出 segmentation fault，<strong>栈中数据只能任由输入者篡改</strong>。</p>
 <p>再来看看内存对应的情况：</p>
-<p><img src="imgs/buffer_overflow_example1.png" height="260px"><img src="imgs/buffer_overflow_example1_2.png" height="260px"><img src="imgs/buffer_overflow_example1_3.png" height="260px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/buffer_overflow_example1.png" height="260px"><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/buffer_overflow_example1_2.png" height="260px"><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/buffer_overflow_example1_3.png" height="260px"></p>
 <p>如上左图，当 <code>char buf[4]</code> 声明后，在程序初始化时，编译器为<code>echo</code> 预留了 24 bytes 的空间；<code>echo</code> 栈帧的最顶层存放的是局部变量 <code>buf</code> 数组对应的空间大小是 4 bytes，一切都很正常。</p>
 <p>如上中图，我们不妨假设 <code>call_echo</code> 在 return address 里存放的地址是 <code>0x4006C3</code>（<code>echo</code> 运行结束后应该返回的地址）；如果输入字符串内容超过了 <code>buf</code> 能承受的 3 bytes，则会出现 buffer overflow，如图，数据覆盖了 <code>buf</code> 下方的 20 bytes 其他区域的数据，但因为这个例子中，恰好那个区域没有存放其他数据，所以表面上程序没问题；</p>
 <blockquote>
@@ -2175,7 +2175,7 @@
 <p>这种攻击被称为<strong>缓冲区溢出攻击（stack smashing attack）</strong>，这种攻击就是利用了技术人员不注意输入检查，而导致的缓冲区溢出的问题。</p>
 <p>实现这种攻击的原理比较简单，就是<strong>输入无意义的填充字符（padding）让输入的内容 buffer overflow，并且在末尾设置一个想要跳转到的函数的地址，并且只需让末尾的地址恰好覆盖 return address</strong> 就行。</p>
 <p>如下图所示，正常的流程是 <code>P()</code> 调用 <code>Q()</code>，<code>P</code> 函数在 return address 中写的是 <code>A</code>，也就是 <code>P</code> 函数中调用 <code>Q</code> 的下一行；但由于 <code>Q()</code> 中的 <code>gets(buf)</code> 有溢出风险，在攻击者输入 <code>padding</code> 字符 + <code>S</code> 地址组合的字符串后，<code>gets</code> 函数将缓冲区数据覆盖了，如下图右，return address 被改成了 <code>S</code> 的地址。这样在 <code>Q()</code> 执行结束后，会跳转到 <code>S()</code> 函数中，而不是原来的 <code>P()</code> 中：</p>
-<p><img src="imgs/stack_smashing_attack.png" height="300px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/stack_smashing_attack.png" height="300px"></p>
 <p>做法很简单，但是编译时要关闭 <code>gcc</code> 的栈保护机制（<code>-fno-stack-protector</code>）。现在大多数 C/C++ 编译器都有这项功能，利用栈随机化、“金丝雀” 检查等技术，打乱栈空间的实际排布、利用栈两端的 “金丝雀” 侦测栈溢出，发现就立即终止程序，让攻击难以进行。<strong>（后面会详细讨论）</strong></p>
 <ol>
 <li>找到有导致缓冲区溢出风险的函数（像之前提到的 <code>scanf</code> 家族、<code>str</code> 家族），并且技术人员没有为这些函数的输入进行检查；</li>
@@ -2186,7 +2186,7 @@
 <h4 id="7-2-3-Code-Injection-Attacks"><a href="#7-2-3-Code-Injection-Attacks" class="headerlink" title="7.2.3 Code Injection Attacks"></a>7.2.3 Code Injection Attacks</h4><p>也是在上面说到的情况下，如果有攻击者刻意如此设置，让缓冲区溢出到 return address，并且恰好让 return address 指向攻击者事先设计好的 exploit code 中，那么程序就会执行攻击者设计的函数，从而给计算机造成威胁。</p>
 <p>这种攻击被称为 <strong>代码注入攻击</strong>，思路和上面的 stack smashing attack 如出一辙，只不过攻击者不满足于执行软件内的其他函数了，他要执行的是自己嵌入的函数，危害可能更大。</p>
 <p>实现攻击的原理就是，<strong>攻击者输入编码有 exploit code + padding string + pointer to exploit code 的内容</strong>，让读入程序执行结束后跳转到攻击者刚刚输入的 exploit code 中执行，如下图所示：</p>
-<p><img src="imgs/code_injection_attack.png" height="300"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/code_injection_attack.png" height="300"></p>
 <blockquote>
 <p>更聪明的攻击者会在运行完 exploit code 后修复溢出的缓冲区，并且跳转到原来的函数，伪装成没有被攻击的假象。</p>
 <p>知识拓展：计算机病毒和计算机蠕虫的区别</p>
@@ -2242,9 +2242,9 @@
 </ul>
 <p>下面介绍这种攻击的原理。</p>
 <p>这种攻击利用的部件称之为 <strong>gadget</strong>，通常是各个函数的<strong>包含 <code>ret</code> 指令的最后几行或者一段</strong>，如下：</p>
-<p><img src="imgs/gadget_1.png" height="225px"><img src="imgs/gadget_2.png" height="225px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/gadget_1.png" height="225px"><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/gadget_2.png" height="225px"></p>
 <p>这些毫无关系的函数的汇编代码最后几行甚至几个片段总会包含一些指令，例如将某个寄存器的值加多少、将某个寄存器的值移动到哪。它们紧接着 <code>ret</code> 指令（对应汇编码 <code>0xC3</code>）。这就意味这我们可以<strong>收集这些 gadget 的地址，按照我们的需求依此排列这些 gadget，通过输入将这些地址溢出到栈里，让栈充当程序计数器的角色，反复执行 <code>gadget1</code> -&gt; <code>ret</code> -&gt; 执行 <code>gadget2</code> -&gt; <code>ret</code> -&gt; …，越过了上面两个限制，将所有 gadget 连在一起，最终让程序段达到我们的目的</strong>，如下图：</p>
-<p><img src="imgs/ROP_execution.png" height="300px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/ROP_execution.png" height="300px"></p>
 <p><strong>可以说是顶级的 “断章取义”！</strong></p>
 <p>不过有两个缺点：</p>
 <ul>
@@ -2526,4 +2526,17 @@ document.addEventListener('pjax:error', e => {
   if (e.request.status === 404) {
     pjax.loadUrl('/myBlog/404.html')
   }
-})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div>
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: true,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body></html>

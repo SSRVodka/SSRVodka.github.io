@@ -256,7 +256,7 @@
 &注:数学上有\space m-\lceil\dfrac{m}{2}\rceil\ge\lceil\dfrac{m}{2}\rceil-1
 \end{aligned}</script><p>再将中间的结点：<strong>$(K_{\lceil\cfrac{m}{2}\rceil},\space R_{\lceil\cfrac{m}{2}\rceil})$</strong> 提到父结点上用以分开两个分裂结点；</p>
 <p><strong>step 4. 提升到父结点后，对父结点递归第二步，检查是否违反定义，并及时修正</strong></p>
-<p><img src="BTreeInsert.jpg"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="BTreeInsert.jpg"></p>
 </li>
 <li><p>删除</p>
 <p><strong>step 1. 先查找关键字 $K_i$ 的位置，判断是否在底层（下一层为失败结点）</strong></p>
@@ -340,7 +340,7 @@
 <li><p><span id="BPCalc">B+树阶数计算</span></p>
 <blockquote>
 <p>已知：一棵 B+ 树的一个非叶结点预分配：M-1个键、M个指针（记录磁盘地址）；叶结点预分配：L个记录、1个指针（构成单链表，但相对于L个记录可忽略不计）；</p>
-<p><img src="BPTreeS.jpg"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="BPTreeS.jpg"></p>
 </blockquote>
 <p>假设：一个磁盘块 W Bytes、一个记录 R Bytes、一个关键字 K Bytes、一个磁盘地址大小 A Bytes，则：</p>
 <script type="math/tex; mode=display">
@@ -407,7 +407,7 @@ N&=(n_{NL}-1)\cdot(m-1)+m-1=m^{h-1}-1
 <p>一般都使用归并排序，这在外排序中极其优秀；</p>
 </blockquote>
 <p>⚠<strong>易错警示：如果题目说：”多阶段归并是为了最大限定地提高归并的路数“是正确的。不是说多阶段归并本身能提高归并路数，是因为多阶段归并能够提高”路“的利用率（对k路，总路数2k降为k+1），这样在同样大小的内存中，可以选取更大的k值。所以多阶段归并的目的也可以说成（在一定的资源条件下）为了最大限度地提高归并的路数</strong>；</p>
-<p><img src="ExSort.jpg"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="ExSort.jpg"></p>
 <p>█◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤图部分将结合离散数学-图论知识共同复习◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢█</p>
 <h2 id="Chapter-9-图"><a href="#Chapter-9-图" class="headerlink" title="Chapter 9 图"></a>Chapter 9 图</h2><h3 id="9-1-图论中的重要定义Ⅰ"><a href="#9-1-图论中的重要定义Ⅰ" class="headerlink" title="9.1 图论中的重要定义Ⅰ"></a>9.1 图论中的重要定义Ⅰ</h3><blockquote>
 <p>图的起源：人们关心一类问题，给定的两点间是否有一条或多条连线的关系，而连接方式无关紧要。这类问题在数学上的抽象是<strong>图</strong>；</p>
@@ -1118,4 +1118,17 @@ document.addEventListener('pjax:error', e => {
   if (e.request.status === 404) {
     pjax.loadUrl('/myBlog/404.html')
   }
-})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div>
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: true,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body></html>

@@ -192,7 +192,7 @@
 <p>虽然我们无论是命令行还是 GUI 使用 Linux 的时候，TTY 似乎对我们无感，但是，当我因为一个小问题在互联网上查了很多关于 TTY 资料，却仍然很难找到一个完整的知识资料的时候，我发现这个 TTY 子系统的重要性被很多人忽视了。在整理了相关资料后，我愿意相信，搞清楚 Linux 的 TTY 子系统，属实是入门 Linux 系统的必由之路。</p>
 <p><strong>尤其是，如果你想要写一些更接近 Linux 底层的、I/O interactive 方面的应用程序，那么 <code>TTY</code> 的知识就显得更加重要。</strong></p>
 <p>前段时间，我在写 CSAPP 的 shell lab，工作量不大所以很快就完成了。但是文档里有句话让我不解，“这个 tiny shell <strong>不需要支持</strong>运行类似 <code>vim</code> 和 <code>tmux</code> 的程序，它们会对你的终端进行一些修改”。出于 “你不让我做，我偏要做” 的心态，我迅速拿着已经完工的 <code>tsh</code> 运行 <code>vim</code>，结果，<strong><code>vim</code> 被第 22 号信号挂起了</strong>。我尝试用内置指令 <code>fg</code> 将任务调向前台，也无济于事：</p>
-<p><img src="imgs/fail.png"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/fail.png"></p>
 <p>很自然地，我查看了一下 22 号信号，发现是一个我未曾谋面的信号：<code>SIGTTOU</code>。很快啊，英文文档 “啪” 的一下就来了，我没有闪，只看见字里行间密密麻麻地挤满一个单词：<code>TTY</code>。</p>
 <p>Google 了很多文章之后我才发现，我们一直使用的<strong>命令行（CLI）</strong>都建立在一个无形的机制之上，这个机制接收并且传递我们在终端软件窗口的字符指令，建立起用户和操作系统的 “调度 和 沟通” 的桥梁。这，我以前一直是没有关注的。</p>
 <p>于是我明白，想要了解这之中究竟发生了什么、想要解决这个问题，就有必要了解一下 Linux TTY 了。</p>
@@ -201,7 +201,7 @@
 </blockquote>
 <h2 id="TTY-的成长之路"><a href="#TTY-的成长之路" class="headerlink" title="TTY 的成长之路"></a>TTY 的成长之路</h2><p>实际上，TTY 在 OS 中的迭代和发展史谈不上 “elegant”，甚至可以用 “蜿蜒曲折” 来形容。</p>
 <p>在 1869 年，一种机器叫做 “<strong>股票行情自动收录器</strong>”（stock ticker）在当时金融系统不断发展的资本主义世界诞生了。它的样貌可以描述一下——一个电驱动的机械装置，包含一台机械打字机（typewriter）、一捆的电线，还有一长串用以打孔的纸带组成，它工作时的样貌如下图<sup><a href="#fn_1" id="reffn_1">1</a></sup>：</p>
-<div class="group-picture"><div class="group-picture-container"><div class="group-picture-row"><div class="group-picture-column" style="width: 50%;"><img src="imgs/tick1.png" width="300px" align=center></div><div class="group-picture-column" style="width: 50%;"><img src="imgs/tick2.png" width="300px" align=center></div></div></div></div>
+<div class="group-picture"><div class="group-picture-container"><div class="group-picture-row"><div class="group-picture-column" style="width: 50%;"><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/tick1.png" width="300px" align=center></div><div class="group-picture-column" style="width: 50%;"><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/tick2.png" width="300px" align=center></div></div></div></div>
 <p>它的使用和早期的计算机一样（不过更早），都需要有一个操作员在一旁输入指令、处理输出纸带，<strong>最终可以达成 “远距离实时广播股票价格” 的任务</strong>，是不是有点像影视剧里的电报？</p>
 <p>不过这个机器很快就演变为一个更快、基于 ASCII 编码的机械结构。知道它的名字的人可能会多一点：<strong>teletype</strong>（电传打字机，简称 TTY）。那么 teletype 在当时时如何完成给通信的另一方传输消息的功能的呢？答案是，连接上当时最大的 “网络”——<strong>Telex</strong>，专门用来在各个资本家之间传输商业电报。</p>
 <p>你可能会好奇，这个时候的计算机是什么情况？很遗憾，这个时候计算机还超级大、超级原始，似乎和 teletype 没啥交集。但是没过几年，当计算机的设计和架构发展到，已经可以支持执行多任务（multitask）的时候，一个重要的能力，却也是等待解决的问题就来了：<strong>计算机可以与用户进行实时交互了</strong>。这意味着，之前 “将打孔写程序的纸带传入机器” 的<strong>旧批处理模型（old batch processing model）</strong>就可以被人机交互所代替，从而大大减小操作员运行计算机的工作量<sup><a href="#fn_2" id="reffn_2">2</a></sup>。</p>
@@ -216,7 +216,7 @@
 <p>这头钢铁巨兽（teletypes）的意志仍蛰伏在如今的 OS 的外表之下<sup><a href="#fn_3" id="reffn_3">3</a></sup>。</p>
 </blockquote>
 <h2 id="用户视角下的-TTY-old-versions"><a href="#用户视角下的-TTY-old-versions" class="headerlink" title="用户视角下的 TTY: old versions"></a>用户视角下的 TTY: old versions</h2><p>想要了解现代 Linux 系统中的 TTY 机制，我们还需要将时间拨回很早以前——人们使用实体 teletype 输入的时候。我们将 teletype 这个输入计算机指令以实现人机交互的设备称之为 <strong>终端（terminal）</strong>。当时的软硬件结构是这样的：</p>
-<p><img src="imgs/case1.png"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/case1.png"></p>
 <p>teletype 是用一捆捆电线连接到计算机的一个叫 <strong>UART</strong>（Universal Asynchronous Receiver and Transmitter，通用异步收发器）的硬件设备上的。</p>
 <p>对应地，内核里就写了一个驱动 UART driver，用来管理从物理 terminal 设备上发来的电信号 bytes，处理一些细节例如前一节提到的 bytes 校验、流控制。</p>
 <p>一开始，UART driver 是直接将初步处理好的 bytes 流直接传给一些正在运行的进程，但是显然这种方法需要弥补几个缺陷：</p>
@@ -251,7 +251,7 @@
 </blockquote>
 <h2 id="用户视角下的-TTY-modern-versions"><a href="#用户视角下的-TTY-modern-versions" class="headerlink" title="用户视角下的 TTY: modern versions"></a>用户视角下的 TTY: modern versions</h2><p>我们了解了以前计算机是如何将 teletype 连接到计算机上并与之交互的，现在我们再将视野转移到现代计算机（desktop system，一般是图形化的）。</p>
 <p>还是讨论现代 Unix 系统，这个时候输入输出模型可以抽象为如下图形：</p>
-<p><img src="imgs/case2.png"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/case2.png"></p>
 <p>此时 TTY driver 和 line discipline 的 作用和以往版本的作用几乎相近，但是现在已经不存在 teletype 了，取而代之的是 键盘 和 显示屏，因此就没有 UART 和实体 terminal 什么事了。</p>
 <p>取而代之的，是一个在 <strong>terminal emulator 中模拟的 video terminal</strong>（可以理解为<strong>一个包括了字符帧缓存（frame buffer of characters）和图形属性）的复杂状态机</strong>）。</p>
 <p>它的作用是接收来自键盘驱动的预处理信号，将其传给对应得 line discipline，并将输出数据渲染到 VGA 显示器上。</p>
@@ -261,7 +261,7 @@
 <li>emulator 位于<strong>内核中</strong>，不够灵活（rigid），在抽象层级上说，为了可维护性和可扩展性，应该将其挪到用户态空间中（userland）；</li>
 </ul>
 <p>事实上，为了解决上面的问题，TTY device 的设计更加抽象了：</p>
-<p><img src="imgs/case3.png"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/case3.png"></p>
 <p>我们发现，line discipline、TTY driver 的结构都不需要变嘛，因为它们还需要提供基本的行缓冲、会话管理的功能。因此，人们在内核中设计出了 <strong>pseudo terminal（<code>pty</code>，伪终端）</strong>，用于对接支持 <code>xterm</code>（Unix 中一种默认的终端模拟器）的桌面程序。</p>
 <blockquote>
 <p>注意，如果你在一个 <code>xterm</code> 桌面进程中调用了 <code>screen</code>、<code>tmux</code> 等程序，那么就是 pseudo terminal 套 pseudo terminal 的复杂结构，这里不讨论。</p>
@@ -269,7 +269,7 @@
 <h2 id="TTY-与-进程"><a href="#TTY-与-进程" class="headerlink" title="TTY 与 进程"></a>TTY 与 进程</h2><p>了解了 <code>TTY</code> 的发展和构成，那么 process 是如何和 PTY 对接的呢？为了讨论这个问题，我们需要复习一些进程、shell job control 的知识。</p>
 <h3 id="补充-1：Unix-Processes"><a href="#补充-1：Unix-Processes" class="headerlink" title="补充 1：Unix Processes"></a>补充 1：Unix Processes</h3><p>大部分学过 CSAPP 的同学可能对进程已经有了初步了解，尤其是在考完了 ICS 之后对其理解更为深刻…… 不过 CSAPP 关于进程的知识并不是操作系统的全部，我们下面补充一点。</p>
 <p>一个 Linux Process 通常有 <strong>5 种状态</strong>：</p>
-<p><img src="imgs/process.png"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/process.png"></p>
 <ul>
 <li><p><code>R</code>：Running / Runnable（On OS run queue），此状态的进程正在 CPU 上运行，或者做好被 CPU 调度的一切准备；</p>
 </li>
@@ -291,7 +291,7 @@
 <p>进程组的知识不再赘述，与大家在 CSAPP 中接触到的一样。</p>
 <h3 id="补充-2：Shell-Job-Control"><a href="#补充-2：Shell-Job-Control" class="headerlink" title="补充 2：Shell Job Control"></a>补充 2：Shell Job Control</h3><p>在 CSAPP 的 shell lab 中，我们进一步深化了对课本中 shell 的理解。通常情况下，一个 shell 承担了一个重要的工作：对用户的程序管理为 <strong>前台、后台</strong> 两种形式，方便用户指定和操作。这种管理方法就称为 <strong>job control</strong>。</p>
 <p>正如 CSAPP 一书中对 job control 的说明，shell 的进程管理应该呈现如下的模式：</p>
-<p><img src="imgs/process_group.png" height="300px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/process_group.png" height="300px"></p>
 <p>当用户通过 shell 登陆，或者仅启动 shell 时，shell 作为系统中的一个进程，会单独设置自己的进程组（自己进程组号改为与自身进程号一致，防止与父进程联系，导致收到父进程的信号）；</p>
 <p>此后，通过 shell 创建的所有进程（执行的所有程序）都会在 <code>execve</code> 前设置单独的进程组号，方便 shell 统一管理。前台、后台进程的子进程一般都在自己的进程组里。其中前台进程只有一个，后台进程有多个。</p>
 <p>但是！CSAPP 中没有说明的一点是，<strong>前台进程是如何与用户输入建立联系的？更准确地说，前台进程如何准确 attach 到当前的 pseudo terminal 上的？</strong></p>
@@ -301,7 +301,7 @@
 <blockquote>
 <p>注：Session Leader 可以在进程信息中看到。</p>
 <p>大家不妨运行 <code>ps aux</code> 查看一下当前进程的状况，比如：</p>
-<p><img src="imgs/ps.jpg" height="300px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/ps.jpg" height="300px"></p>
 <p>中间红框的一列描述的就是各个进程的状态。其中可能出现的 <code>D</code>、<code>R</code>、<code>S</code>、<code>T</code>、<code>Z</code> 称为 <strong>标识符</strong>，就是之前介绍的含义。还有一类标识符 <code>I</code> 表示 Idle Kernel Thread（空闲的内核线程）<sup><a href="#fn_4" id="reffn_4">4</a></sup>；</p>
 <p>不过除此以外还有一些修饰符，例如：</p>
 <ul>
@@ -354,7 +354,7 @@
 <p><strong>step 1.</strong> 假设你在一个 login shell 中执行 <code>vim</code>，那么：</p>
 <p>当前 shell 为 <code>vim</code> 创建一个进程（<code>fork &amp; execve</code>）和进程组（<code>setgid</code>），通知 <code>TTY device</code> 将该进程标记为前台进程组（<code>tcsetpgrp</code>）；</p>
 <p>所以你会看到如下图，启动 <code>vim</code> 后，<code>vim</code> 进程所在组成为 foreground process group（进程状态 <code>S+</code>）；而 shell（这里是 <code>zsh</code>）进程则由 <code>Ss+</code> 转为 <code>Ss</code>（不再是前台进程，但仍是 session leader），并且它们都位于同一个 session 中（指向同一个 <code>pts</code>，即 <code>pts/1</code>）：</p>
-<p><img src="imgs/vim.png" height="350px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="imgs/vim.png" height="350px"></p>
 <p><strong>step 2.</strong> 假设你在 <code>vim</code> 运行时按下 <code>Ctrl + Z</code> 将 <code>vim</code> 转向后台挂起，那么：</p>
 <p>触发 Asynchronous Exception（ECF），<code>vim</code> 作为前台进程组直接收到 OS Kernel 发送的 <code>SIGTSTP</code> 信号。在 <code>vim</code> 的 <code>SIGTSTP</code> signal handler 中，<code>vim</code> 做挂起前的准备工作（例如通过向 <code>TTY device</code> 输出特定序列，将光标移动到上次位置、恢复打开前的命令行内容等等）。最后 <code>vim</code> 向自己进程组发送 <code>SIGSTOP</code>，正式将自己的进程组挂起到后台；</p>
 <p>此时，<code>vim</code> 父进程（之前的 shell）收到 <code>SIGCHLD</code> 信号，shell 进入对应的 handler 进行处理（例如打印 <code>[1]+ Stopped</code> 信息给用户等工作），并且将自己的进程设置为前台进程组（<code>tcsetpgrp</code>）；</p>
@@ -561,4 +561,17 @@ document.addEventListener('pjax:error', e => {
   if (e.request.status === 404) {
     pjax.loadUrl('/myBlog/404.html')
   }
-})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div>
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: true,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body></html>

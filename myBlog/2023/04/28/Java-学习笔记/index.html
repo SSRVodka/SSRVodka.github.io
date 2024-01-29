@@ -215,7 +215,7 @@
 </li>
 </ol>
 <h4 id="解释型语言的运行过程"><a href="#解释型语言的运行过程" class="headerlink" title="解释型语言的运行过程"></a>解释型语言的运行过程</h4><p>前端分析“三件套” + 生成中间代码 + 解释器解释执行</p>
-<h4 id="图解"><a href="#图解" class="headerlink" title="图解"></a>图解</h4><p><img src="./CompileAndExplain.png"></p>
+<h4 id="图解"><a href="#图解" class="headerlink" title="图解"></a>图解</h4><p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./CompileAndExplain.png"></p>
 <blockquote>
 <p>注：字节码是低级语言</p>
 </blockquote>
@@ -855,7 +855,7 @@
 <li><p>try-catch 块：与C++相同；</p>
 </li>
 <li><p>Java 中的异常类</p>
-<p><img src="./JavaError_and_Exception.png"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./JavaError_and_Exception.png"></p>
 </li>
 </ol>
 <blockquote>
@@ -1014,7 +1014,7 @@
 </blockquote>
 <ol>
 <li><p>Binary I/O 类：和<code>PrintWriter</code>、<code>Scanner</code>一样，会占用资源，请及时释放</p>
-<p><img src="./bin_io.png"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./bin_io.png"></p>
 <blockquote>
 <p><i>摘自 Introduction to Java Programming 10th Edition (Y. Daniel Liang)</i></p>
 </blockquote>
@@ -1051,7 +1051,7 @@
 </ol>
 <h3 id="基本程序设计：总结"><a href="#基本程序设计：总结" class="headerlink" title="基本程序设计：总结"></a>基本程序设计：总结</h3><ol>
 <li><p>前面使用到的所有类、包：复习回顾有哪些知识？（主要）</p>
-<p><img src="./packages.png"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./packages.png"></p>
 </li>
 <li><p>类的设计原则</p>
 <blockquote>
@@ -1255,4 +1255,17 @@ document.addEventListener('pjax:error', e => {
   if (e.request.status === 404) {
     pjax.loadUrl('/myBlog/404.html')
   }
-})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div>
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: true,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body></html>

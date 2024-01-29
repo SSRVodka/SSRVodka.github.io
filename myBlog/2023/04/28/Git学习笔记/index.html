@@ -207,10 +207,10 @@
 <li><p>How do snapshots record differences?</p>
 <ul>
 <li><p>Other VCS: <strong>delta-based version control</strong> (store information as a list of file-based changes);</p>
-<p><img src="./imgs/deltas.png" height="220"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/deltas.png" height="220"></p>
 </li>
 <li><p>Git: takes a picture of what all your files look like at that moment and stores a reference to that snapshot. (if files have not changed, Git doesn’t store the file again, just a <strong>link</strong> to the previous identical file it has already stored)</p>
-<p><img src="./imgs/snapshots.png" height="220"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/snapshots.png" height="220"></p>
 </li>
 </ul>
 </li>
@@ -240,7 +240,7 @@
 <li>Staged means that you have marked a modified file in its current version to go into your next commit snapshot.</li>
 <li>Committed means that the data is safely stored in your local database.</li>
 </ul>
-<p><img src="./imgs/areas.png" height="300"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/areas.png" height="300"></p>
 <p><strong>总结</strong></p>
 <p>工作区：放置从数据库中被取出的、在磁盘上供用户修改和使用的 文件；</p>
 <p>中转地（staging area）：储存在Git目录中，即将进入下一个commit的选中的部分文件；</p>
@@ -302,7 +302,7 @@
 <li><p>更改Git存储库、更改项目状态</p>
 <blockquote>
 <p>Each file in your working directory can be in one of two states: <strong>tracked</strong> or <strong>untracked</strong>.</p>
-<p><img src="./imgs/lifecycle.png"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/lifecycle.png"></p>
 <ul>
 <li><p>被追踪的文件一定是：上一个提交的snapshot中的文件，或者是在中转地的文件；</p>
 </li>
@@ -628,9 +628,9 @@
 </blockquote>
 <h2 id="Chapter-3-Git-Branching-“killer-feature”"><a href="#Chapter-3-Git-Branching-“killer-feature”" class="headerlink" title="Chapter 3. Git Branching: “killer feature”"></a>Chapter 3. Git Branching: “killer feature”</h2><h3 id="3-1-Branches-in-a-nutshell"><a href="#3-1-Branches-in-a-nutshell" class="headerlink" title="3.1 Branches in a nutshell"></a>3.1 Branches in a nutshell</h3><ol>
 <li><p>Look back on how Git stores its data（略，详见<a href="https://git-scm.com/book/en/v2" rel="external nofollow noreferrer" target="_blank">Git-book</a>）</p>
-<p><img src="./imgs/commit-and-tree.png" height="300px"></p>
-<p><img src="./imgs/commits-and-parents.png" height="200"></p>
-<p><img src="./imgs/branch-and-history.png" height="300"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/commit-and-tree.png" height="300px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/commits-and-parents.png" height="200"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/branch-and-history.png" height="300"></p>
 <ul>
 <li><p>A branch in Git is simply <strong>a lightweight movable pointer</strong> to one of these commits.</p>
 <blockquote>
@@ -654,14 +654,14 @@
 <blockquote>
 <p>从数据底层考虑这一步在做什么（以 <code>git branch testing</code> 为例）：</p>
 <p><strong>补充：git log 查看参数<code>--decorate</code>可以显示在当时commit下的分支指针情况</strong></p>
-<p><img src="./imgs/head-to-master.png" height="300px"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/head-to-master.png" height="300px"></p>
 <p><strong>由图，执行创建分支操作后，只生成一个指向<code>HEAD</code>（当前commit）的指针testing，并不改变其他任何数据！</strong></p>
 </blockquote>
 </li>
 <li><p>Switching Branches：<code>git checkout branchName</code></p>
 <blockquote>
 <p>从数据底层考虑这一步在做什么（以 <code>git checkout testing</code> 为例）：</p>
-<p><img src="./imgs/head-to-testing.png" height="300"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/head-to-testing.png" height="300"></p>
 <p>tips1. <strong>修改分支只是修改HEAD指向分支的指向！</strong></p>
 <p>一旦此时commit，那么master将停留在原处，只有testing和HEAD向前移动。</p>
 <p><strong>补充：<code>git log</code>默认不展示所有分支，如果想要展示所有分支，添加<code>--all</code>参数，所以可以这样设置参数来查看完整的分支信息：<code>git log --oneline --decorate --graph --all</code></strong></p>
@@ -676,12 +676,12 @@
 <blockquote>
 <p><strong>合并情况一：“Fast-forward”，即要master合并的分支是master的直达的子分支</strong></p>
 <p>这种情况下一定不会出现合并冲突，只需将master向前移动若干commit即可，例如下面的例子：</p>
-<p><img src="./imgs/basic-branching-4.png" height="180"><img src="./imgs/basic-branching-5.png" height="200"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/basic-branching-4.png" height="180"><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/basic-branching-5.png" height="200"></p>
 <p>上面的过程只需执行<code>git checkout master; git merge hotfix</code>即可，</p>
 <p>现在即可删除多余的hotfix分支了。</p>
 <p><strong>合并情况二：“Common Ancester”，即要合并的两个分支有共同祖先结点</strong></p>
 <p>这种情况下，Git需要使用“<strong>三项合并</strong>”（three-way merge，即共同祖先、要合并的两个结点），生成并得到一个新commit（结点），它有两个父结点，就是刚刚合并的两个（为了防止结点丢失），现在就可以删除多余的分支指针了。</p>
-<p><img src="./imgs/basic-merging-1.png" height="160"><img src="./imgs/basic-merging-2.png" height="150"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/basic-merging-1.png" height="160"><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/basic-merging-2.png" height="150"></p>
 <p>上面的过程只需执行<code>git checkout master; git merge iss53</code>即可</p>
 <p><strong>警告：情况二可能出现冲突（如果同一段代码不能协调合并），此时需要修改才能合并</strong></p>
 <p><strong>那么情况二什么时候不冲突呢？——&gt; 涉及<code>three-way merge</code>的原理：</strong></p>
@@ -725,9 +725,9 @@
 <li><p>Synchronize  <code>Remote-tracking branches</code>：<code>git fetch &lt;remote&gt;</code></p>
 <blockquote>
 <p>注意：如果远程存储库已经在原来的基础上提交了一些commit，则在本地同步后会产生分叉，例如下图</p>
-<p><img src="./imgs/remote-branches-1.png" height="450"></p>
-<p><img src="./imgs/remote-branches-2.png" height="380"></p>
-<p><img src="./imgs/remote-branches-3.png" height="450"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/remote-branches-1.png" height="450"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/remote-branches-2.png" height="380"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/remote-branches-3.png" height="450"></p>
 <p>注意2：如果是从多个server上fetch，那么会有多种 <code>Remote-tracking branches</code>，位置视情况而定；</p>
 <p>注意3： <code>Remote-tracking branches</code>不能作为本地的HEAD的指向对象！如果不创建新的分支就将HEAD移动到这里，会出现“detached HEAD”的情况，可能造成commit的丢失！</p>
 </blockquote>
@@ -758,7 +758,7 @@
 </blockquote>
 <ol>
 <li><p>In a nutshell: In the picture shown below, we take the patch of the change that was introduced in <code>C4</code> and reapply it on top of <code>C3</code>. In Git, this is called <em>rebasing</em>.</p>
-<p><img src="./imgs/basic-rebase-1.png" height="140"><img src="./imgs/basic-rebase-3.png" height="130"></p>
+<p><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/basic-rebase-1.png" height="140"><img src="https://cdn.sjtuxhw.top/cover_imgs/lazyload.gif" data-original="./imgs/basic-rebase-3.png" height="130"></p>
 <blockquote>
 <p><code>git checkout experiment &amp;&amp; git rebase master</code></p>
 <p>算法原理：找到二者的公共祖先结点、找到祖先结点和这两个commit共三者的不同，将这些不同保存在临时文件中（<strong>这里的合并方式和merge是一样的</strong>），生成一个新的commit，作为targetBranch的子结点，同时将当前分支移动到新结点上，删除原分支。</p>
@@ -969,4 +969,17 @@ document.addEventListener('pjax:error', e => {
   if (e.request.status === 404) {
     pjax.loadUrl('/myBlog/404.html')
   }
-})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div>
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: true,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body></html>
