@@ -793,13 +793,6 @@
   </url>
   
   <url>
-    <loc>https://sjtuxhw.top/tags/git/</loc>
-    <lastmod>2024-02-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://sjtuxhw.top/tags/Java/</loc>
     <lastmod>2024-02-27</lastmod>
     <changefreq>weekly</changefreq>
@@ -849,7 +842,7 @@
   </url>
   
   <url>
-    <loc>https://sjtuxhw.top/tags/React/</loc>
+    <loc>https://sjtuxhw.top/tags/git/</loc>
     <lastmod>2024-02-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -871,6 +864,13 @@
   
   <url>
     <loc>https://sjtuxhw.top/tags/MySQL/</loc>
+    <lastmod>2024-02-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://sjtuxhw.top/tags/React/</loc>
     <lastmod>2024-02-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
