@@ -1,0 +1,830 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>React框架速通 | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Written by SJTU-XHW Reference:  MDN Doc &amp;&amp; React Doc 本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React框架速通">
+<meta property="og:url" content="https://sjtuxhw.top/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="Written by SJTU-XHW Reference:  MDN Doc &amp;&amp; React Doc 本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/react.jpg">
+<meta property="article:published_time" content="2024-02-27T07:30:41.000Z">
+<meta property="article:modified_time" content="2024-02-27T07:34:37.303Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="React">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/react.jpg"><link rel="shortcut icon" href="/myBlog/img/favicon.ico"><link rel="canonical" href="https://sjtuxhw.top/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myBlog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?64dd3b0c09c8af7b916f8249d32097e2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = {
+  root: '/myBlog/',
+  algolia: undefined,
+  localSearch: {"path":"/myBlog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'React框架速通',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-02-27 15:34:37'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/myBlog/css/mouseConfig.css"><link rel="stylesheet" href="/myBlog/css/valineBg.css"><link rel="stylesheet" href="/myBlog/css/rightmenu.css"><link rel="stylesheet" href="/myBlog/css/custom_music.css"><link rel="stylesheet" href="/myBlog/css/addFonts.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/myBlog/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/myBlog/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">33</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">50</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.sjtuxhw.top/cover_imgs/react.jpg')"><nav id="nav"><span id="blog-info"><a href="/myBlog/" title="SJTU-XHW's blog"><img class="site-icon" src="/myBlog/img/head_icon.png"/><span class="site-name">SJTU-XHW's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">React框架速通</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-02-27T07:30:41.000Z" title="发表于 2024-02-27 15:30:41">2024-02-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-02-27T07:34:37.303Z" title="更新于 2024-02-27 15:34:37">2024-02-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">11.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>39分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/myBlog/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/#post-comment"><span id="twikoo-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><i>Written by SJTU-XHW</i></p>
+<p><i>Reference: </i> MDN Doc &amp;&amp; React Doc</p>
+<p><i>本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！</i></p>
+<hr>
+<span id="more"></span>
+<h1 id="Chapter-0-5-分钟速通-React-框架"><a href="#Chapter-0-5-分钟速通-React-框架" class="headerlink" title="Chapter 0. 5 分钟速通 React 框架"></a>Chapter 0. 5 分钟速通 React 框架</h1><blockquote>
+<p>如果你只有 5 分钟时间，则只需阅读这一章；否则<strong>请从 Chapter 1 开始</strong>。</p>
+<p>建议有一定的原生 JavaScript 基础，至少包括：<strong>JS 基本类型、内置引用类型、函数表达式的各种操作，简单 DOM 操作，JavaScript 事件，JavaScript 异步（Promise）</strong>。</p>
+</blockquote>
+<h2 id="0-1-基本概念"><a href="#0-1-基本概念" class="headerlink" title="0.1 基本概念"></a>0.1 基本概念</h2><ul>
+<li><p>React 应用程序是由 <strong>组件</strong> 组成的。</p>
+<blockquote>
+<p>一个组件是 UI 的一部分，它拥有自己的逻辑和外观。组件可以小到一个按钮，也可以大到整个页面。</p>
+</blockquote>
+</li>
+<li><p>React 组件是<strong>返回标签的 JavaScript 函数</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function MyButton() &#123;</span><br><span class="line">    return (</span><br><span class="line">        &lt;button&gt;I&#x27;m a button&lt;/button&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>React 组件的使用方法就是直接使用 “React 特殊标签”，React 组件的标签必须以大写字母开头，而 HTML 标签则必须是小写字母：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">export default function MyApp() &#123;</span><br><span class="line">    return (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;h1&gt;Welcome to my app&lt;/h1&gt;</span><br><span class="line">        &lt;MyButton /&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="0-2-JSX-使用规范"><a href="#0-2-JSX-使用规范" class="headerlink" title="0.2 JSX 使用规范"></a>0.2 JSX 使用规范</h2><ul>
+<li><p>大多数 React 项目会使用 JSX，主要是它很方便；</p>
+</li>
+<li><p>JSX 比 HTML 更加严格。你必须闭合标签（尤其是单标签），如 <code>&lt;br /&gt;</code>，而不能写 <code>&lt;br&gt;</code>；</p>
+</li>
+<li><p>React 组件不允许返回多个 JSX 标签。如果需要，必须将它们包裹到一个共享的父级中，比如 <code>&lt;div&gt;...&lt;/div&gt;</code> 或使用空的 <code>&lt;&gt;...&lt;/&gt;</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function AboutPage() &#123;</span><br><span class="line">    return (</span><br><span class="line">    &lt;&gt;</span><br><span class="line">        &lt;h1&gt;About&lt;/h1&gt;</span><br><span class="line">        &lt;p&gt;Hello there.&lt;br/&gt;How do you do?&lt;/p&gt;</span><br><span class="line">    &lt;/&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>为组件自定义样式：和 HTML 一样，在标签里写 <code>className</code>，再使用 CSS / JavaScript 选择更改；</p>
+</li>
+<li><p>使用 JavaScript 变量：<code>&#123;variableName&#125;</code>；</p>
+<blockquote>
+<p>可以在其中写 JavaScript 语法、JSON 对象；</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="0-3-与-JavaScript-组合起来"><a href="#0-3-与-JavaScript-组合起来" class="headerlink" title="0.3 与 JavaScript 组合起来"></a>0.3 与 JavaScript 组合起来</h2><p>举几个例子来进一步了解如何使用：</p>
+<ul>
+<li><p>根据条件选择渲染组件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/* 三目表达式 */</span><br><span class="line">return (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &#123;login ? (</span><br><span class="line">            &lt;AdminPanel/&gt;</span><br><span class="line">        ) : (</span><br><span class="line">            &lt;LoginForm/&gt;</span><br><span class="line">        )&#125;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>快速渲染列表：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const listItem = pList.map((item) =&gt; &#123;</span><br><span class="line">    &lt;li key=&#123;item.id&#125;&gt;&#123;item.title&#125;&lt;/li&gt;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">return (&lt;ul&gt;&#123;listItem&#125;&lt;/ul&gt;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 react 中使用事件处理函数</strong>：</p>
+<ul>
+<li><p>方法 1：内联事件处理函数（纯 JavaScript 不建议）；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function MyButton() &#123;</span><br><span class="line">  function handleClick() &#123;</span><br><span class="line">    alert(&#x27;You clicked me!&#x27;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return (</span><br><span class="line">    &lt;button onClick=&#123;handleClick&#125;&gt;</span><br><span class="line">      Click me</span><br><span class="line">    &lt;/button&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方法 2：手动绑定事件处理函数（react 中不方便使用）；</p>
+</li>
+</ul>
+</li>
+<li><p>记忆组件：在 React 中，一般<strong>存储组件状态信息</strong>的方法是引入 React 内置的 Hook（后面介绍），这里以 <code>useState</code> 为例；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import &#123; useState &#125; from &#x27;react&#x27;;</span><br><span class="line"></span><br><span class="line">function MyButton() &#123;</span><br><span class="line">    const [count, setCount] = useState(0);</span><br><span class="line">    /* 得到有记忆性的 count 数据 和 改变该数据的 setCount 函数 */</span><br><span class="line">    function handleClick() &#123;</span><br><span class="line">        setCount(count + 1);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      return (</span><br><span class="line">        &lt;button onClick=&#123;handleClick&#125;&gt;</span><br><span class="line">              Clicked &#123;count&#125; times</span><br><span class="line">        &lt;/button&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">export default function MyApp() &#123;</span><br><span class="line">    // 在每个组件内部定义的 `count` 只对当前组件有效；</span><br><span class="line">    return (</span><br><span class="line">        &lt;div&gt;</span><br><span class="line">            &lt;MyButton/&gt;</span><br><span class="line">            &lt;MyButton/&gt;</span><br><span class="line">        &lt;/div&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Hook</code> 在 react 内置库中是 <strong>以 <code>use</code> 开头的函数</strong>；它比普通函数更为严格，<strong>只能在组件（或其他 Hook）的 顶层</strong> 调用 Hook；</p>
+<p>⚠⚠<strong>特别地，如果你想要组件间共享某个 hook 的值，可以将 hook 定义在组件共同的环境中。</strong>⚠⚠</p>
+</li>
+<li><p>React 为组件自定义属性（具体表现为 HTML 上传入的属性）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/* 组件传入的参数使用 &#123;&#125; 括起 */</span><br><span class="line">function MyButton(&#123; count, onClick &#125;) &#123;</span><br><span class="line">    return (</span><br><span class="line">        &lt;button onClick=&#123;onClick&#125;&gt;</span><br><span class="line">            Clicked &#123;count&#125; times</span><br><span class="line">        &lt;/button&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="Chapter-1-React-描述-UI"><a href="#Chapter-1-React-描述-UI" class="headerlink" title="Chapter 1. React 描述 UI"></a>Chapter 1. React 描述 UI</h1><h2 id="1-1-React-组件"><a href="#1-1-React-组件" class="headerlink" title="1.1 React 组件"></a>1.1 React 组件</h2><ul>
+<li><p>React 应用程序是由 <strong>组件</strong> 组成的。</p>
+<blockquote>
+<p>一个组件是 UI 的一部分，它拥有自己的逻辑和外观。组件可以小到一个按钮，也可以大到整个页面。</p>
+</blockquote>
+</li>
+<li><p>React 组件是<strong>返回标签的 JavaScript 函数</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function MyButton() &#123;</span><br><span class="line">    return (</span><br><span class="line">        &lt;button&gt;I&#x27;m a button&lt;/button&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>React 组件的使用方法就是直接使用 “React 特殊标签”，React 组件的标签必须以大写字母开头，而 HTML 标签则必须是小写字母：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">export default function MyApp() &#123;</span><br><span class="line">    return (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &lt;h1&gt;Welcome to my app&lt;/h1&gt;</span><br><span class="line">        &lt;MyButton /&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>export default</code> 指定了文件中的主要组件。而这种 “React 特殊标签” 被称为 <code>JSX</code>；</p>
+<blockquote>
+<p>JavaScript 中，<code>export</code> 关键字用于从模块中导出实时绑定的函数、对象或原始值，以便其他程序可以通过 <code>import</code> 语句使用它们。</p>
+<p>导出有两种方式：<strong>命名导出（一个模块中可以有任意个）、默认导出（每个模块仅一个）</strong>；</p>
+<p>命名导出可以导出 var, let, const, function, class；不过另一个模块导入时 <strong>必须同名，或者使用重命名命名导出</strong>；</p>
+<p>默认导出在 <code>export</code> 后加 <code>default</code> 关键字，这样 <code>import XX from &quot;&lt;this script&gt;&quot;</code> 中的 <code>XX</code> 可以随意取名；</p>
+</blockquote>
+</li>
+</ul>
+<p>注意要点：</p>
+<ul>
+<li><p>不应该在组件中<u><strong>定义</strong></u>组件（但是可以嵌套使用）：性能降低、引发 Bug；</p>
+</li>
+<li><p>合理地将组件拆分为不同文件，利用 “默认导出”、“命名导出” 等方法进行组件的导入导出，提高代码的可读性和可维护性；</p>
+</li>
+</ul>
+<h2 id="1-2-JSX-的逻辑-和-规则"><a href="#1-2-JSX-的逻辑-和-规则" class="headerlink" title="1.2 JSX 的逻辑 和 规则"></a>1.2 JSX 的逻辑 和 规则</h2><p>为什么要有 JSX ？有些人说它把 HTML 和 JavaScript 混在了一起。我们在之前 Chapter 0 中看到，就事件处理器而言，原本 JavaScript 因为和 HTML 分离而不建议使用内联事件处理器，到了 JSX 中就建议使用了，这就是组件定义的位置的变化。</p>
+<p>因为随着 Web 的交互性越来越强，逻辑越来越决定页面中的内容。JavaScript 开始负责 HTML 的内容，这也是为什么 <strong>在 React 中，渲染逻辑和标签共同存在于同一个地方——组件。</strong></p>
+<blockquote>
+<p>要注意的是，JSX 和 React 相互独立，前者是语法扩展，后者是 JavaScript 的库。</p>
+</blockquote>
+<p>JSX 用在 JavaScript 中，比 HTML 语言更为严格，具体有下面的要求：</p>
+<ol>
+<li><p><strong>只能返回一个根元素</strong>。如果想要在一个组件中包含多个元素，<strong>需要用一个父标签把它们包裹起来</strong>；</p>
+</li>
+<li><p>标签必须闭合，单标签必须尾缀 <code>/</code> 以示结束；</p>
+</li>
+<li><p>标签属性必须以驼峰命名法命名（HTML 原生属性中含有 <code>a-b</code> 的在 JSX 以 <code>aB</code> 代替）；</p>
+<ul>
+<li><p><strong>JSX 中，考虑到 JavaScript 有关键字 <code>class</code>，因此 JSX 中的 <code>class</code> 属性名使用 <code>className</code> 代替</strong>；</p>
+</li>
+<li><p>JSX 中，如果传入内联样式 <code>style</code> 属性，那么其中的键值也应该使用驼峰命名法，因为它仍然是 JSX；</p>
+<blockquote>
+<p>例如在 HTML 中：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span> <span class="attr">class</span>=<span class="string">&quot;test-type&quot;</span>, <span class="attr">style</span>=<span class="string">&quot;&#123;background-color: black&#125;;&quot;</span>&gt;</span></span><br><span class="line"> <span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在 JSX 中应该写成：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;ul className=<span class="string">&quot;test-type&quot;</span>, style=&#123;&#123;<span class="attr">backgroundColor</span>: <span class="string">&#x27;black&#x27;</span>&#125;&#125;&gt;&lt;/ul&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="1-3-JSX-中使用-JavaScript"><a href="#1-3-JSX-中使用-JavaScript" class="headerlink" title="1.3 JSX 中使用 JavaScript"></a>1.3 JSX 中使用 JavaScript</h2><p><strong>一言以蔽之：JSX 的 <code>&#123;&#125;</code> 中可以运行任何 JavaScript 合法表达式</strong>。</p>
+<p>那么在 JSX 中只能什么时候用呢？</p>
+<ul>
+<li><p>用作 JSX 标签内的<strong>文本</strong>：<code>&lt;h1&gt;&#123;name&#125;&#39;s To Do List&lt;/h1&gt;</code> 是有效的；</p>
+<blockquote>
+<p>但是 <code>&lt;&#123;tag&#125;&gt;Gregorio Y. Zara&#39;s To Do List&lt;/&#123;tag&#125;&gt;</code> 无效；</p>
+</blockquote>
+</li>
+<li><p>用作紧跟在 <code>=</code> 符号后的 <strong>属性</strong>：<code>src=&#123;avatar&#125;</code> 会读取 <code>avatar</code> 变量；</p>
+<blockquote>
+<p>但是 <code>src=&quot;&#123;avatar&#125;&quot;</code> 只会传一个字符串 <code>&#123;avatar&#125;</code>；</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="1-4-React-自定义组件传入属性"><a href="#1-4-React-自定义组件传入属性" class="headerlink" title="1.4 React 自定义组件传入属性"></a>1.4 React 自定义组件传入属性</h2><p>React 通过允许自定义组件传入的属性，实现了 “父组件向子组件传递数据” 的需求。</p>
+<p>你可能会想，既然 React 组件就是一个返回标签的 JavaScript 函数嘛，那不直接给函数加几个参数就行？</p>
+<p>可惜事与愿违，你还要在参数外面包一层 <code>&#123;&#125;</code>。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function Avatar(&#123; person, size &#125;) &#123;</span><br><span class="line">  return (</span><br><span class="line">    &lt;img</span><br><span class="line">      className=&quot;avatar&quot;</span><br><span class="line">      src=&#123;getImageUrl(person)&#125;</span><br><span class="line">      alt=&#123;person.name&#125;</span><br><span class="line">      width=&#123;size&#125;</span><br><span class="line">      height=&#123;size&#125;</span><br><span class="line">    /&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是为什么？因为在 HTML 中，这些都是定义在元素内的属性。在经过 React 库的包装之后，相当于 “对象解包” 的过程（类比 Python 的 <code>arg</code> 形参要加 <code>*</code> 的原因）。</p>
+<p>你也可以这么做：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function Avatar(prop) &#123;</span><br><span class="line">  return (</span><br><span class="line">    &lt;img</span><br><span class="line">      className=&quot;avatar&quot;</span><br><span class="line">      src=&#123;getImageUrl(prop.person)&#125;</span><br><span class="line">      alt=&#123;prop.person.name&#125;</span><br><span class="line">      width=&#123;prop.size&#125;</span><br><span class="line">      height=&#123;prop.size&#125;</span><br><span class="line">    /&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这个语法很自由，允许指定默认值：</p>
+<p><code>function Avatar(&#123; person, size = 100&#125;) &#123; ... &#125;</code></p>
+</blockquote>
+<p>⚠⚠<strong>有种特殊情况，当组件的形参是 <code>children</code> 时，就是该组件内部的子组件</strong>。⚠⚠</p>
+<p>这说明了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;Widget1&gt;</span><br><span class="line">    &lt;Widget2/&gt;</span><br><span class="line">&lt;/Widget1&gt;</span><br></pre></td></tr></table></figure>
+<p><code>Widget1.children</code> 就是 <code>Widget2</code>；</p>
+<hr>
+<p>还有一个点需要注意：<strong>不能在组件内更改传入的 <code>prop</code> 属性！！</strong> 为什么？</p>
+<p>我们知道，通过传入 <code>prop</code> 可以给子组件以数据。但是，<code>prop</code> 永远是不可变数据类型，下一次渲染时如果父组件传递的数据改变，那么传入的 <code>prop</code> 将是个新的对象，旧的对象将在合适时机被 JavaScript 引擎回收。</p>
+<h2 id="1-5-条件渲染"><a href="#1-5-条件渲染" class="headerlink" title="1.5 条件渲染"></a>1.5 条件渲染</h2><p>很简单，在组件定义函数中加入条件判断，根据条件返回对应的元素即可。</p>
+<p>同时，我们可以充分利用 JavaScript 的<strong>三目运算符、逻辑运算符</strong>的特点来简化代码。</p>
+<p>有一点需要注意，<strong>允许返回 <code>null / false</code>，这相当于告诉渲染器此处什么都不要渲染</strong>。</p>
+<h2 id="1-6-从数据渲染列表"><a href="#1-6-从数据渲染列表" class="headerlink" title="1.6 从数据渲染列表"></a>1.6 从数据渲染列表</h2><p>注意几件事情：</p>
+<ul>
+<li><p>生成列表时，应该为每个项准备全局唯一的 Key，因为这些 key 会告诉 React，每个组件对应着数组里的哪一项，所以 React 可以把它们匹配起来。这在数组项进行移动（例如排序）、插入或删除等操作时非常重要。一个合适的 <code>key</code> 可以帮助 React 推断发生了什么，从而得以正确地更新 DOM 树。</p>
+</li>
+<li><p>用作 key 的值应该在数据中提前就准备好，<strong>并且和数据绑定不作变化</strong>，而不是在运行时才随手生成；</p>
+</li>
+</ul>
+<p><strong>这里的 “列表” 是广义上的列表，只要你利用了 <code>map</code>、手动构建数组等方法生成了一个重复的表状结构</strong>。</p>
+<h2 id="1-7-React-组件渲染函数的幂等性"><a href="#1-7-React-组件渲染函数的幂等性" class="headerlink" title="1.7 React 组件渲染函数的幂等性"></a>1.7 React 组件渲染函数的幂等性</h2><p>按照 React 规范，定义组件的渲染函数（<strong>不是事件处理函数！</strong>）对于相同的输入（即属性），表现应该始终相同。即 React 组件需要有对外的幂等性。</p>
+<p>这意味着每个 React 组件渲染函数只应该完成自己 JSX 的计算，并且不应该更改在组件外的变量 / 对象，尤其是数组（例如定义在组件外的变量、传入组件的 <code>props</code>、<code>state</code>、<code>context</code> 等等）；</p>
+<p>这一点与我们在 JavaScript 中遇到的情况就很不一样了。比如：</p>
+<p>假设页面上有一个组件 <code>&lt;h1&gt;</code>，希望它在午夜 0 时到清晨 6 时的时间内将 <code>class</code> 属性设置为 <code>night</code>，其余时间设置为 <code>day</code>；那么 JavaScript 实现的思路就很简单：</p>
+<ul>
+<li>定义处理函数，通过 <code>querySelector</code> 获取元素 DOM 对象；</li>
+<li><p>计算时间，在对应时间内按要求设置 <code>class</code> 属性内容；</p>
+</li>
+<li><p>最后使用 <code>setInterval</code> 设置渲染；</p>
+</li>
+</ul>
+<p>但是在 React 中，如果使用 <code>document</code> 更改了外部元素，这就是违反规范的行为。正确的做法是 <strong>计算然后利用结果返回指定组件</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">export default function Cock(&#123; time &#125;) &#123; /* 外部传入时间 */</span><br><span class="line">    var hour = time.getHours();</span><br><span class="line">    var cln = (hour &gt;= 0 &amp;&amp; hour &lt;= 6 ? &#x27;night&#x27; : &#x27;day&#x27;);</span><br><span class="line">    return (</span><br><span class="line">        &lt;h1 className=&#123;cln&#125;&gt;</span><br><span class="line">            &#123;time.toLocaleString()&#125;</span><br><span class="line">        &lt;/h1&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Chapter-2-React-交互与事件"><a href="#Chapter-2-React-交互与事件" class="headerlink" title="Chapter 2. React 交互与事件"></a>Chapter 2. React 交互与事件</h1><h2 id="2-1-React-中的事件处理函数"><a href="#2-1-React-中的事件处理函数" class="headerlink" title="2.1 React 中的事件处理函数"></a>2.1 React 中的事件处理函数</h2><p>在原生 JavaScript 中，我们使用 <strong>事件处理函数</strong> 来管理用户与界面元素的事件。通常的做法是，先找到需要处理的元素，使用 <code>addEventListener</code> 添加事先定义的事件处理器，这样就能起到监听事件并在适当时机调用回调函数的作用。</p>
+<p>而在 React 中，根据规范应该使用闭包定义 + 内联事件处理器的方法。</p>
+<p>例如为一个按钮设置点击事件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">export default function MyButton() &#123;</span><br><span class="line">    function handleClick() &#123;</span><br><span class="line">        alert(&quot;Clicked!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return (</span><br><span class="line">        &lt;button onClick=&#123;handleClick&#125;&gt;</span><br><span class="line">        Click me</span><br><span class="line">        &lt;/button&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此外，在原生 JavaScript 中，我们了解到了 “事件传播”，在 React 中，事件传播完全与原生 JavaScript 相同，<strong>包括阻止事件传播 <code>event.stopPropagation()</code>、阻止默认事件处理函数 <code>event.preventDefault()</code></strong> 都与 JavaScript 一致。</p>
+<p>我们一般想要阻止事件向父组件传递，就需要修改事件处理函数，“先阻止事件传播，再调用目标事件处理函数”。</p>
+<p>还有重要的一点，<strong>事件处理函数可以不是幂等的</strong>，因为组件可能需要有个应对用户操作的状态机，因此它可以更改一些其他变量。</p>
+<p>⚠⚠<strong>注意：如果要用 <code>event</code>，使用前一定要记住给函数声明一个参数！</strong>⚠⚠</p>
+<h2 id="2-2-React-中的状态机：useState"><a href="#2-2-React-中的状态机：useState" class="headerlink" title="2.2 React 中的状态机：useState"></a>2.2 React 中的状态机：<code>useState</code></h2><p>通常情况下，如果我们只是单独使用原生的事件处理函数，那么可能并不能满足我们的需求。即 “事件处理函数 和 渲染函数 到目前为止都是幂等的”。我们想要 Web 程序跟随用户的操作进行一系列的变化。</p>
+<p>有人也许会说，那么在事件处理函数中修改外部的变量，让外部变量保存一些状态不就行了？就像原生 JavaScript 一样。</p>
+<p>很遗憾，这样不行，这主要是因为 React 的渲染机制造成的。原生 JavaScript 的页面渲染大部分都交给 HTML，自己则按照事件和对象驱动地修改一部分内容，并立即渲染。但是在 React 中，HTML 和 JavaScript 的工作全部交由 JSX，这会引发几个问题：</p>
+<ul>
+<li>组件函数内的局部变量<strong>无法在多次渲染中持久保存。</strong> 当 React 再次渲染这个组件时，它会从头开始渲染，不会考虑之前对局部变量的任何更改；</li>
+<li><strong>更改局部变量不会触发渲染。</strong> React 没有意识到它需要使用新数据再次渲染组件；</li>
+</ul>
+<blockquote>
+<p>提醒：你不应该将变量定义到组件函数外面。因为它们不会被导出。</p>
+</blockquote>
+<p>所以，真正想要实现最初的功能，必须完成两件事：</p>
+<ol>
+<li>把操作中产生的状态数据保存起来，不被渲染过程影响；</li>
+<li>在修改这些状态数据后，触发重新渲染的机制；</li>
+</ol>
+<p>在 React 框架内，就有这样定义好的对象 <code>useState</code>，它是一种 Hook，提供了：</p>
+<ol>
+<li>state 变量保存状态数据；</li>
+<li>state setter 函数更新 state 变量的同时<strong>触发 React 再次渲染组件</strong>；</li>
+</ol>
+<blockquote>
+<p>这里介绍一下 React 的 Hook 机制。在 React 中，任何以 <code>use</code> 开头的函数都被称为 Hook。</p>
+<p>Hook <u><strong>是一种特殊的函数，只在 React 渲染时有效</strong></u>。</p>
+</blockquote>
+<p>它的使用方法超级简单，就是<u><strong>在组件渲染函数最开头</strong></u>调用一次 <code>useState(&lt;initVal&gt;)</code>，返回一个包含 <code>state</code> 变量（以 <code>initVal</code> 为初值）、<code>state setter</code> 函数的数组；</p>
+<p>使用多少状态变量，就调用多少次 <code>useState()</code>。</p>
+<p><u><strong>因此，React 中几乎一切需要更新、记忆状态的的过程，都可以交由 <code>useState</code> 完成</strong></u>。</p>
+<p>⚠⚠<strong>最最重要的是，如果 <code>useState</code> 在某个组件内被定义，那么这个属性对于该组件其他所有实例、其他所有组件（包括父组件、子组件）都是<u>互不影响、相互独立</u>的，这为一些复杂的状态设计提供了可能</strong>。⚠⚠</p>
+<h2 id="2-3-React-的渲染机制"><a href="#2-3-React-的渲染机制" class="headerlink" title="2.3 React 的渲染机制"></a>2.3 React 的渲染机制</h2><h3 id="2-3-1-渲染流程"><a href="#2-3-1-渲染流程" class="headerlink" title="2.3.1 渲染流程"></a>2.3.1 渲染流程</h3><p>到现在为止，我们有必要接触一些关于 React 渲染的更加详细的知识。</p>
+<p>渲染的步骤很简单：</p>
+<ol>
+<li>用户或者 Hook 调用一些函数 <strong>触发</strong> 一次渲染过程；</li>
+<li>React 库渲染组件；</li>
+<li>React 库将更改提交给 DOM；</li>
+</ol>
+<p>我们作为用户只知道有 2 种情况会触发渲染，一是在 React 应用启动时。如果你使用 <code>create-react-app</code> 来创建项目的话，你能在 <code>App.js</code> 中看到类似这样的语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import &#123; createRoot &#125; from &#x27;react-dom/client&#x27;;</span><br><span class="line"></span><br><span class="line">const root = createRoot(document.getElementById(&#x27;root&#x27;));</span><br><span class="line">root.render(&lt;App /&gt;);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>第一句 <code>createRoot</code> 相当于使用原生 JavaScript 在页面上查找并创建一个根结点对象；</p>
+<p>第二句就使用 <code>render()</code> 将指定组件在根结点上渲染。</p>
+</blockquote>
+<p>而另一种情况就是使用了 Hook 的 setter 函数更新了组件状态，这个做法在 React 库内部会<strong>在恰当的时机</strong>触发一次重新渲染的流程。</p>
+<hr>
+<p><strong>进行一次渲染所做的工作可能有所不同</strong>。</p>
+<p>因为对于初次渲染而言，这个过程是递归的，从调用渲染根组件，在渲染函数（也就是我们定义的组件函数）内返回了子组件，那么接下来继续渲染子组件，直到没有更多的组件需要渲染为止。渲染每个组件的每个元素标签时，React 都会为它们创建一个 DOM 结点。</p>
+<p>初次渲染完成后，React 会将创建好的 DOM 结点利用 DOM API <code>appendChild()</code> 将结点放在 DOM 树上，交给浏览器做 “浏览器渲染”，为了避免混淆，将 “浏览器渲染” 称为 <strong>“绘制”</strong>。</p>
+<p>而在重渲染中，React 会判断哪些属性从上次渲染以来没有更改，对没有更改的部分不会进行任何操作（增量渲染）。并且 React <u>不会为</u>已经存在的、修改了属性的的结点重新创建 DOM 结点。</p>
+<p>重渲染完成后，React 仅将改动的结点进行设置，<strong>不会影响没有修改的结点</strong>。最终还是将 DOM 交由浏览器绘制。</p>
+<p><strong>这也是为什么之前提到 “渲染函数必须是幂等的，唯一能使渲染函数改变输出的，只有 外部 或 事件处理器 更改了渲染函数的输入参数”</strong>，因为如果不这么做，渲染的行为将无法预测；</p>
+<h3 id="2-3-2-useState-与渲染的关系"><a href="#2-3-2-useState-与渲染的关系" class="headerlink" title="2.3.2 useState 与渲染的关系"></a>2.3.2 <code>useState</code> 与渲染的关系</h3><p>了解了上一节的知识，你可能已经认为对 React 渲染的机制掌握透彻了。但是请看下面的示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">import &#123; useState &#125; from &#x27;react&#x27;;</span><br><span class="line"></span><br><span class="line">export default function Counter() &#123;</span><br><span class="line">  const [number, setNumber] = useState(0);</span><br><span class="line"></span><br><span class="line">  return (</span><br><span class="line">    &lt;&gt;</span><br><span class="line">      &lt;h1&gt;&#123;number&#125;&lt;/h1&gt;</span><br><span class="line">      &lt;button onClick=&#123;() =&gt; &#123;</span><br><span class="line">        setNumber(number + 1);</span><br><span class="line">        setNumber(number + 1);</span><br><span class="line">        setNumber(number + 1);</span><br><span class="line">      &#125;&#125;&gt;+3&lt;/button&gt;</span><br><span class="line">    &lt;/&gt;</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>你可能认为每次点击按钮，数字会 + 3，对吗？很遗憾，其实数字在每次点击后始终 + 1。这个行为与 <code>useState</code> 触发重渲染的方式有关。</p>
+<p><strong>我们在前一节只知道 <code>useState</code> 这类 Hook 会内部触发重渲染，但是这是怎么触发，我们也要知道，否则就会出现上面的错误</strong>。</p>
+<p>像 <code>useState</code> 这类 Hook 一般出现在各种事件处理器中，它们执行的机制 <strong>不是立即更新，而是标记更新</strong>。准确地说，它们本身不会调用重新渲染的函数，更像是 Cache 的 Set dirty，提醒 React 在结束事件处理函数之后进行为这个组件进行重渲染。</p>
+<p><u><strong>也就是说，setter 并不会直接更改 state（本次保持不变），而是告诉 React 下次渲染时将 state 改成什么</strong></u>。</p>
+<blockquote>
+<p>为什么 React 要这么设计？引用官方文档的一句话：</p>
+<p>这让你可以更新多个 state 变量——甚至来自多个组件的 state 变量——而不会触发太多的重渲染。但这也意味着只有在你的事件处理函数及其中任何代码执行完成 <strong>之后</strong>，UI 才会更新。这种特性也就是 <strong>批处理</strong>，它会使你的 React 应用运行得更快。它还会帮你避免处理只更新了一部分 state 变量的令人困惑的“半成品”渲染。</p>
+<p>就像餐厅里帮你点菜的服务员。服务员不会在你说第一道菜的时候就跑到厨房。相反，他们会让你把菜点完，让你修改菜品，甚至会帮桌上的其他人点菜。</p>
+</blockquote>
+<p>这样就能解释上面的行为：<code>setNumber(number + 1)</code> 只是<strong>重复地</strong>告诉 React 下次渲染时，该组件的 <code>number</code> 状态为 <strong>当前的 <code>number</code> + 1</strong>，等价于：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 设 0 为 number 本次的值</span><br><span class="line">setNumber(0 + 1);</span><br><span class="line">setNumber(0 + 1);</span><br><span class="line">setNumber(0 + 1);</span><br></pre></td></tr></table></figure>
+<p><u><strong>更让人惊奇的是，访问 <code>number</code> 得到的绝不是它的引用，而总是它的值</strong></u>！在 JavaScript 这个遍地是引用的语言中，这就相当于是相当少见的 “<strong>值捕获</strong>”（类比 C++11 的匿名函数表达式中有值、引用两种方式捕获变量）！</p>
+<p>看下面的示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import &#123; useState &#125; from &#x27;react&#x27;;</span><br><span class="line"></span><br><span class="line">export default function Counter() &#123;</span><br><span class="line">  const [number, setNumber] = useState(0);</span><br><span class="line"></span><br><span class="line">  return (</span><br><span class="line">    &lt;&gt;</span><br><span class="line">      &lt;h1&gt;&#123;number&#125;&lt;/h1&gt;</span><br><span class="line">      &lt;button onClick=&#123;() =&gt; &#123;</span><br><span class="line">        setNumber(number + 5);</span><br><span class="line">        setTimeout(() =&gt; &#123;</span><br><span class="line">          alert(number);</span><br><span class="line">        &#125;, 3000);</span><br><span class="line">      &#125;&#125;&gt;+5&lt;/button&gt;</span><br><span class="line">    &lt;/&gt;</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们让 <code>number</code> 等待 5 秒后再传给 <code>alert</code>，你会发现输出的 <code>number</code> 就是在重渲染前的值。</p>
+<p>了解了这些你可能会问，这种做法有好有坏。好处是在<strong>执行渲染函数时无需担心 <code>state</code> 突然被更改</strong>，但坏处是，我们在一次渲染中没法立即读取改变后的 <code>state</code>，这应该怎么办？下一节就是解决方案。</p>
+<h3 id="2-3-3-useState-更新队列"><a href="#2-3-3-useState-更新队列" class="headerlink" title="2.3.3 useState 更新队列"></a>2.3.3 <code>useState</code> 更新队列</h3><p>正如前面介绍的，在下一次渲染开始前，你无法实现多次更改状态的需求，因为 state setter 只是提醒下一次渲染要改变的内容。但 React 也给开发者提供了一种 “批处理队列” 的方法，明确让 React 逐步设置一些状态。</p>
+<p>我们对 2.3.2 中一开始 + 3 的示例进行修改：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">import &#123; useState &#125; from &#x27;react&#x27;;</span><br><span class="line"></span><br><span class="line">export default function Counter() &#123;</span><br><span class="line">  const [number, setNumber] = useState(0);</span><br><span class="line"></span><br><span class="line">  return (</span><br><span class="line">    &lt;&gt;</span><br><span class="line">      &lt;h1&gt;&#123;number&#125;&lt;/h1&gt;</span><br><span class="line">      &lt;button onClick=&#123;() =&gt; &#123;</span><br><span class="line">        setNumber(n =&gt; n + 1);</span><br><span class="line">        setNumber(n =&gt; n + 1);</span><br><span class="line">        setNumber(n =&gt; n + 1);</span><br><span class="line">      &#125;&#125;&gt;+3&lt;/button&gt;</span><br><span class="line">    &lt;/&gt;</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在 React 就能够按照我们想要的动作进行 + 3 的操作了。</p>
+<p>我们注意到这次传入 <code>setNumber</code> 的是一个函数（<code>(n) =&gt; &#123; return n + 1; &#125;</code>），这就相当于<strong>向 React 状态修改队列中加入了一个执行函数</strong>，在 React 下一次渲染时，会依次运行队列中的函数，以指定的方式修改状态。</p>
+<p>到这里，我们可以从另一角度理解 <code>setNumber(number + 1)</code> 的含义了，它其实等效于：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setNumber(x =&gt; number + 1)</span><br></pre></td></tr></table></figure>
+<p>由于 <code>x</code> 参数与结果无关，当然最后也就不会累加计算啦。</p>
+<p>以此类推，下面的行为也就不难理解：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/* 每次 + 6 */</span><br><span class="line">&lt;button onClick=&#123;() =&gt; &#123;</span><br><span class="line">  setNumber(number + 5);</span><br><span class="line">  setNumber(n =&gt; n + 1);</span><br><span class="line">&#125;&#125;&gt;&lt;/button&gt;</span><br><span class="line"></span><br><span class="line">/* 变为 42 后不会改变 */</span><br><span class="line">&lt;button onClick=&#123;() =&gt; &#123;</span><br><span class="line">  setNumber(number + 5);</span><br><span class="line">  setNumber(n =&gt; n + 1);</span><br><span class="line">  setNumber(42);</span><br><span class="line">&#125;&#125;&gt;&lt;/button&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-4-useState-与-JavaScript-原生异步结合"><a href="#2-3-4-useState-与-JavaScript-原生异步结合" class="headerlink" title="2.3.4 useState 与 JavaScript 原生异步结合"></a>2.3.4 <code>useState</code> 与 JavaScript 原生异步结合</h3><p>众所周知，原生 JavaScript 的异步大多依靠 Promise 实现。那么，如果把异步操作与 <code>useState</code> 结合，又有哪些需要注意的地方呢？</p>
+<p>首先明确异步操作对 <code>useState</code> 没啥影响，并不妨碍正常使用，<strong>只是需要明白它的含义</strong>。</p>
+<p>下面是个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">import &#123; useState &#125; from &#x27;react&#x27;;</span><br><span class="line"></span><br><span class="line">export default function RequestTracker() &#123;</span><br><span class="line">  const [pending, setPending] = useState(0);</span><br><span class="line">  const [completed, setCompleted] = useState(0);</span><br><span class="line"></span><br><span class="line">  async function handleClick() &#123;</span><br><span class="line">    setPending(pending + 1);</span><br><span class="line">    await delay(3000);</span><br><span class="line">    setPending(pending - 1);</span><br><span class="line">    setCompleted(completed + 1);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return (</span><br><span class="line">    &lt;&gt;</span><br><span class="line">      &lt;h3&gt;</span><br><span class="line">        等待：&#123;pending&#125;</span><br><span class="line">      &lt;/h3&gt;</span><br><span class="line">      &lt;h3&gt;</span><br><span class="line">        完成：&#123;completed&#125;</span><br><span class="line">      &lt;/h3&gt;</span><br><span class="line">      &lt;button onClick=&#123;handleClick&#125;&gt;</span><br><span class="line">        购买</span><br><span class="line">      &lt;/button&gt;</span><br><span class="line">    &lt;/&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function delay(ms) &#123;</span><br><span class="line">  return new Promise(resolve =&gt; &#123;</span><br><span class="line">    setTimeout(resolve, ms);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们想在事件处理函数中改变状态的同时加上一些异步等待的行为。</p>
+<p>这样做是可行的，你可以认为异步的等待能在状态设置的时机被触发。如上例，在两次 <code>setter</code> 操作之间加一个异步 <code>await</code> 依然是能够等待的。</p>
+<p>结论是，<strong>尽管 <code>setter</code> 只是标记改变，但能完全按照代码执行顺序，依次改变状态。</strong></p>
+<h3 id="2-3-5-useState-存储可变数据类型"><a href="#2-3-5-useState-存储可变数据类型" class="headerlink" title="2.3.5 useState 存储可变数据类型"></a>2.3.5 <code>useState</code> 存储可变数据类型</h3><p>继续考虑 <code>useState</code> 的使用细节。我们之前接触到的、用于表征状态的量都是基本类型。如果状态是 <strong>引用类型（JavaScript 对象）</strong>，情况有没有变化呢？</p>
+<p>答案是有的。因为 JavaScript 原生引用类型都是 <strong>可变数据类型</strong>，和基本类型这种不可变数据类型相比有些尤其需要注意的点。</p>
+<p>最重要的原因是，如果开发者将可变数据类型作为状态存储，那么在修改状态时，<strong>如果仅仅修改其中的属性，那么内存地址是不会发生变化的，<u>换言之，React 无法发现这个变量被修改了</u>，那么也就无法发挥 Hook 重渲染的作用</strong>。</p>
+<p>所以注意的问题很简单：<u><strong>想要将可变类型（如对象）作为状态，那么在修改状态时应该直接传入新的对象，而不是修改原来对象的属性。</strong></u></p>
+<p>这里看一个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">import &#123; useState &#125; from &#x27;react&#x27;;</span><br><span class="line">export default function MovingDot() &#123;</span><br><span class="line">  const [position, setPosition] = useState(&#123;</span><br><span class="line">    x: 0,</span><br><span class="line">    y: 0</span><br><span class="line">  &#125;);</span><br><span class="line">  return (</span><br><span class="line">    &lt;div</span><br><span class="line">      onPointerMove=&#123;e =&gt; &#123;</span><br><span class="line">        setPosition(&#123;</span><br><span class="line">          x: e.clientX,</span><br><span class="line">          y: e.clientY</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;&#125;</span><br><span class="line">      style=&#123;&#123;</span><br><span class="line">        position: &#x27;relative&#x27;,</span><br><span class="line">        width: &#x27;100vw&#x27;,</span><br><span class="line">        height: &#x27;100vh&#x27;,</span><br><span class="line">      &#125;&#125;&gt;</span><br><span class="line">      &lt;div style=&#123;&#123;</span><br><span class="line">        position: &#x27;absolute&#x27;,</span><br><span class="line">        backgroundColor: &#x27;red&#x27;,</span><br><span class="line">        borderRadius: &#x27;50%&#x27;,</span><br><span class="line">        transform: `translate($&#123;position.x&#125;px, $&#123;position.y&#125;px)`,</span><br><span class="line">        left: -10,</span><br><span class="line">        top: -10,</span><br><span class="line">        width: 20,</span><br><span class="line">        height: 20,</span><br><span class="line">      &#125;&#125; /&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>除了上面提到 “创建新对象” 的要点外，我们还了解到了 JSX 中另一个可以内联事件处理器的属性：<code>onPointerMove</code>，这个属性对应的事件处理器在用户鼠标移过该元素时就会被触发，<strong>重要的参数有 <code>event.clientX</code>、<code>event.clientY</code></strong>。</p>
+<hr>
+<p>另外，还有几个使用技巧，每次创建新的对象可能有点麻烦，尤其是这个对象属性很多，而我们只想改变一个属性的时候。我们可以使用 <strong>对象展开语法</strong>，类似 Python 的数组解包。比如，<code>person</code> 有 3 个属性，而我们只需要改 <code>firstName</code>，老方法写成这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">setPerson(&#123;</span><br><span class="line">  firstName: e.target.value, // 从 input 中获取新的 first name</span><br><span class="line">  lastName: person.lastName,</span><br><span class="line">  email: person.email</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>新方法就可以写：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">setPerson(&#123;</span><br><span class="line">    ...person,    // 复制上一个 person 中的所有字段</span><br><span class="line">    firstName: e.target.value // 覆盖 firstName 字段</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><strong>很遗憾的是，这种解包的方式也是引用，所以如果你解包的内容中含有可变数据类型，那么直接这么做也不行。</strong></p>
+<p>例如对于多个的对象，你只能把它们拆开，<u>直到不含有可变数据类型为止</u>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var tmpArt = &#123;</span><br><span class="line">    ...person.artwork,</span><br><span class="line">    city: &#x27;New Delhi&#x27;</span><br><span class="line">&#125;;</span><br><span class="line">setPerson(&#123;</span><br><span class="line">    ...person</span><br><span class="line">    artwork: tmpArt</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>知识补充</strong></p>
+<p>我们对目前遇到的能够内联事件处理器的属性进行总结，主要有下面几个：</p>
+<ul>
+<li><code>onClick</code>；</li>
+<li><code>onFocus</code>；</li>
+<li><code>onPointerMove</code>；</li>
+<li><code>onPointerDown</code>；</li>
+<li><code>onPointerUp</code>；</li>
+<li><code>onChange</code>（特定元素才有，例如 <code>&lt;select&gt;</code>）；</li>
+</ul>
+</blockquote>
+<hr>
+<p>上面的例子所介绍的可变类型大多是 object 对象，如果是数组，那么方法更多一点。因为原生 JavaScript 操作数组的方法本身就多一点。要注意的点是相同的，一定要传入新的对象。</p>
+<p>在使用数组方法时，要注意 <code>map</code>、<code>filter</code>、<code>concat</code>、<code>slice</code> 这类函数都会创建新的数组对象，而 <code>splice</code>、<code>push/pop</code>、<code>shift/unshift</code>、<code>sort</code>、<code>reverse</code> 则只会修改原先的对象。<strong>要善于使用这些函数！能让你处理数组更方便！</strong></p>
+<p><u>也要注意数组元素中含有可变数据类型，那就要单独处理</u>。</p>
+<p>数组还有一点与普通对象有差别的：<strong>它们可能有顺序。在创建新数组时不应该改变元素顺序！！</strong></p>
+<p>我们尝试一个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">import &#123; useState &#125; from &#x27;react&#x27;;</span><br><span class="line"></span><br><span class="line">const initialProducts = [&#123;</span><br><span class="line">  id: 0,</span><br><span class="line">  name: &#x27;Baklava&#x27;,</span><br><span class="line">  count: 1,</span><br><span class="line">&#125;, &#123;</span><br><span class="line">  id: 1,</span><br><span class="line">  name: &#x27;Cheese&#x27;,</span><br><span class="line">  count: 5,</span><br><span class="line">&#125;, &#123;</span><br><span class="line">  id: 2,</span><br><span class="line">  name: &#x27;Spaghetti&#x27;,</span><br><span class="line">  count: 2,</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">export default function ShoppingCart() &#123;</span><br><span class="line">  const [</span><br><span class="line">    products,</span><br><span class="line">    setProducts</span><br><span class="line">  ] = useState(initialProducts)</span><br><span class="line"></span><br><span class="line">  function handleIncreaseClick(productId) &#123;</span><br><span class="line">    </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  return (</span><br><span class="line">    &lt;ul&gt;</span><br><span class="line">      &#123;products.map(product =&gt; (</span><br><span class="line">        &lt;li key=&#123;product.id&#125;&gt;</span><br><span class="line">          &#123;product.name&#125;</span><br><span class="line">          &#123;&#x27; &#x27;&#125;</span><br><span class="line">          (&lt;b&gt;&#123;product.count&#125;&lt;/b&gt;)</span><br><span class="line">          &lt;button onClick=&#123;() =&gt; &#123;</span><br><span class="line">            handleIncreaseClick(product.id);</span><br><span class="line">          &#125;&#125;&gt;</span><br><span class="line">            +</span><br><span class="line">          &lt;/button&gt;</span><br><span class="line">        &lt;/li&gt;</span><br><span class="line">      ))&#125;</span><br><span class="line">    &lt;/ul&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如何实现 <code>handleIncreaseClick</code>，使得对应 <code>product.id</code> 的按钮一点击，该 product 的 <code>count</code> 数据就 +1 ？</p>
+<p>其实最简单的方法是用 <code>Array.map</code>，而且它恰好能创建一个新数组对象：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function handleIncreaseClick(productId) &#123;</span><br><span class="line">    var newProdList = products.map((elem)=&gt;&#123;</span><br><span class="line">        if (elem.id === productId) &#123;</span><br><span class="line">            return &#123;</span><br><span class="line">                ...elem,</span><br><span class="line">                count: elem.count + 1</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; else return item;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Chapter-3-React-状态管理"><a href="#Chapter-3-React-状态管理" class="headerlink" title="Chapter 3. React 状态管理"></a>Chapter 3. React 状态管理</h1><p>本章旨在介绍一种更好的组织 React 组件的 state 的思路，让项目写起来更加规范、容易维护。</p>
+<h2 id="3-1-声明式-UI-与-命令式-UI"><a href="#3-1-声明式-UI-与-命令式-UI" class="headerlink" title="3.1 声明式 UI 与 命令式 UI"></a>3.1 声明式 UI 与 命令式 UI</h2><p>命令式 UI 的编程方法通常非常繁琐，你必须去根据要发生的事情写一些明确的命令去操作 UI。</p>
+<p>就像你坐在车里的某个人旁边，然后一步一步地告诉他该去哪。他并不知道你想去哪，只想跟着命令行动。（并且如果你发出了错误的命令，那么你就会到达错误的地方）正因为你必须从加载动画到按钮地“命令”每个元素，所以这种告诉计算机<strong>如何</strong>去更新 UI 的编程方式被称为<strong>命令式 UI 编程</strong>。</p>
+<p>原生 JavaScript + HTML，以及 C++ 的 Qt 框架，采用都是命令式 UI 编程。Qt 为了规避命令式 UI 编程的麻烦，将部分工作转移给 Qt Designer + <code>uic</code>（用户界面编译器）来做。</p>
+<p>JavaScript 的框架 React 则采用了 <strong>声明式 UI 编程</strong>，也就是说，我们不必直接去操作 UI —— 不必直接启用、关闭、显示或隐藏组件。相反，我们只需要 <strong>声明你想要显示的内容，</strong> React 就会<u>通过计算</u>得出该如何去更新 UI。</p>
+<p>就像上了一辆出租车并且告诉司机你想去哪，而不是事无巨细地告诉他该如何走。将你带到目的地是司机的工作，他们甚至可能知道一些你没有想过并且不知道的捷径（即更高效的渲染方式，例如之前的增量渲染技术）。</p>
+<p>在 声明式 UI 编程中，我们不用直接修改 UI 组件，而是采用以下的几个步骤：</p>
+<ol>
+<li><p><strong>定位</strong>你的组件中不同的视图状态（<strong>设计界面状态机</strong>）；</p>
+</li>
+<li><p><strong>确定</strong>是什么触发了这些 state 的改变；</p>
+<p>根据前两个步骤，你应该能够绘制出组件的状态转换图，类似这个，这是个表单的状态转换图：</p>
+<p><img src="/home/xhw/Desktop/web/imgs/state-machine-form.png" height="300px"></p>
+</li>
+<li><p><strong>定义使用</strong>内存中的 state（<code>useState</code>）；</p>
+<p>根据状态图，我们应该设计尽量少的 state，众所周知，程序越复杂越不方便维护；</p>
+</li>
+<li><p><strong>删除</strong>任何不必要的 state 变量；</p>
+<p><strong>这一步是有技巧的，还是以一个表单为例</strong>：</p>
+<ul>
+<li><strong>这个 state 是否会导致矛盾</strong>？例如，<code>isTyping</code> 与 <code>isSubmitting</code> 的状态不能同时为 <code>true</code>。矛盾的产生通常说明了这个 state 没有足够的约束条件；</li>
+<li><strong>相同的信息是否已经在另一个 state 变量中存在</strong>？另一个矛盾：<code>isEmpty</code> 和 <code>isTyping</code> 不能同时为 <code>true</code>。通过使它们成为独立的 state 变量，可能会导致它们不同步并导致 bug；</li>
+<li><strong>你是否可以通过另一个 state 变量的相反值得到相同的信息</strong>？<code>isError</code> 是多余的，因为你可以检查 <code>error !== null</code>。</li>
+</ul>
+</li>
+<li><p><strong>连接</strong>事件处理函数去设置 state；</p>
+</li>
+</ol>
+<h2 id="3-2-State-设计的最佳实践"><a href="#3-2-State-设计的最佳实践" class="headerlink" title="3.2 State 设计的最佳实践"></a>3.2 State 设计的最佳实践</h2><p>前人总结过如下的经验，采集自官方文档 + 笔者自己总结：</p>
+<ul>
+<li><p><strong>合并关联的 state</strong>。如果你总是同时更新两个或更多的 state 变量，请考虑将它们合并为一个单独的 state 变量。</p>
+<blockquote>
+<p>例如位置信息，x 和 y 是建议绑定在一个对象中，因为它们通常同时变化；</p>
+</blockquote>
+</li>
+<li><p><strong>避免互相矛盾 / 冗余的 state</strong>。当 state 结构中存在多个相互矛盾 / “不一致” / 可以互相推理出信息的 state 时，你就可能为此会留下隐患（例如不及时同步、错误地维护）。应尽量避免这种情况；</p>
+</li>
+<li><p><strong>避免深度嵌套的 state</strong>。深度分层的 state 更新起来不是很方便，而且降低代码可读性。如果可能的话，最好以扁平化方式构建 state；</p>
+</li>
+<li><p><u><strong>避免与其他 State 共享引用对象</strong></u>：⚠⚠<strong>这点请一定要注意！！！是笔者自己加的。笔者曾犯过这个错，调试半天都没找出来</strong>。⚠⚠如果你共享了，那么在更新一个 State 的时候，会不经意间影响到另一个 State 的呈现，使程序出现意外的行为。</p>
+<blockquote>
+<p>替代方案是，共享基本类型（不可变数据类型）；</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="3-3-组件间共享-State"><a href="#3-3-组件间共享-State" class="headerlink" title="3.3 组件间共享 State"></a>3.3 组件间共享 State</h2><p>非常简单，就一句话：<strong>把 state 放入父组件，然后用参数传给子组件，即可完成共享</strong>。</p>
+<h2 id="3-4-State-的保留与重置"><a href="#3-4-State-的保留与重置" class="headerlink" title="3.4 State 的保留与重置"></a>3.4 State 的保留与重置</h2><p>为什么要讨论 State 的保留和重置？考虑一个问题。假如你移除了一个组件，之后又添加上去，State 能否保留？如果没法保留，是否有一些手段能保留它的值？</p>
+<h3 id="3-4-1-保留"><a href="#3-4-1-保留" class="headerlink" title="3.4.1 保留"></a>3.4.1 保留</h3><p>首先，React 组件的 State 与组件在渲染树的位置有关。这句话说明了几点：</p>
+<ol>
+<li><p><strong>即便两个组件是同一个对象的引用，只要它们在渲染树上的位置不同，State 就相互独立</strong>。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">import &#123; useState &#125; from &#x27;react&#x27;;</span><br><span class="line"></span><br><span class="line">export default function App() &#123;</span><br><span class="line">  const counter = &lt;Counter /&gt;;</span><br><span class="line">  return (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &#123;counter&#125;</span><br><span class="line">      &#123;counter&#125;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function Counter() &#123;</span><br><span class="line">  const [score, setScore] = useState(0);</span><br><span class="line">  const [hover, setHover] = useState(false);</span><br><span class="line"></span><br><span class="line">  let className = &#x27;counter&#x27;;</span><br><span class="line">  if (hover) &#123;</span><br><span class="line">    className += &#x27; hover&#x27;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return (</span><br><span class="line">    &lt;div</span><br><span class="line">      className=&#123;className&#125;</span><br><span class="line">      onPointerEnter=&#123;() =&gt; setHover(true)&#125;</span><br><span class="line">      onPointerLeave=&#123;() =&gt; setHover(false)&#125;</span><br><span class="line">    &gt;</span><br><span class="line">      &lt;h1&gt;&#123;score&#125;&lt;/h1&gt;</span><br><span class="line">      &lt;button onClick=&#123;() =&gt; setScore(score + 1)&#125;&gt;</span><br><span class="line">        +1</span><br><span class="line">      &lt;/button&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>两个 counter 指向同一个对象，但是它们在 DOM 树上被渲染成两个结点，因此它们的 State 是不会共享的。</p>
+</li>
+<li><p>被移除的组件，state 会被立即删除。所以哪怕在渲染树的相同位置，state 也无法保存；</p>
+<blockquote>
+<p>什么是 “被移除”？</p>
+<p>就是组件在某次返回的 JSX 中，某元素完全消失，该元素对应的组件就被移除了。</p>
+<p>下次即便生成在同一位置，组件也是新渲染的（<strong>不是重渲染</strong>）。</p>
+<p>像这种就不叫删除，叫属性的改变：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;isFancy ? (</span><br><span class="line">    &lt;Counter isFancy=&#123;true&#125; /&gt; </span><br><span class="line">) : (</span><br><span class="line">    &lt;Counter isFancy=&#123;false&#125; /&gt; </span><br><span class="line">)&#125;</span><br></pre></td></tr></table></figure>
+<p>选择渲染也不会使其他组件被移除。因为其他的组件的 DOM 树没有变动：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;div&gt;</span><br><span class="line">    &#123;(showHint) ? &lt;p&gt;&lt;i&gt;提示：你最喜欢的城市？&lt;/i&gt;&lt;/p&gt; : null&#125;</span><br><span class="line"> &lt;Form /&gt;</span><br><span class="line"> &lt;button onClick=&#123;() =&gt; &#123;</span><br><span class="line">   setShowHint(!showHint);</span><br><span class="line"> &#125;&#125;&gt;&#123;(showHint) ? &quot;隐藏提示&quot; : &quot;显示提示&quot;&#125;&lt;/button&gt;</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+<p>这种就叫删除，因为换成了新的组件，React 会进行首次渲染：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;isPaused ? (</span><br><span class="line">    &lt;p&gt;待会见！&lt;/p&gt; </span><br><span class="line">) : (</span><br><span class="line">    &lt;Counter /&gt; </span><br><span class="line">)&#125;</span><br></pre></td></tr></table></figure>
+<p>注意，如果某组件的父元素改变了，由于 DOM 会重新生成，对 React 来说，也是首次绘制，这也算删除：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;isFancy ? (</span><br><span class="line">&lt;div&gt;</span><br><span class="line">&lt;Counter isFancy=&#123;true&#125; /&gt; </span><br><span class="line">&lt;/div&gt;</span><br><span class="line">) : (</span><br><span class="line">&lt;section&gt;</span><br><span class="line">&lt;Counter isFancy=&#123;false&#125; /&gt;</span><br><span class="line">&lt;/section&gt;</span><br><span class="line">)&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ol>
+<p>以上两点就告诉我们如何保存 State：<strong>如果你想在重新渲染时保留 state，几次渲染中的树形结构就应该相互“匹配”</strong>，属性的变化则不会影响 state。</p>
+<p>到这里就能解释早在 1.1 中的约定：<strong>组件不可嵌套定义</strong>。因为如果嵌套定义，例如下面：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import &#123; useState &#125; from &#x27;react&#x27;;</span><br><span class="line"></span><br><span class="line">export default function MyComponent &#123;</span><br><span class="line">    const [counter, setCounter] = useState(0);</span><br><span class="line">    </span><br><span class="line">    function MyTextField() &#123;</span><br><span class="line">        const [text, setText] = useState(&#x27;&#x27;);</span><br><span class="line">        </span><br><span class="line">        return (</span><br><span class="line">            &lt;input</span><br><span class="line">                value=&#123;text&#125;</span><br><span class="line">                onChange=&#123;e=&gt;setText(e.target.value)&#125;</span><br><span class="line">            /&gt;</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return (</span><br><span class="line">        &lt;&gt;</span><br><span class="line">            &lt;MyTextField/&gt;</span><br><span class="line">            &lt;button onCLick=&#123;()=&gt;&#123;</span><br><span class="line">                setCounter(counter + 1)</span><br><span class="line">            &#125;&#125;&gt;Clicked &#123;counter&#125; times&lt;/button&gt;</span><br><span class="line">        &lt;/&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么每次渲染时，<code>MyTextField</code> 函数<strong>本身的内存地址每次都不一样</strong>，那么相当于每次渲染 <code>MyTextField</code> 组件都会被移除，从头开始渲染，这就直接导致 state <strong>丢失</strong>。</p>
+<h3 id="3-4-2-重置"><a href="#3-4-2-重置" class="headerlink" title="3.4.2 重置"></a>3.4.2 重置</h3><p>上面讨论 state 的保留的情况。考虑实际应用时的另一种情况：<br>假设有一个组件收集用户输入。但是你需要实现 “切换用户” 的功能。在不销毁组件的情况下，组件的 state 会被保存。那么我们如何在 DOM 树的同一位置上重置组件的 state？</p>
+<p>有两种思路：<strong>要么把组件渲染在不同位置，要么使用 <code>key</code> 在指定组件身份，确保切换 <code>key</code> 时 React 会移除并重新生成组件</strong>。</p>
+<ol>
+<li><p>不同位置渲染：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;isPlayerA &amp;&amp;</span><br><span class="line">    &lt;Counter person=&quot;Taylor&quot; /&gt;</span><br><span class="line">&#125;</span><br><span class="line">&#123;!isPlayerA &amp;&amp;</span><br><span class="line">    &lt;Counter person=&quot;Sarah&quot; /&gt;</span><br><span class="line">&#125;</span><br><span class="line">&lt;button onClick=&#123;() =&gt; &#123;</span><br><span class="line">    setIsPlayerA(!isPlayerA);</span><br><span class="line">&#125;&#125;&gt;</span><br></pre></td></tr></table></figure>
+<p>如上，注意和 3.4.1 的例子的区别。我们在多个用户的情况可以通过列表组织。</p>
+</li>
+<li><p>使用 <code>key</code> 重置 state：我们不仅在列表中使用 <code>key</code> 来帮助 React 更好地管理 entries，在普通的组件 / 元素中也能使用，React 会根据 <code>key</code> 来区分组件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;isPlayerA ? (</span><br><span class="line">  &lt;Counter key=&quot;Taylor&quot; person=&quot;Taylor&quot; /&gt;</span><br><span class="line">) : (</span><br><span class="line">  &lt;Counter key=&quot;Sarah&quot; person=&quot;Sarah&quot; /&gt;</span><br><span class="line">)&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>值得注意的是，<code>key</code> 不是全局唯一的。它只能指定在同一父组件间的区别</strong>。</p>
+</li>
+</ol>
+<hr>
+<p>到这里，state 的保存和重置机制的利用，我们已经很清楚了。但是如果我们就想<strong>在一个组件被移除后，仍然保留它的 state，直到它下次被创建呢</strong>？</p>
+<p>还有几种思路：</p>
+<ol>
+<li>利用 CSS 隐藏不需要的组件，这样它实际上不会被移除；</li>
+<li>使用不会被移除的父组件来保存信息；</li>
+<li>使用 原生 JavaScript 中定义的 <code>localStorage</code>，即使用 cookie 来保存。这样即使关闭了页面也能恢复。</li>
+</ol>
+<h2 id="3-5-Reducer-统一状态管理"><a href="#3-5-Reducer-统一状态管理" class="headerlink" title="3.5 Reducer 统一状态管理"></a>3.5 Reducer 统一状态管理</h2><p>本节将遇到 <strong>第二个 React Hook</strong>，它的作用非常重要：<strong>统一管理 React 事件处理器</strong>。</p>
+<p>要知道，在 React 中使用闭包 + 内联事件处理器，这样的定义在事件处理器的数量少的时候非常方便书写。但是如果事件处理器的数量过多，那么代码可读性和可维护性将大大降低。这主要是因为 JSX 将页面布局和事件处理逻辑放在一起了。</p>
+<p>而 React 库提供了一个新的 Hook，它允许你<strong>将事件处理器从 UI 声明中抽离出来，使得项目的事件处理系统<u>更容易调试、更可读、更有可维护性</u></strong>。</p>
+<p>它就是 <code>useReducer</code>。Reducer 是处理状态的另一种方式，它相当于将我们的 <strong>事件处理函数 和 状态 打包了起来</strong>。</p>
+<h3 id="3-5-1-useReducer-的基本使用"><a href="#3-5-1-useReducer-的基本使用" class="headerlink" title="3.5.1 useReducer 的基本使用"></a>3.5.1 <code>useReducer</code> 的基本使用</h3><p>使用 reducers 管理状态与直接设置状态略有不同。它不是通过设置状态来告诉 React “要做什么”，而是通过事件处理程序 dispatch 一个 “action” 来指明 “用户刚刚做了什么”，而状态更新逻辑则保存在<strong>其他地方</strong>，实现了状态管理逻辑和 UI 的抽离。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">import &#123; useReduce &#125; from &#x27;react&#x27;;</span><br><span class="line"></span><br><span class="line">// ...</span><br><span class="line"></span><br><span class="line">// `yourReducer` 是等会需要定义的总的事件管理的函数（你可以自己命名），所有事件处理函数 dispatch 都会到这里</span><br><span class="line">// `initialState` 是 `state`（你也可以自己命名）的初值</span><br><span class="line">const [state, dispatch] = useReducer(yourReducer, initialState);</span><br></pre></td></tr></table></figure>
+<p>事件处理函数只需要调用 <code>dispatch</code>，传入 <code>action</code> 对象，告诉之后的 <code>yourReducer</code> 发生了什么。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">dispath(</span><br><span class="line">    // action 对象（普通的 JS Object），可以自己定义，但要保证你在 yourReducer 能知道发生了什么</span><br><span class="line">    &#123;</span><br><span class="line">        /* 描述发生事件的类别 */</span><br><span class="line">        type: &#x27;what_happened&#x27;,</span><br><span class="line">        /* 其他字段描述改变的信息 */</span><br><span class="line">    &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>另一边的事件管理函数 <code>yourReducer</code> 则处理调用 <code>dispatch</code> 的动作，要求声明如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function yourReducer(state, action) =&gt; newState</span><br></pre></td></tr></table></figure>
+<p>该函数会被 <code>dispatch</code> 触发（内部触发），React 库自动添加第一个参数 <code>state</code> 即当前组件的当前状态，<code>action</code> 等同于之前传入 <code>dispatch</code> 的对象。</p>
+<p>React 会将组件的 state 设置为状态管理函数 <code>yourReducer</code> 的返回值 <code>newState</code>；</p>
+<p>这样，我们可以把 <code>yourReducer</code> 定义在 UI 组件以外的文件中，提升代码可读性和可维护性。</p>
+<h3 id="3-5-2-Reducer-设计规范"><a href="#3-5-2-Reducer-设计规范" class="headerlink" title="3.5.2 Reducer 设计规范"></a>3.5.2 Reducer 设计规范</h3><ul>
+<li><p>值得注意的是，<strong>Reducer 和 渲染函数一样，都在<u>渲染时运行</u>（包括你 dispatch 的 actions 也会等待到下一次渲染时进行）</strong>，因此在 <strong>异步方面和 <code>useState</code> 不一样 —— reducers 内部不允许使用异步操作、定时器等</strong>；</p>
+<blockquote>
+<p><code>alert</code> 等函数也不能使用。因为严格模式下，React 会重复执行 2 次渲染函数，确保渲染函数具有幂等性。在 reducers 内部写 <code>alert</code> 极有可能会被调用 2 次。</p>
+</blockquote>
+</li>
+<li><p>和 <code>useState</code> 一致的是，允许修改状态，并且应该使用新的可变数据类型，或者不可变数据类型；</p>
+</li>
+<li><p>每个 action 只应该对应一个用户交互动作，方便代码调试；</p>
+</li>
+</ul>
+<blockquote>
+<p>JavaScript JSON 对象操作小技巧：</p>
+<p>当 JSON 中的键恰好是某个变量中的值，那么可以使用 <code>[var]</code> 计算出值，例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">messages</span>: &#123;</span><br><span class="line">  ...state.<span class="property">messages</span>,</span><br><span class="line">  [state.<span class="property">selectedId</span>]: action.<span class="property">message</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="3-6-Context-自定义参数传播"><a href="#3-6-Context-自定义参数传播" class="headerlink" title="3.6 Context: 自定义参数传播"></a>3.6 Context: 自定义参数传播</h2><p>在某些场景下，例如为深层的组件传递参数，如果采用 1.4 的普通 <code>props</code> 的参数传递，那么实际操作起来会非常麻烦，并且不易维护。</p>
+<p>我们可以使用新的 Hook <code>useContext</code> 来实现数据在组件树上的传递。</p>
+<h3 id="3-6-1-useContext-基本使用"><a href="#3-6-1-useContext-基本使用" class="headerlink" title="3.6.1 useContext 基本使用"></a>3.6.1 <code>useContext</code> 基本使用</h3><p>使用主要分成 3 步：</p>
+<ol>
+<li><p>使用如下方法创建 context 上下文：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import &#123; createContext &#125; from &#x27;react&#x27;;</span><br><span class="line"></span><br><span class="line">export const LevelContext = createContext(&lt;defaultValue&gt;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>读取 context 值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import &#123; useContext &#125; from &#x27;react&#x27;;</span><br><span class="line">import &#123; LevelContext &#125; from &#x27;./XXX.js&#x27;;</span><br><span class="line"></span><br><span class="line">// ...</span><br><span class="line"></span><br><span class="line">export default function Widget() &#123;</span><br><span class="line">    const level = useContext(LevelContext);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过现在只能读到默认值，我能否由父组件向子组件传递一定的 context 值？</p>
+</li>
+<li><p>父控件提供 context 值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;LevelContext.Provider value=&#123;level&#125;&gt;</span><br><span class="line">&lt;/LevelContext.Provider&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>这告诉 React：“如果在该组件中的任何子组件请求 <code>LevelContext</code>，给他们这个 <code>level</code>。”组件会使用 UI 树中在它上层最近的那个 <code>&lt;LevelContext.Provider&gt;</code> 传递过来的值。</strong></p>
+</li>
+</ol>
+<h3 id="3-6-2-Context-的使用场景"><a href="#3-6-2-Context-的使用场景" class="headerlink" title="3.6.2 Context 的使用场景"></a>3.6.2 Context 的使用场景</h3><ul>
+<li><strong>主题：</strong> 如果你的应用允许用户更改其外观（例如暗夜模式），你可以在应用顶层放一个 context provider，并在需要调整其外观的组件中使用该 context。</li>
+<li><strong>当前账户：</strong> 许多组件可能需要知道当前登录的用户信息。将它放到 context  中可以方便地在树中的任何位置读取它。某些应用还允许你同时操作多个账户（例如，以不同用户的身份发表评论）。在这些情况下，将 UI  的一部分包裹到具有不同账户数据的 provider 中会很方便。</li>
+<li><strong>路由：</strong> 大多数路由解决方案在其内部使用 context 来保存当前路由。这就是每个链接“知道”它是否处于活动状态的方式。如果你创建自己的路由库，你可能也会这么做。</li>
+<li><strong>状态管理：</strong> 随着你的应用的增长，最终在靠近应用顶部的位置可能会有很多 state。许多遥远的下层组件可能想要修改它们。通常将 reducer 与 context 搭配使用来管理复杂的状态并将其传递给深层的组件来避免过多的麻烦。</li>
+</ul>
+<p>对于最后一条，也是最难的一条，我们将单独描述。</p>
+<p>Context 不仅可以存放不可变数据类型，还能放 <strong>state + dispatch</strong>，这样能够实现组件树下的各个子组件都可以直接读取 states 和 dispatch，无需担心引用问题。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/">https://sjtuxhw.top/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myBlog/tags/Web/">Web</a><a class="post-meta__tags" href="/myBlog/tags/JavaScript/">JavaScript</a><a class="post-meta__tags" href="/myBlog/tags/React/">React</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/react.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/myBlog/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/myBlog/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/myBlog/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/" title="JavaScript入门笔记-(2)"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/javascript2.jpeg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">JavaScript入门笔记-(2)</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/myBlog/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/" title="JavaScript入门笔记-(2)"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/javascript2.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-02-25</div><div class="title">JavaScript入门笔记-(2)</div></div></a></div><div><a href="/myBlog/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="JavaScript入门笔记"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/javascript.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-02-20</div><div class="title">JavaScript入门笔记</div></div></a></div><div><a href="/myBlog/2023/05/03/%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E6%9E%81%E7%AE%80%E7%9A%84Java%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" title="开发一个极简的Java网络爬虫"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/java-crawler.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-03</div><div class="title">开发一个极简的Java网络爬虫</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/myBlog/img/favicon.ico" onerror="this.onerror=null;this.src='/myBlog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SJTU-XHW</div><div class="author-info__description">A blog to document learning and life</div></div><div class="card-info-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">33</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">50</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.top/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! ‎|•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-0-5-%E5%88%86%E9%92%9F%E9%80%9F%E9%80%9A-React-%E6%A1%86%E6%9E%B6"><span class="toc-text">Chapter 0. 5 分钟速通 React 框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-1-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">0.1 基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0-2-JSX-%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83"><span class="toc-text">0.2 JSX 使用规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0-3-%E4%B8%8E-JavaScript-%E7%BB%84%E5%90%88%E8%B5%B7%E6%9D%A5"><span class="toc-text">0.3 与 JavaScript 组合起来</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-1-React-%E6%8F%8F%E8%BF%B0-UI"><span class="toc-text">Chapter 1. React 描述 UI</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-React-%E7%BB%84%E4%BB%B6"><span class="toc-text">1.1 React 组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-JSX-%E7%9A%84%E9%80%BB%E8%BE%91-%E5%92%8C-%E8%A7%84%E5%88%99"><span class="toc-text">1.2 JSX 的逻辑 和 规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-JSX-%E4%B8%AD%E4%BD%BF%E7%94%A8-JavaScript"><span class="toc-text">1.3 JSX 中使用 JavaScript</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-React-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BB%84%E4%BB%B6%E4%BC%A0%E5%85%A5%E5%B1%9E%E6%80%A7"><span class="toc-text">1.4 React 自定义组件传入属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-5-%E6%9D%A1%E4%BB%B6%E6%B8%B2%E6%9F%93"><span class="toc-text">1.5 条件渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-6-%E4%BB%8E%E6%95%B0%E6%8D%AE%E6%B8%B2%E6%9F%93%E5%88%97%E8%A1%A8"><span class="toc-text">1.6 从数据渲染列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-7-React-%E7%BB%84%E4%BB%B6%E6%B8%B2%E6%9F%93%E5%87%BD%E6%95%B0%E7%9A%84%E5%B9%82%E7%AD%89%E6%80%A7"><span class="toc-text">1.7 React 组件渲染函数的幂等性</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-2-React-%E4%BA%A4%E4%BA%92%E4%B8%8E%E4%BA%8B%E4%BB%B6"><span class="toc-text">Chapter 2. React 交互与事件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-React-%E4%B8%AD%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0"><span class="toc-text">2.1 React 中的事件处理函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-React-%E4%B8%AD%E7%9A%84%E7%8A%B6%E6%80%81%E6%9C%BA%EF%BC%9AuseState"><span class="toc-text">2.2 React 中的状态机：useState</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-React-%E7%9A%84%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6"><span class="toc-text">2.3 React 的渲染机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-1-%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B"><span class="toc-text">2.3.1 渲染流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-2-useState-%E4%B8%8E%E6%B8%B2%E6%9F%93%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-text">2.3.2 useState 与渲染的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-3-useState-%E6%9B%B4%E6%96%B0%E9%98%9F%E5%88%97"><span class="toc-text">2.3.3 useState 更新队列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-4-useState-%E4%B8%8E-JavaScript-%E5%8E%9F%E7%94%9F%E5%BC%82%E6%AD%A5%E7%BB%93%E5%90%88"><span class="toc-text">2.3.4 useState 与 JavaScript 原生异步结合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-5-useState-%E5%AD%98%E5%82%A8%E5%8F%AF%E5%8F%98%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">2.3.5 useState 存储可变数据类型</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-3-React-%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86"><span class="toc-text">Chapter 3. React 状态管理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E5%A3%B0%E6%98%8E%E5%BC%8F-UI-%E4%B8%8E-%E5%91%BD%E4%BB%A4%E5%BC%8F-UI"><span class="toc-text">3.1 声明式 UI 与 命令式 UI</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-State-%E8%AE%BE%E8%AE%A1%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-text">3.2 State 设计的最佳实践</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-%E7%BB%84%E4%BB%B6%E9%97%B4%E5%85%B1%E4%BA%AB-State"><span class="toc-text">3.3 组件间共享 State</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-4-State-%E7%9A%84%E4%BF%9D%E7%95%99%E4%B8%8E%E9%87%8D%E7%BD%AE"><span class="toc-text">3.4 State 的保留与重置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-1-%E4%BF%9D%E7%95%99"><span class="toc-text">3.4.1 保留</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-2-%E9%87%8D%E7%BD%AE"><span class="toc-text">3.4.2 重置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-5-Reducer-%E7%BB%9F%E4%B8%80%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86"><span class="toc-text">3.5 Reducer 统一状态管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-1-useReducer-%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-text">3.5.1 useReducer 的基本使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-2-Reducer-%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83"><span class="toc-text">3.5.2 Reducer 设计规范</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-6-Context-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8F%82%E6%95%B0%E4%BC%A0%E6%92%AD"><span class="toc-text">3.6 Context: 自定义参数传播</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-1-useContext-%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-text">3.6.1 useContext 基本使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-2-Context-%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">3.6.2 Context 的使用场景</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/" title="React框架速通"><img src="https://cdn.sjtuxhw.top/cover_imgs/react.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="React框架速通"/></a><div class="content"><a class="title" href="/myBlog/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/" title="React框架速通">React框架速通</a><time datetime="2024-02-27T07:30:41.000Z" title="发表于 2024-02-27 15:30:41">2024-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/" title="JavaScript入门笔记-(2)"><img src="https://cdn.sjtuxhw.top/cover_imgs/javascript2.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="JavaScript入门笔记-(2)"/></a><div class="content"><a class="title" href="/myBlog/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/" title="JavaScript入门笔记-(2)">JavaScript入门笔记-(2)</a><time datetime="2024-02-25T03:25:22.000Z" title="发表于 2024-02-25 11:25:22">2024-02-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="JavaScript入门笔记"><img src="https://cdn.sjtuxhw.top/cover_imgs/javascript.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="JavaScript入门笔记"/></a><div class="content"><a class="title" href="/myBlog/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="JavaScript入门笔记">JavaScript入门笔记</a><time datetime="2024-02-20T13:17:09.000Z" title="发表于 2024-02-20 21:17:09">2024-02-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/" title="浅析 TTY Subsystem"><img src="https://cdn.sjtuxhw.top/cover_imgs/tty.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="浅析 TTY Subsystem"/></a><div class="content"><a class="title" href="/myBlog/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/" title="浅析 TTY Subsystem">浅析 TTY Subsystem</a><time datetime="2024-01-14T23:12:02.000Z" title="发表于 2024-01-15 07:12:02">2024-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/01/13/%E6%94%BE%E5%81%87%EF%BC%81%E5%90%90%E6%A7%BD%EF%BC%81/" title="放假！吐槽！"><img src="https://cdn.sjtuxhw.top/cover_imgs/tease.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="放假！吐槽！"/></a><div class="content"><a class="title" href="/myBlog/2024/01/13/%E6%94%BE%E5%81%87%EF%BC%81%E5%90%90%E6%A7%BD%EF%BC%81/" title="放假！吐槽！">放假！吐槽！</a><time datetime="2024-01-13T06:33:01.000Z" title="发表于 2024-01-13 14:33:01">2024-01-13</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/myBlog/js/utils.js"></script><script src="/myBlog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+      GLOBAL_CONFIG_SITE.isPost && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://twikoo.sjtuxhw.top',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <div class='name'><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom.innerHTML= result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script src="/myBlog/js/jquery-3.7.0.min.js"></script><script src="/myBlog/js/rightmenu.js"></script><div class="aplayer no-destroy" data-id="6898044781" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false"></div><script src="/myBlog/js/mourn.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="/myBlog/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/myBlog/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>

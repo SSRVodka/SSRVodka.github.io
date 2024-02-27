@@ -1,0 +1,605 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>JavaScript入门笔记-(2) | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Written by SJTU-XHW Reference: 《Professional JavaScript for Web Developers》 3rd Edition 本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript入门笔记-(2)">
+<meta property="og:url" content="https://sjtuxhw.top/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="Written by SJTU-XHW Reference: 《Professional JavaScript for Web Developers》 3rd Edition 本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/javascript2.jpeg">
+<meta property="article:published_time" content="2024-02-25T03:25:22.000Z">
+<meta property="article:modified_time" content="2024-02-27T07:33:19.299Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/javascript2.jpeg"><link rel="shortcut icon" href="/myBlog/img/favicon.ico"><link rel="canonical" href="https://sjtuxhw.top/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myBlog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?64dd3b0c09c8af7b916f8249d32097e2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = {
+  root: '/myBlog/',
+  algolia: undefined,
+  localSearch: {"path":"/myBlog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'JavaScript入门笔记-(2)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-02-27 15:33:19'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/myBlog/css/mouseConfig.css"><link rel="stylesheet" href="/myBlog/css/valineBg.css"><link rel="stylesheet" href="/myBlog/css/rightmenu.css"><link rel="stylesheet" href="/myBlog/css/custom_music.css"><link rel="stylesheet" href="/myBlog/css/addFonts.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/myBlog/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/myBlog/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">33</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">50</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.sjtuxhw.top/cover_imgs/javascript2.jpeg')"><nav id="nav"><span id="blog-info"><a href="/myBlog/" title="SJTU-XHW's blog"><img class="site-icon" src="/myBlog/img/head_icon.png"/><span class="site-name">SJTU-XHW's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">JavaScript入门笔记-(2)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-02-25T03:25:22.000Z" title="发表于 2024-02-25 11:25:22">2024-02-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-02-27T07:33:19.299Z" title="更新于 2024-02-27 15:33:19">2024-02-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">5.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>20分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/myBlog/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/#post-comment"><span id="twikoo-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><i>Written by SJTU-XHW</i></p>
+<p><i>Reference: </i>《Professional JavaScript for Web Developers》 3rd Edition</p>
+<p><i>本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！</i></p>
+<hr>
+<span id="more"></span>
+<h2 id="Chapter-7-简单使用-DOM"><a href="#Chapter-7-简单使用-DOM" class="headerlink" title="Chapter 7. 简单使用 DOM"></a>Chapter 7. 简单使用 DOM</h2><p>假设你学习了初级数据结构，那么把 HTML 页面想象成一个以元素为结点的一般树。JavaScript DOM 操作就是操作这个文档树，达到改变前端页面的目的。</p>
+<p>在浏览器运行的 JavaScript 引擎中，全局运行环境中会自动设置一个变量 <code>document</code>（DOM 对象），操作它就是在动态操作 HTML 页面。</p>
+<h3 id="7-1-基本操作"><a href="#7-1-基本操作" class="headerlink" title="7.1 基本操作"></a>7.1 基本操作</h3><blockquote>
+<p>假设你学习了 CSS 的基础用法。</p>
+</blockquote>
+<ul>
+<li><p><code>document.querySelector(&lt;selectorStr&gt;)</code>：JavaScript DOM 中的重要方法，document 对象的 按选择器查找 HTML 中的元素（CSS 中有效的所有选择器，除了伪类选择器都行）；</p>
+<blockquote>
+<p>如果有多个符合选择器的对象，那么只会返回一个。想要返回全部，请使用 <code>querySelectorAll() -&gt; NodeList (or Array)</code>；</p>
+<p>注：还有一些老方法 <code>getElementById</code>、<code>getElementByTagName</code> 不建议使用，因为太多太繁了，有这个方法足够了。</p>
+</blockquote>
+</li>
+<li><p><code>&lt;Node&gt;.textContent</code>：很多元素，例如 <code>div</code>、<code>button</code>、<code>p</code>、<code>a</code> 等等，可以通过对 DOM 结点设置这个属性来达到更改文本的目的。前提是这个元素能够显示文本；</p>
+</li>
+<li><p><code>&lt;Node&gt;.href</code>：很多含有 <code>href</code> 属性的元素可以用这种方法更改链接，类似地，<code>src</code> 等属性也可以如此更改；</p>
+</li>
+<li><p><code>&lt;Node&gt;.classList</code>：获取结点的 <code>class</code> 属性列表，相当于 <code>&lt;Node&gt;.className.split(&quot; &quot;)</code> 再转为 <code>DOMTokenList</code>；</p>
+<blockquote>
+<p>对于 <code>DOMTokenList</code>，与 JavaScript 原生数组不一样，它有自己的属性、方法：</p>
+<ul>
+<li><code>DOMTokenList.length</code>（<strong>只读</strong>）；</li>
+<li><code>DOMTokenList.item(idx)</code>；</li>
+<li><code>DOMTokenList.contains(token)</code>；</li>
+<li><code>DOMTokenList.add(token[, token2, ...])</code>；</li>
+<li><code>DOMTokenList.remove(...)</code>；</li>
+<li><code>DOMTokenList.toggle(token)</code>：<strong>修改属性非常方便的选择！！</strong>，若 <code>token</code> 存在其中，则删除并返回 false；若不存在，则添加并返回 true；</li>
+<li><code>DOMTokenList.forEach(&lt;callback&gt;)</code>；</li>
+</ul>
+</blockquote>
+</li>
+<li><p>网页刷新：<code>document.location.reload()</code>；</p>
+</li>
+</ul>
+<h3 id="7-2-创建新结点"><a href="#7-2-创建新结点" class="headerlink" title="7.2 创建新结点"></a>7.2 创建新结点</h3><p>一般分三步走：</p>
+<ol>
+<li>创建结点 DOM 对象：<code>document.createElement(&lt;element-type&gt;)</code>；</li>
+<li>设置结点对象属性：<code>&lt;Node&gt;.attr = ...</code>；</li>
+<li>向指定结点对象追加新的对象：<code>&lt;Node&gt;.appendChild(&lt;Node&gt;)</code>；</li>
+</ol>
+<h3 id="7-3-移动、删除结点"><a href="#7-3-移动、删除结点" class="headerlink" title="7.3 移动、删除结点"></a>7.3 移动、删除结点</h3><p>注意一个问题：<strong>DOM 对象引用与 HTML 元素一一对应</strong>。因此除非你使用 <code>&lt;Node&gt;.cloneNode()</code>，否则，之前新建的结点对象如果再一次 <code>appendChild</code>，那么它会移动到父结点的底部，例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sect = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;section&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> para = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&quot;p&quot;</span>);</span><br><span class="line">para.<span class="property">textContent</span> = <span class="string">&quot;We hope you enjoyed the ride.&quot;</span>;</span><br><span class="line">sect.<span class="title function_">appendChild</span>(para);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 中间添加了一些结点</span></span><br><span class="line"></span><br><span class="line">sect.<span class="title function_">appendChild</span>(para); <span class="comment">// para 会被移动到 sect 的底部，而非出现副本</span></span><br></pre></td></tr></table></figure>
+<p>删除结点就使用：<code>&lt;parentNode&gt;.removeChild(&lt;Node&gt;)</code>，如果不知道父元素，那么可以借助 <code>parentNode</code> 属性：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="title class_">Node</span>&gt;.<span class="property">parentNode</span>.<span class="title function_">removeChild</span>(&lt;<span class="title class_">Node</span>&gt;);</span><br></pre></td></tr></table></figure>
+<h3 id="7-4-改变结点样式"><a href="#7-4-改变结点样式" class="headerlink" title="7.4 改变结点样式"></a>7.4 改变结点样式</h3><p>JavaScript 可以通过修改 DOM 对象的属性来修改其 CSS 样式。</p>
+<p>有两种方法可以实现：</p>
+<ul>
+<li><p><code>&lt;Node&gt;.style</code> 属性本身是个对象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">para.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&quot;white&quot;</span>;</span><br><span class="line">para.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&quot;black&quot;</span>;</span><br><span class="line">para.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&quot;10px&quot;</span>;</span><br><span class="line">para.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&quot;250px&quot;</span>;</span><br><span class="line">para.<span class="property">style</span>.<span class="property">textAlign</span> = <span class="string">&quot;center&quot;</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>&lt;Node&gt;.setAttribute(&lt;attrName&gt;, &lt;attrValue&gt;)</code>；</p>
+<blockquote>
+<p>对应有 <code>getAttribute</code>；它们不止能改 CSS 样式（<code>style</code> 属性），其他属性也能改；</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>个人建议使用后一种，因为不需要额外记忆内置变量名</strong>。</p>
+<h2 id="Chapter-8-事件"><a href="#Chapter-8-事件" class="headerlink" title="Chapter 8. 事件"></a>Chapter 8. 事件</h2><p>事件是 JavaScript 能够响应用户行为的重要手段之一。</p>
+<p>事件可能有以下几种：</p>
+<ul>
+<li>用户选择、点击或将光标悬停在某一元素上。</li>
+<li>用户在键盘中按下某个按键。</li>
+<li>用户调整浏览器窗口的大小或者关闭浏览器窗口。</li>
+<li>网页结束加载。</li>
+<li>表单提交。</li>
+<li>视频播放、暂停或结束。</li>
+<li>发生错误。</li>
+</ul>
+<p>为了对一个事件做出反应，就要在 JavaScript 中附加一个<strong>事件处理器</strong>。它通常是自己创建的、<strong>已注册的</strong>一个函数。具体使用方法举个例子：</p>
+<h3 id="8-1-注册、移除事件处理器"><a href="#8-1-注册、移除事件处理器" class="headerlink" title="8.1 注册、移除事件处理器"></a>8.1 注册、移除事件处理器</h3><p>假设 HTML 上有个按钮：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;sbtn groupt&quot;</span>&gt;</span></span><br><span class="line">    Click Me</span><br><span class="line"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>那么：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> btn = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;button.sBtn&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">random</span>(<span class="params">num</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">Math</span>.<span class="title function_">floor</span>(<span class="title class_">Math</span>.<span class="title function_">random</span>() &amp; (num + <span class="number">1</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* JavaScript 中注册事件处理器的方法。下次如果该对象有动作，则立即调用这个函数。 */</span></span><br><span class="line"><span class="comment">/* 事件类型：click，回调函数：匿名 */</span></span><br><span class="line">btn.<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> randCtl = <span class="string">`rgb(<span class="subst">$&#123;random(<span class="number">255</span>)&#125;</span>, <span class="subst">$&#123;random(<span class="number">255</span>)&#125;</span>, <span class="subst">$&#123;random(<span class="number">255</span>)&#125;</span>)`</span>;</span><br><span class="line">    <span class="comment">/* document 对象 body 元素 -&gt; style 属性 -&gt; backgroundColor */</span></span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">body</span>.<span class="property">style</span>.<span class="property">backgroundColor</span> = randCtl;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>知识补充</strong>: JavaScript 模板字符串（反引号引起的字符串）</p>
+<ul>
+<li><p>相当于 shell 中的单引号字符串、python 的 <code>f</code> 格式化字符串。</p>
+</li>
+<li><p>可以向其中嵌入变量（<code>$&#123;js_variable&#125;</code>）而无需加法运算符；</p>
+</li>
+</ul>
+</blockquote>
+<p>于是我们认识了注册事件处理器的函数：<code>&lt;DOMObj&gt;.addEventListener(&lt;event-type&gt;, &lt;func&gt;)</code>；</p>
+<p>除了上面提到的 <code>click</code> 事件，<code>button</code> 元素常用的还有：</p>
+<ul>
+<li><code>&quot;mouseover&quot; / &quot;mouseout&quot;</code>（即 hover in / hover out）；</li>
+<li><code>&quot;focus&quot; / &quot;blur&quot;</code>（即按钮聚焦、失焦，常见用 tab 的情况）；</li>
+<li><code>&quot;dblclick&quot;</code>（即双击）；</li>
+<li><code>&quot;submit&quot;</code>（对表单中的按钮而言，触发了 <code>&quot;click&quot;</code> 就接连触发了 <code>&quot;submit&quot;</code>）；</li>
+</ul>
+<p>其实 <code>&quot;click&quot;</code> 事件几乎对其他所有元素都可用；</p>
+<p>还有一些事件只有特定元素有，例如 <code>&quot;play&quot;</code> 事件只有 <code>&lt;video&gt;</code>、<code>&lt;audio&gt;</code> 元素有；</p>
+<hr>
+<p>相对地，我们可以移除指定的事件处理器：<code>removeEventListener(&lt;event-type&gt;, &lt;func&gt;)</code>；</p>
+<p>这就像 Qt 的信号-槽机制中的 <code>connect</code> 和 <code>disconnect</code>，就连 “一对多”、“多对一”、“一对一” 等原则也与 Qt 一致，不再赘述。</p>
+<p>⚠⚠ <strong>友情提醒</strong> ⚠⚠</p>
+<p>不要使用内联事件处理器（写在 HTML 中的事件处理器），它们已经被 deprecated 了，例如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">onclick</span>=<span class="string">&quot;alert(&#x27;It was deprecated!&#x27;);&quot;</span>&gt;</span></span><br><span class="line">  click me</span><br><span class="line"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="8-2-事件对象"><a href="#8-2-事件对象" class="headerlink" title="8.2 事件对象"></a>8.2 事件对象</h3><p>JavaScript 解释器在回调某个事件处理器时，会自动向参数列表中传入 <code>event / evt / e</code>（三个都行，开发时为了可读性请选择一个），</p>
+<p>事件对象有个常用属性：</p>
+<ul>
+<li><code>event.target</code>：相当于 Qt 中信号-槽机制的 <code>event.sender</code>，返回发送方对象；</li>
+<li><code>event.key</code>：相当于 Qt <code>QKeyEvent::key()</code>，就是触发键击信号的键；</li>
+</ul>
+<blockquote>
+<p>对常见的 DOM 元素，例如 <code>div</code>、<code>p</code>，可以设置 <code>&lt;DOMObj&gt;.textContent</code> 改变文本值；</p>
+</blockquote>
+<p>那么我们使用事件对象有什么用？</p>
+<p>和 Qt 一样，答案是自定义默认的事件处理。有些默认的事件处理器（例如表单按钮的 <code>&quot;submit&quot;</code> 动作），开发者不好取消，我们可以通过事件对象的方法 <code>event.preventDefault()</code> 来阻止默认动作、进行自定义：</p>
+<p>例如对这个表单，我们想让用户必须填写 <code>First name</code> 和 <code>Last name</code>，缺一不可，</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;fname&quot;</span>&gt;</span>First name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;fname&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;lname&quot;</span>&gt;</span>Last name: <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;lname&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>我们就能这样阻止表单的默认提交动作：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> form = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;form&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> fname = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;fname&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> lname = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;lname&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> para = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;p&quot;</span>);</span><br><span class="line"></span><br><span class="line">form.<span class="title function_">addEventListener</span>(<span class="string">&quot;submit&quot;</span>, <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">/* 判断字符串为空也可以用 String.length（但要确保不是 null） */</span></span><br><span class="line">  <span class="keyword">if</span> (fname.<span class="property">value</span> === <span class="string">&quot;&quot;</span> || lname.<span class="property">value</span> === <span class="string">&quot;&quot;</span>) &#123;</span><br><span class="line">    e.<span class="title function_">preventDefault</span>();</span><br><span class="line">    para.<span class="property">textContent</span> = <span class="string">&quot;You need to fill in both names!&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="8-3-事件传递"><a href="#8-3-事件传递" class="headerlink" title="8.3 事件传递"></a>8.3 事件传递</h3><p>我们类比 Qt 的信号-槽机制，在 Qt 中，一个事件 / 信号被捕获后，进入事件 / 信号处理函数，我们以 <code>bool eventFilter(QEvent* event, QObject* obj)</code> 为例，如果该函数返回 <code>true</code>，表示事件处理结束，事件不会再向父控件传递，反之则会。</p>
+<p>在 JavaScript 中，<strong>事件传递行为和 Qt 相近</strong>，只是<strong>收到并处理后，开发者无法自定义事件的传递行为，一定会继续向父元素传递</strong>。</p>
+<p>在一些情况下，由于父子元素需要控制事件比较复杂，如果不控制事件的传递，很有可能引发一些问题，例如我们想做个页面包含一个视频，最初它为隐藏状态；还有一个标记为“显示视频”的按钮。我们希望有如下交互：</p>
+<ul>
+<li>当用户单击“显示视频”按钮时，显示包含视频的盒子，但不要开始播放视频。</li>
+<li>当用户在视频上单击时，开始播放视频。</li>
+<li>当用户单击盒子内视频以外的任何区域时，隐藏盒子。</li>
+</ul>
+<p>如果这么写：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span>&gt;</span></span><br><span class="line">    显示视频</span><br><span class="line"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;hidden&quot;</span>&gt;</span>    <span class="comment">&lt;!-- 使用 CSS 的 class 属性标记隐藏内容 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">video</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span></span></span><br><span class="line"><span class="tag">            <span class="attr">src</span>=<span class="string">&quot;XXX.webm&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">type</span>=<span class="string">&quot;video/webm&quot;</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">p</span>&gt;</span></span><br><span class="line">            您的浏览器不支持 webm 格式视频！</span><br><span class="line">        <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">video</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> btn = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;button&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> box = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;div&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> video = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;video&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* DOM 对象的另一个重要属性 classList */</span></span><br><span class="line"><span class="comment">/* 可以得到对应的 HTML 元素的 class 属性列表（空格间隔），返回对象是 Array */</span></span><br><span class="line">btn.<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, <span class="function">() =&gt;</span> box.<span class="property">classList</span>.<span class="title function_">remove</span>(<span class="string">&quot;hidden&quot;</span>));</span><br><span class="line"><span class="comment">/* video 元素的 BOM 方法： play() */</span></span><br><span class="line">video.<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, <span class="function">() =&gt;</span> video.<span class="title function_">play</span>());</span><br><span class="line">box.<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, <span class="function">() =&gt;</span> box.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&quot;hidden&quot;</span>));</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>知识补充 1</strong>: JavaScript DOM 对象 <code>classList</code> 属性；</p>
+<p><strong>知识补充 2</strong>: JavaScript <code>video / audio</code> 元素对应的 BOM 方法 <code>play()</code>；</p>
+</blockquote>
+<p>我们点击显示视频是没问题的，但是有个问题是，当我们点击视频开始播放的时候，容器会被隐藏！这是因为 <code>video</code> 空间在 <code>div</code> 内部，点击操作会传递到 <code>div</code> 中，相当于同时触发了两个事件处理器。</p>
+<p>所以 JavaScript 中的解决方案是 <code>event.stopPropagation()</code>，在事件处理器中，可以停止事件自动地向父元素传播。</p>
+<p>上面的 JavaScript 改成这样就能实现目的了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> btn = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;button&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> box = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;div&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> video = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;video&quot;</span>);</span><br><span class="line"></span><br><span class="line">btn.<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, <span class="function">() =&gt;</span> box.<span class="property">classList</span>.<span class="title function_">remove</span>(<span class="string">&quot;hidden&quot;</span>));</span><br><span class="line"></span><br><span class="line">video.<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, <span class="function">(<span class="params">event</span>) =&gt;</span> &#123;</span><br><span class="line">  event.<span class="title function_">stopPropagation</span>();</span><br><span class="line">  video.<span class="title function_">play</span>();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">box.<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, <span class="function">() =&gt;</span> box.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&quot;hidden&quot;</span>));</span><br></pre></td></tr></table></figure>
+<p><strong>⚠⚠注意：<code>event.target</code> 在事件传递中保持不变，始终代表最内层的元素（事件传递的第一个收到的元素、事件捕获的最后一个捕获到的元素）⚠⚠</strong></p>
+<h3 id="8-4-JavaScript-中的-“事件捕获”"><a href="#8-4-JavaScript-中的-“事件捕获”" class="headerlink" title="8.4 JavaScript 中的 “事件捕获”"></a>8.4 JavaScript 中的 “事件捕获”</h3><p>JavaScript 中，除了事件传递，还有一种术语叫 “事件捕获”，它和事件传递 <strong>唯一区别</strong> 是，“事件捕获” 的事件传递方向是从父元素到子元素，与一般事件传递方向正好相反。</p>
+<p>你只有在 <code>addEventListener</code> 注册事件处理器时加上第三参数 <code>&#123; capture: true &#125;</code> 才会启用。</p>
+<blockquote>
+<p>你问为什么有这两种传递方式？唉，早期厂商的浏览器互不兼容（Netscape 只使用事件捕捉，而 Internet Explorer 只使用事件冒泡）。</p>
+<p>现在的 W3C 指定标准后，将这两种方式都保留下来了，不过默认都是普通的事件传递。</p>
+</blockquote>
+<p><strong>因此这里强烈建议，在编写代码时，尽量使用一种传递方式，增强可读性和可维护性</strong>。</p>
+<h2 id="Chapter-9-JavaScript-异步"><a href="#Chapter-9-JavaScript-异步" class="headerlink" title="Chapter 9. JavaScript 异步"></a>Chapter 9. JavaScript 异步</h2><p>网页端程序的响应速度极其重要，因此网页端应用采用异步的重要性不言而喻。</p>
+<h3 id="9-1-认识旧式异步实现：基于事件处理器-和-回调函数"><a href="#9-1-认识旧式异步实现：基于事件处理器-和-回调函数" class="headerlink" title="9.1 认识旧式异步实现：基于事件处理器 和 回调函数"></a>9.1 认识旧式异步实现：基于事件处理器 和 回调函数</h3><p>上一章我们已经接触到了 JavaScript 异步编程的一种形式：事件处理器。它不会立即被调用，而是在事件发生时才被调用。只要我们把事件换成某个对象的状态变化，那么就变成了异步程序。</p>
+<p>于是 <strong>早期的异步 API 就是采用这种方式</strong>：通过给 <code>XMLHttpRequest</code> 对象附加事件监听器来让程序在请求进展和最终完成时获得通知。</p>
+<blockquote>
+<p><code>XMLHttpRequest</code> 有 <code>loadend</code> 事件；</p>
+</blockquote>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">&quot;xhr&quot;</span>&gt;</span>click to send request<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">&quot;reload&quot;</span>&gt;</span>reload<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">pre</span> <span class="attr">readonly</span> <span class="attr">class</span>=<span class="string">&quot;event-log&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">pre</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> log = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;.event-log&quot;</span>);</span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;#xhr&quot;</span>).<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  log.<span class="property">textContent</span> = <span class="string">&quot;&quot;</span>;</span><br><span class="line">  <span class="keyword">const</span> xhr = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line">  xhr.<span class="title function_">addEventListener</span>(<span class="string">&quot;loadend&quot;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    log.<span class="property">textContent</span> = <span class="string">`<span class="subst">$&#123;log.textContent&#125;</span> finished! Status Code:<span class="subst">$&#123;xhr.status&#125;</span>`</span>;</span><br><span class="line">  &#125;);</span><br><span class="line">  xhr.<span class="title function_">open</span>(</span><br><span class="line">    <span class="string">&quot;GET&quot;</span>,</span><br><span class="line">    <span class="string">&quot;https://raw.githubusercontent.com/mdn/content/main/files/en-us/_wikihistory.json&quot;</span>,</span><br><span class="line">  );</span><br><span class="line">  xhr.<span class="title function_">send</span>();</span><br><span class="line">  log.<span class="property">textContent</span> = <span class="string">`<span class="subst">$&#123;log.textContent&#125;</span> request was sent\n`</span>;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;#reload&quot;</span>).<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  log.<span class="property">textContent</span> = <span class="string">&quot;&quot;</span>;</span><br><span class="line">  <span class="variable language_">document</span>.<span class="property">location</span>.<span class="title function_">reload</span>();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>还有一种异步实现的方式：回调函数。它是一个<u>被传递到另一个函数中的、会在适当的时候被调用的</u>函数。</p>
+<p>我们看到之前很多参数名 <code>&lt;callback&gt;</code> 都是回调函数。</p>
+<p>那么为什么这种方法被舍弃了呢？考虑这样的场景：<strong>假设有 N 个独立的步骤，需要异步执行，它们必须按照一定的执行次序执行。那么当使用回调函数的方式实现的时候，它们就会深度嵌套。</strong>例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">doStep1</span>(<span class="params">init, callback</span>) &#123;</span><br><span class="line">  <span class="comment">// DO SOMETHING</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">doStep2</span>(<span class="params">init, callback</span>) &#123;</span><br><span class="line">  <span class="comment">// DO SOMETHING</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">doStep3</span>(<span class="params">init, callback</span>) &#123;</span><br><span class="line">  <span class="comment">// DO SOMETHING</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">doOperation</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="title function_">doStep1</span>(params, <span class="function">(<span class="params">result1</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">doStep2</span>(result1, <span class="function">(<span class="params">result2</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">doStep3</span>(result2, <span class="function">(<span class="params">result3</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`Result: <span class="subst">$&#123;result3&#125;</span>`</span>);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">doOperation</span>();</span><br></pre></td></tr></table></figure>
+<p>这样不仅不美观，而且极大影响代码可读性、可维护性（尤其是 JavaScript 语言本身就难以调试）；</p>
+<p>所以，大多数现代的异步 API 都不使用上述的方法。现在的 JavaScript 异步编程的基础是 Promise；</p>
+<h3 id="9-2-新式异步：JavaScript-Promise"><a href="#9-2-新式异步：JavaScript-Promise" class="headerlink" title="9.2 新式异步：JavaScript Promise"></a>9.2 新式异步：JavaScript Promise</h3><p>JavaScript 的 Promise 对象是 <strong>一个由异步函数返回的、可以向我们指示当前操作所处的状态的</strong> 对象。</p>
+<p>JavaScript 中有很多异步 API 都是基于 Promise 的，它们在被调用后会进行一些操作并立即返回 Promise 对象。开发者可以通过将处理函数附加到返回的 Promise 对象上实现回调。</p>
+<h4 id="9-2-1-API-fetch"><a href="#9-2-1-API-fetch" class="headerlink" title="9.2.1 API fetch()"></a>9.2.1 API <code>fetch()</code></h4><p><code>[global.]fetch()</code> 方法就是一个基于 Promise 的、替代 <code>XMLHttpRequest</code> 的 API，我们直接看一个使用示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fetchPromise = <span class="title function_">fetch</span>(</span><br><span class="line">  <span class="string">&quot;https://mdn.github.io/learning-area/javascript/apis/fetching-data/can-store/products.json&quot;</span>,</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(fetchPromise);</span><br><span class="line"></span><br><span class="line">fetchPromise.<span class="title function_">then</span>(<span class="function">(<span class="params">response</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`Respond received: <span class="subst">$&#123;response.status&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Request sent...&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>上面的程序分成几个步骤：</p>
+<ol>
+<li>使用 <code>fetch</code>（默认）向指定网页发送 GET 请求，返回 Promise 对象存放在 <code>fetchPromise</code> 中；</li>
+<li>输出 Promise 对象，能看到 <code>Promise &#123; &lt;state&gt;: &quot;pending&quot; &#125;</code>，说明 Promise 对象有属性 <code>state</code> 来查看异步任务是否完成；</li>
+<li>使用 <strong><code>Promise.then(&lt;callback&gt;)</code></strong> 向 Promise 对象加入回调函数，<code>callback</code> 函数传入参数就是之前使用 <code>fetch</code> API 规定的返回内容（<code>Response</code> 对象）；</li>
+</ol>
+<blockquote>
+<p>总结：<code>fetch(&lt;url&gt;, &lt;options&gt;) -&gt; Promise -&gt;&gt; Response</code>；</p>
+</blockquote>
+<h4 id="9-2-1-Ex-知识补充：Response-对象"><a href="#9-2-1-Ex-知识补充：Response-对象" class="headerlink" title="9.2.1-Ex 知识补充：Response 对象"></a>9.2.1-Ex 知识补充：Response 对象</h4><p>常见实例属性（几乎都是只读，想要自定义请从构造函数传入）：<code>body</code>、<code>headers</code>、<code>status</code>、<code>url</code>（响应的 URL）、<code>redirected</code>（可以在 <code>fetch</code> 第二参数中禁止重定向：<code>&#123;redirect: &quot;error&quot;&#125;</code>）等；</p>
+<p>常见的<strong>实例方法</strong>：</p>
+<ul>
+<li><code>Response.blob() -&gt; Promise -&gt;&gt; stream</code>：<strong>这是个异步 API，可以读取响应体中的二进制数据</strong>；</li>
+<li><code>Response.clone()</code>：完全复制 Response 对象，唯一区别是内存地址和引用不同；</li>
+<li><code>Response.formData() -&gt; Promise -&gt;&gt; FormData</code>：<strong>以表单数据的方式读取响应体，最终返回 <code>FormData</code> 对象</strong>（和之前的 <code>Array</code>、<code>DOMTokenList</code> 又不一样，自己查 API）；</li>
+<li><code>Response.json() -&gt; Promise -&gt;&gt; JSON</code>：<strong>以 JSON 数据的方式读取响应体，最终返回原生 <code>JSON</code> 对象</strong>；</li>
+<li><code>Response.text() -&gt; Promise -&gt;&gt; USVString</code>：<strong>以字符串的方式读取响应体，最终返回类似 <code>String</code> 的对象，总是 UTF-8</strong>；</li>
+</ul>
+<h4 id="9-2-2-链式-Promise"><a href="#9-2-2-链式-Promise" class="headerlink" title="9.2.2 链式 Promise"></a>9.2.2 链式 Promise</h4><p>Promise 更加优雅的原因是，它的 <code>then</code> 实例方法也会返回 Promise 对象，不过这个对象指示 <code>then</code> 回调函数执行的情况。这样，我们就可以链式地使用 Promise：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fetchPromise = <span class="title function_">fetch</span>(</span><br><span class="line">  <span class="string">&quot;https://mdn.github.io/learning-area/javascript/apis/fetching-data/can-store/products.json&quot;</span>,</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">fetchPromise.<span class="title function_">then</span>(<span class="function">(<span class="params">response</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> jsonPromise = response.<span class="title function_">json</span>();</span><br><span class="line">  jsonPromise.<span class="title function_">then</span>(<span class="function">(<span class="params">json</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(json[<span class="number">0</span>].<span class="property">name</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>但我们在上一节中，回调实现遇到 “深层嵌套” 的问题，Promise 好像没有解决？它只不过换成了 <code>then</code> 的嵌套？</p>
+<p>实际上不是这样，我们可以借助返回 Promise 的机制多返回几次，把上面的代码改写成：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fetchPromise = <span class="title function_">fetch</span>(</span><br><span class="line">  <span class="string">&quot;https://mdn.github.io/learning-area/javascript/apis/fetching-data/can-store/products.json&quot;</span>,</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">fetchPromise</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function">(<span class="params">response</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> response.<span class="title function_">json</span>();</span><br><span class="line">  &#125;)</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function">(<span class="params">json</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(json[<span class="number">0</span>].<span class="property">name</span>);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="9-2-3-Promise-异常处理"><a href="#9-2-3-Promise-异常处理" class="headerlink" title="9.2.3 Promise 异常处理"></a>9.2.3 Promise 异常处理</h4><p>众所周知，网络就是不稳定的，不可避免会出现一些问题。Promise 作为异步的基石，必然要进行异常处理。</p>
+<p>以 <code>fetch()</code> 为例，它本身可能因为各种原因出现错误（如没有网络连接、或 URL 本身存在问题），而我们也需要自己在特定的业务逻辑中主动抛出错误。</p>
+<p>对此，<code>Promise.catch(&lt;callback&gt;)</code> 就能解决问题：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fetchPromise = <span class="title function_">fetch</span>(</span><br><span class="line">  <span class="string">&quot;bad-scheme://mdn.github.io/learning-area/javascript/apis/fetching-data/can-store/products.json&quot;</span>,</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">fetchPromise</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function">(<span class="params">response</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!response.<span class="property">ok</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">`HTTP Request error: <span class="subst">$&#123;response.status&#125;</span>`</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> response.<span class="title function_">json</span>();</span><br><span class="line">  &#125;)</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function">(<span class="params">json</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(json[<span class="number">0</span>].<span class="property">name</span>);</span><br><span class="line">  &#125;)</span><br><span class="line">  .<span class="title function_">catch</span>(<span class="function">(<span class="params">error</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">`Failed to fetch product list: <span class="subst">$&#123;error&#125;</span>`</span>);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>⚠⚠<strong>请注意，只要异步操作中接收到了服务器的响应（不管是什么，例如服务器返回的 404），除非开发者自己抛出错误，否则 Promise 认为 fulfilled</strong>⚠⚠</p>
+<h4 id="9-2-4-Promise-state"><a href="#9-2-4-Promise-state" class="headerlink" title="9.2.4 Promise state"></a>9.2.4 Promise state</h4><p>之前我们在 9.2.1 中看到 Promise 对象有个属性 <code>state</code> 指示异步任务的完成情况。</p>
+<p>它有 3 种状态：</p>
+<ul>
+<li>pending：挂起等待，异步任务进行中；</li>
+<li>fulfilled：异步任务成功完成，此时会执行 <code>then</code> 传入的回调函数；</li>
+<li>rejected：异步任务执行失败，此时会执行 <code>catch</code> 传入的回调函数，如果没有就向上抛出错误；</li>
+</ul>
+<p>fulfilled 和 rejected 统称 settled；</p>
+<h4 id="9-2-5-合并-Promise"><a href="#9-2-5-合并-Promise" class="headerlink" title="9.2.5 合并 Promise"></a>9.2.5 合并 Promise</h4><p>除了上面提到的链式使用 Promise，可能还会遇到一些情况，需要合并使用多个 Promise。</p>
+<ul>
+<li><code>Promise.all(Array[Promise]) -&gt; Promise -&gt;&gt; Array[...]</code> ，等待所有的 Promise 全部 settled，并且只有全部的 Promise 都 fulfilled，这个 Promise 才会 fulfilled，否则 rejected；</li>
+<li><code>Promise.any(Array[Promise]) -&gt; Promise -&gt;&gt; ...</code>，等待<strong>任意一个 Promise settled</strong>，该 Promise 最终状态取决于这个等到的 Promise；</li>
+</ul>
+<h4 id="9-2-6-显式等待-Promise"><a href="#9-2-6-显式等待-Promise" class="headerlink" title="9.2.6 显式等待 Promise"></a>9.2.6 显式等待 Promise</h4><p>如果在一些业务逻辑中必须使用同步编程（例如没有最终返回值就进行不下去），那么就可以对 Promise 进行等待处理。对 Promise 的等待必须放在 <strong>异步函数（用关键字 <code>async</code> 修饰，箭头函数也是这样）</strong> 中，在返回 Promise 的 API 前加上 <code>await</code> 关键字，这样程序能够等待在这里并且返回最终对象；同时错误也会成为普通的 JavaScript 异常向上抛出。</p>
+<p>⚠⚠<strong>请注意，异步函数只能返回 Promise 对象。</strong>⚠⚠</p>
+<p>为什么必须要在异步函数中？因为异步函数有等待，也允许开发者在外面等待 / 继续使用 Promise 处理这个异步函数。</p>
+<p><code>await</code> 和 Promise 链一样，强制异步操作串行完成（一般应用在 “前一个步骤是后一个步骤的参数“ 的情况）。如果不需要串行，<code>Promise.all</code> 可以有更好的性能。</p>
+<h4 id="9-2-7-自定义基于-Promise-的异步-API"><a href="#9-2-7-自定义基于-Promise-的异步-API" class="headerlink" title="9.2.7 自定义基于 Promise 的异步 API"></a>9.2.7 自定义基于 Promise 的异步 API</h4><p>这里需要了解 Promise 的构造函数 <code>Promise(&lt;executor&gt;)</code>，<code>executor</code> 的需求参数如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">executor</span>(<span class="params">resolve, reject</span>) &#123; <span class="comment">/*...*/</span> &#125;</span><br></pre></td></tr></table></figure>
+<p><code>resolve</code>、<code>reject</code> 都是函数，<strong>分别对应传入 <code>then</code>、<code>catch</code> 中的函数</strong>。</p>
+<p>当一个新的 Promise 对象被创建（<code>new</code>）后，它立即执行 <code>executor</code> 中的内容（通常是耗时任务）。</p>
+<p>如果 <code>executor</code> 内调用了 <code>resolve</code>（也就是 <code>then</code> 传入的函数），那么 Promise 对象自动进入 fulfilled 状态；反之如果调用了 <code>reject</code> 或者<strong>抛出错误（自动调用 <code>reject</code>）</strong>，就相当于调用了 catch 传入的函数，或向上抛出了错误。</p>
+<h4 id="9-2-8-异步的补充：JavaScript-多线程"><a href="#9-2-8-异步的补充：JavaScript-多线程" class="headerlink" title="9.2.8 异步的补充：JavaScript 多线程"></a>9.2.8 异步的补充：JavaScript 多线程</h4><p>这里只是介绍一下，JavaScript 中存在 <code>workers</code> 机制，例如 <code>dedicated workers</code>，创建线程，但不能访问 DOM 等等。有需要的话自行查询文档。</p>
+<h2 id="Chapter-10-JavaScript-简单保存会话状态"><a href="#Chapter-10-JavaScript-简单保存会话状态" class="headerlink" title="Chapter 10. JavaScript 简单保存会话状态"></a>Chapter 10. JavaScript 简单保存会话状态</h2><p>基本上有 2 种简单的方法：<code>localStorage</code>、<code>sessionStorage</code>。</p>
+<p>二者唯一的区别是，<strong>前者是 cookie，可以在用户关闭页面后，仍然保留数据，直到下一次打开就能还原数据；后者是 session，数据只保留到用户关闭此会话（即浏览器的标签页）</strong>。</p>
+<p>使用方法是一样的：</p>
+<ul>
+<li>定义对象：直接赋值。<code>myStorage = [window.]localStorage;</code></li>
+<li><strong>异常：<code>SecurityError</code>，用户拒绝使用 cookie / session</strong>；</li>
+<li>设置键值：<code>localStorage.setItem(&quot;&lt;key&gt;&quot;, &quot;&lt;value&gt;&quot;);</code></li>
+<li>获取键值：<code>localStorage.getItem(&quot;&lt;key&gt;&quot;, &quot;&lt;value&gt;&quot;);</code></li>
+<li>移除键值：<code>localStorage.removeItem(&quot;&lt;key&gt;&quot;);</code></li>
+<li>清空：<code>locaStorage.clear();</code></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/">https://sjtuxhw.top/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myBlog/tags/Web/">Web</a><a class="post-meta__tags" href="/myBlog/tags/JavaScript/">JavaScript</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/javascript2.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/myBlog/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/myBlog/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myBlog/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/" title="React框架速通"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/react.jpg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">React框架速通</div></div></a></div><div class="next-post pull-right"><a href="/myBlog/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="JavaScript入门笔记"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/javascript.jpg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">JavaScript入门笔记</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/myBlog/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="JavaScript入门笔记"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/javascript.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-02-20</div><div class="title">JavaScript入门笔记</div></div></a></div><div><a href="/myBlog/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/" title="React框架速通"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/react.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-02-27</div><div class="title">React框架速通</div></div></a></div><div><a href="/myBlog/2023/05/03/%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E6%9E%81%E7%AE%80%E7%9A%84Java%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB/" title="开发一个极简的Java网络爬虫"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/java-crawler.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-03</div><div class="title">开发一个极简的Java网络爬虫</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/myBlog/img/favicon.ico" onerror="this.onerror=null;this.src='/myBlog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SJTU-XHW</div><div class="author-info__description">A blog to document learning and life</div></div><div class="card-info-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">33</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">50</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.top/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! ‎|•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Chapter-7-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8-DOM"><span class="toc-text">Chapter 7. 简单使用 DOM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-text">7.1 基本操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E5%88%9B%E5%BB%BA%E6%96%B0%E7%BB%93%E7%82%B9"><span class="toc-text">7.2 创建新结点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E7%A7%BB%E5%8A%A8%E3%80%81%E5%88%A0%E9%99%A4%E7%BB%93%E7%82%B9"><span class="toc-text">7.3 移动、删除结点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E6%94%B9%E5%8F%98%E7%BB%93%E7%82%B9%E6%A0%B7%E5%BC%8F"><span class="toc-text">7.4 改变结点样式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chapter-8-%E4%BA%8B%E4%BB%B6"><span class="toc-text">Chapter 8. 事件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E6%B3%A8%E5%86%8C%E3%80%81%E7%A7%BB%E9%99%A4%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E5%99%A8"><span class="toc-text">8.1 注册、移除事件处理器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E4%BA%8B%E4%BB%B6%E5%AF%B9%E8%B1%A1"><span class="toc-text">8.2 事件对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92"><span class="toc-text">8.3 事件传递</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-JavaScript-%E4%B8%AD%E7%9A%84-%E2%80%9C%E4%BA%8B%E4%BB%B6%E6%8D%95%E8%8E%B7%E2%80%9D"><span class="toc-text">8.4 JavaScript 中的 “事件捕获”</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chapter-9-JavaScript-%E5%BC%82%E6%AD%A5"><span class="toc-text">Chapter 9. JavaScript 异步</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E8%AE%A4%E8%AF%86%E6%97%A7%E5%BC%8F%E5%BC%82%E6%AD%A5%E5%AE%9E%E7%8E%B0%EF%BC%9A%E5%9F%BA%E4%BA%8E%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E5%99%A8-%E5%92%8C-%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0"><span class="toc-text">9.1 认识旧式异步实现：基于事件处理器 和 回调函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E6%96%B0%E5%BC%8F%E5%BC%82%E6%AD%A5%EF%BC%9AJavaScript-Promise"><span class="toc-text">9.2 新式异步：JavaScript Promise</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#9-2-1-API-fetch"><span class="toc-text">9.2.1 API fetch()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-2-1-Ex-%E7%9F%A5%E8%AF%86%E8%A1%A5%E5%85%85%EF%BC%9AResponse-%E5%AF%B9%E8%B1%A1"><span class="toc-text">9.2.1-Ex 知识补充：Response 对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-2-2-%E9%93%BE%E5%BC%8F-Promise"><span class="toc-text">9.2.2 链式 Promise</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-2-3-Promise-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="toc-text">9.2.3 Promise 异常处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-2-4-Promise-state"><span class="toc-text">9.2.4 Promise state</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-2-5-%E5%90%88%E5%B9%B6-Promise"><span class="toc-text">9.2.5 合并 Promise</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-2-6-%E6%98%BE%E5%BC%8F%E7%AD%89%E5%BE%85-Promise"><span class="toc-text">9.2.6 显式等待 Promise</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-2-7-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%BA%E4%BA%8E-Promise-%E7%9A%84%E5%BC%82%E6%AD%A5-API"><span class="toc-text">9.2.7 自定义基于 Promise 的异步 API</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-2-8-%E5%BC%82%E6%AD%A5%E7%9A%84%E8%A1%A5%E5%85%85%EF%BC%9AJavaScript-%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="toc-text">9.2.8 异步的补充：JavaScript 多线程</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chapter-10-JavaScript-%E7%AE%80%E5%8D%95%E4%BF%9D%E5%AD%98%E4%BC%9A%E8%AF%9D%E7%8A%B6%E6%80%81"><span class="toc-text">Chapter 10. JavaScript 简单保存会话状态</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/" title="React框架速通"><img src="https://cdn.sjtuxhw.top/cover_imgs/react.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="React框架速通"/></a><div class="content"><a class="title" href="/myBlog/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/" title="React框架速通">React框架速通</a><time datetime="2024-02-27T07:30:41.000Z" title="发表于 2024-02-27 15:30:41">2024-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/" title="JavaScript入门笔记-(2)"><img src="https://cdn.sjtuxhw.top/cover_imgs/javascript2.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="JavaScript入门笔记-(2)"/></a><div class="content"><a class="title" href="/myBlog/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/" title="JavaScript入门笔记-(2)">JavaScript入门笔记-(2)</a><time datetime="2024-02-25T03:25:22.000Z" title="发表于 2024-02-25 11:25:22">2024-02-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="JavaScript入门笔记"><img src="https://cdn.sjtuxhw.top/cover_imgs/javascript.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="JavaScript入门笔记"/></a><div class="content"><a class="title" href="/myBlog/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="JavaScript入门笔记">JavaScript入门笔记</a><time datetime="2024-02-20T13:17:09.000Z" title="发表于 2024-02-20 21:17:09">2024-02-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/" title="浅析 TTY Subsystem"><img src="https://cdn.sjtuxhw.top/cover_imgs/tty.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="浅析 TTY Subsystem"/></a><div class="content"><a class="title" href="/myBlog/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/" title="浅析 TTY Subsystem">浅析 TTY Subsystem</a><time datetime="2024-01-14T23:12:02.000Z" title="发表于 2024-01-15 07:12:02">2024-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/01/13/%E6%94%BE%E5%81%87%EF%BC%81%E5%90%90%E6%A7%BD%EF%BC%81/" title="放假！吐槽！"><img src="https://cdn.sjtuxhw.top/cover_imgs/tease.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="放假！吐槽！"/></a><div class="content"><a class="title" href="/myBlog/2024/01/13/%E6%94%BE%E5%81%87%EF%BC%81%E5%90%90%E6%A7%BD%EF%BC%81/" title="放假！吐槽！">放假！吐槽！</a><time datetime="2024-01-13T06:33:01.000Z" title="发表于 2024-01-13 14:33:01">2024-01-13</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/myBlog/js/utils.js"></script><script src="/myBlog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+      GLOBAL_CONFIG_SITE.isPost && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://twikoo.sjtuxhw.top',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <div class='name'><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom.innerHTML= result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script src="/myBlog/js/jquery-3.7.0.min.js"></script><script src="/myBlog/js/rightmenu.js"></script><div class="aplayer no-destroy" data-id="6898044781" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false"></div><script src="/myBlog/js/mourn.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="/myBlog/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/myBlog/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>
