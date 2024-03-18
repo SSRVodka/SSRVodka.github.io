@@ -1,3 +1,4 @@
+https://sjtuxhw.top/2024/03/18/TypeScript%E7%AC%94%E8%AE%B0/
 https://sjtuxhw.top/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/
 https://sjtuxhw.top/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/
 https://sjtuxhw.top/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/
@@ -28,10 +29,10 @@ https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-10th.html
 https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-17th.html
 https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-20th.html
 https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-2nd.html
-https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-5th.html
-https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-9th.html
-https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-8th.html
 https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-4th.html
+https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-5th.html
+https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-8th.html
+https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-9th.html
 https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-3rd.html
 https://sjtuxhw.top/dailyQ/%E6%9A%82%E5%81%9C%E6%9B%B4%E6%96%B0%E8%AF%B4%E6%98%8E.html
 https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-15th.html
@@ -101,6 +102,7 @@ https://sjtuxhw.top/tags/React/
 https://sjtuxhw.top/tags/SQL/
 https://sjtuxhw.top/tags/Database/
 https://sjtuxhw.top/tags/MySQL/
+https://sjtuxhw.top/tags/TypeScript/
 https://sjtuxhw.top/tags/poem/
 https://sjtuxhw.top/tags/essay/
 https://sjtuxhw.top/tags/Anime/
