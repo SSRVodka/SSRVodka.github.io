@@ -2,6 +2,60 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://sjtuxhw.top/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/</loc>
+    
+    <lastmod>2024-05-16</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://sjtuxhw.top/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/</loc>
+    
+    <lastmod>2024-05-16</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://sjtuxhw.top/2024/04/10/CSAPP-Notes-Memory-Hierarchy-Cache-Opt/</loc>
+    
+    <lastmod>2024-05-16</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://sjtuxhw.top/2024/04/16/CSAPP-Notes-ECF-I-O/</loc>
+    
+    <lastmod>2024-05-16</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://sjtuxhw.top/2023/11/11/CSAPP-Notes-Scheduler-Arch/</loc>
+    
+    <lastmod>2024-05-16</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://sjtuxhw.top/2023/09/17/CSAPP-Notes-Basic/</loc>
+    
+    <lastmod>2024-05-16</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://sjtuxhw.top/2024/03/18/TypeScript%E7%AC%94%E8%AE%B0/</loc>
     
     <lastmod>2024-03-18</lastmod>
@@ -50,24 +104,6 @@
     <loc>https://sjtuxhw.top/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/</loc>
     
     <lastmod>2024-01-15</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://sjtuxhw.top/2023/09/17/CSAPP-Notes-Part-1/</loc>
-    
-    <lastmod>2023-12-26</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://sjtuxhw.top/2023/11/11/CSAPP-Notes-Part-2/</loc>
-    
-    <lastmod>2023-12-10</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -425,7 +461,7 @@
   </url>
   
   <url>
-    <loc>https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-21th.html</loc>
+    <loc>https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-23th.html</loc>
     
     <lastmod>2023-09-19</lastmod>
     
@@ -434,7 +470,7 @@
   </url>
   
   <url>
-    <loc>https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-23th.html</loc>
+    <loc>https://sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-21th.html</loc>
     
     <lastmod>2023-09-19</lastmod>
     
@@ -697,7 +733,7 @@
 
   <url>
     <loc>https://sjtuxhw.top/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -705,357 +741,364 @@
   
   <url>
     <loc>https://sjtuxhw.top/tags/HDC/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/HarmonyOS/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/CDN/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/CMake/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/GNU/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Programmimg/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/CSAPP/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/ICS/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Programming/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Docker/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Container/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Fiddler/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Crack/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Disassembly/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/git/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Java/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://sjtuxhw.top/tags/Spring/</loc>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Web/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/JavaScript/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Minecraft/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Forge/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Matlab/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Math/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/React/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/SQL/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Database/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/MySQL/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/TypeScript/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/poem/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/essay/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Anime/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Appreciation/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Flag/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Qt/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/C/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Crawler/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/tease/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/holiday/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Data-Structure/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Linear-List/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Sort/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Hash-Table/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/BSTree/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Tree/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Discrete-Math/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/External-Search/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/B-Tree/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Graph/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Linux/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Logic/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/Set-Theory/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/tags/novel/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -1064,28 +1107,28 @@
   
   <url>
     <loc>https://sjtuxhw.top/categories/literary/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/categories/Chat/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/categories/technical/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://sjtuxhw.top/categories/review/</loc>
-    <lastmod>2024-03-18</lastmod>
+    <lastmod>2024-05-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>

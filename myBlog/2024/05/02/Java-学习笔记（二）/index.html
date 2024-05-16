@@ -1,0 +1,711 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Java 学习笔记（二） | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Reference: Oracle Documentation Chapter 3. Java Record &amp; Java Bean3.1 Java Record在 Java 14 以后，官方引入了新的 Java 关键字：record； 那么这个 record 关键字究竟有什么用处呢？它和我们熟知的 class &#x2F; interface &#x2F; abstract class 又有什么区别呢？其实">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 学习笔记（二）">
+<meta property="og:url" content="https://sjtuxhw.top/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="Reference: Oracle Documentation Chapter 3. Java Record &amp; Java Bean3.1 Java Record在 Java 14 以后，官方引入了新的 Java 关键字：record； 那么这个 record 关键字究竟有什么用处呢？它和我们熟知的 class &#x2F; interface &#x2F; abstract class 又有什么区别呢？其实">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/java2.jpg">
+<meta property="article:published_time" content="2024-05-02T10:09:13.000Z">
+<meta property="article:modified_time" content="2024-05-16T11:34:55.769Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="Programming">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/java2.jpg"><link rel="shortcut icon" href="/myBlog/img/favicon.ico"><link rel="canonical" href="https://sjtuxhw.top/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myBlog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?64dd3b0c09c8af7b916f8249d32097e2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = {
+  root: '/myBlog/',
+  algolia: undefined,
+  localSearch: {"path":"/myBlog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Java 学习笔记（二）',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-05-16 19:34:55'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/myBlog/css/mouseConfig.css"><link rel="stylesheet" href="/myBlog/css/valineBg.css"><link rel="stylesheet" href="/myBlog/css/rightmenu.css"><link rel="stylesheet" href="/myBlog/css/custom_music.css"><link rel="stylesheet" href="/myBlog/css/addFonts.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/myBlog/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/myBlog/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">52</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.sjtuxhw.top/cover_imgs/java2.jpg')"><nav id="nav"><span id="blog-info"><a href="/myBlog/" title="SJTU-XHW's blog"><img class="site-icon" src="/myBlog/img/head_icon.png"/><span class="site-name">SJTU-XHW's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Java 学习笔记（二）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-05-02T10:09:13.000Z" title="发表于 2024-05-02 18:09:13">2024-05-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-05-16T11:34:55.769Z" title="更新于 2024-05-16 19:34:55">2024-05-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>23分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/myBlog/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/#post-comment"><span id="twikoo-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><i>Reference: Oracle Documentation</i></p>
+<h1 id="Chapter-3-Java-Record-amp-Java-Bean"><a href="#Chapter-3-Java-Record-amp-Java-Bean" class="headerlink" title="Chapter 3. Java Record &amp; Java Bean"></a>Chapter 3. Java Record &amp; Java Bean</h1><h2 id="3-1-Java-Record"><a href="#3-1-Java-Record" class="headerlink" title="3.1 Java Record"></a>3.1 Java Record</h2><p>在 Java 14 以后，官方引入了新的 Java 关键字：<code>record</code>；</p>
+<p>那么这个 <code>record</code> 关键字究竟有什么用处呢？它和我们熟知的 <code>class / interface / abstract class</code> 又有什么区别呢？其实在 Java 14 以前，有一种需求写起来非常的麻烦，正因为这种需求才产生出了 <code>record</code> 关键字。这个需求是什么呢？</p>
+<p>举个例子，假如现在有个应用场景，想要定义一个数据类型，<strong>它只是用来存放一些数据</strong>（例如数据库查询的结果，或者是某个服务的返回信息）。</p>
+<p>在很多实际情况下，我们希望使用这些数据就像 Java 内置基本类型一样，是不可变数据类型。这样做有几点好处：</p>
+<ul>
+<li><p>复制构造时，不是引用传递，因此是深拷贝。这样使用起来和基本类型一样方便，但是又不用担心改错源数据（非引用链接）；</p>
+</li>
+<li><p>确保数据在多线程情况下无需同步，线程安全！</p>
+</li>
+</ul>
+<p>回忆下基础篇中的知识，要让 Java 类型（对象）behaves like 不可变数据类型，就必须确保：</p>
+<ul>
+<li>类型中的每个数据域都是 <u>私有的、常量的</u>（<code>private</code>，<code>final</code>）；</li>
+<li>每个数据域都只能通过 <code>getter</code> 方法获取，不能有任何 <code>setter</code> 方法；</li>
+<li>必须存在公有构造函数，并且构造函数内初始化各个数据域（常量只能这么做）；</li>
+<li>Object 基类继承函数 <code>equals</code> 返回 <code>true</code> 当且仅当类中的每个数据域都相等；</li>
+<li>Object 基类继承函数 <code>hashCode</code> 在类中的每个数据域都相等时，一定返回一样的值；</li>
+<li>Object 基类继承函数 <code>toString</code> 最好包含 类名 和 每个数据域的名称和值； </li>
+</ul>
+<p>好了，假设我们现在想要保存一个 “联系人” 的信息，只包含一个名称、住址。我要定义这个类为不可变数据类型，那么：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Objects;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String address;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Persion</span><span class="params">(String name, String address)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">        <span class="built_in">this</span>.address = address;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">hashCode</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Objects.hash(name, address);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">equals</span><span class="params">(Object obj)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">this</span> == obj) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (!(obj <span class="keyword">instanceof</span> Person)) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="type">Person</span> <span class="variable">other</span> <span class="operator">=</span> (Person)obj;</span><br><span class="line">            <span class="keyword">return</span> Objects.equals(name, other.name) &amp;&amp; Objects.equals(address, other.address);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">toString</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Person [name=&quot;</span> + name + <span class="string">&quot;, address=&quot;</span> + address + <span class="string">&quot;]&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* standard getters */</span></span><br><span class="line">    String <span class="title function_">getName</span><span class="params">()</span> &#123; <span class="keyword">return</span> <span class="built_in">this</span>.name; &#125;</span><br><span class="line">    String <span class="title function_">getAddress</span><span class="params">()</span> &#123; <span class="keyword">return</span> <span class="built_in">this</span>.address; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>……这很难评，仅仅为了将两个基本类型保存为不可变的数据类型，如此大费周章。具体来说，有几点坏处：</p>
+<ul>
+<li><p>许多代码都是和业务逻辑无关的 “模板代码”；</p>
+</li>
+<li><p>这种写法模糊了这个类原本的作用（语义模糊）：仅仅是按不可变数据类型保存两个基本类型而已！</p>
+</li>
+<li><p>很差的扩展性。</p>
+<blockquote>
+<p>现在还只有两个属性，那如果我要再加一个属性呢？</p>
+<p>那么我要修改构造函数、修改<strong>所有的重载方法</strong>、为新的属性添加访问器。可谓麻烦。</p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<p>于是，在 Java 14 中，定义了新的关键字 <code>record</code>，它的含义就是告诉编译器，这是个保存数据的类型，要把它定义成不可变的样子！</p>
+<p>经过上面的铺垫，你就能理解 <code>record</code> 关键字的意义，以及它的作用了。</p>
+<h3 id="3-1-1-记录类型的构造函数"><a href="#3-1-1-记录类型的构造函数" class="headerlink" title="3.1.1 记录类型的构造函数"></a>3.1.1 记录类型的构造函数</h3><p>Java 规定，在使用 <code>record</code> 关键字定义类型时，<strong>默认构造函数存在参数，且与私有数据域一一对应</strong>。</p>
+<p>允许特殊的定义方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">Person</span><span class="params">(String name, String address)</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>你没有看错，上面一行等价于之前用 <code>class</code> 定义的一大堆代码……</p>
+<p>除了简化了默认构造函数，你仍然在此基础上自定义构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Objects;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 只需括号内声明数据记录类所有的私有数据成员即可 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">Person</span><span class="params">(String name, String address)</span> &#123;</span><br><span class="line">    <span class="comment">/* 简化的默认构造函数（被称为 compact constructor），不需要写形参列表、不需要手动对其初始化 */</span></span><br><span class="line">    <span class="keyword">public</span> Person &#123;</span><br><span class="line">        <span class="comment">/* 一般没啥事能做，你可以检查检查传入的参数是否为 null */</span></span><br><span class="line">        Objects.requireNotNull(name);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* 可以重载构造函数 */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Person</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="comment">/* 允许委托构造 */</span></span><br><span class="line">        <span class="built_in">this</span>(name, <span class="string">&quot;UNKNOWN&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-1-2-记录类型的访问器"><a href="#3-1-2-记录类型的访问器" class="headerlink" title="3.1.2 记录类型的访问器"></a>3.1.2 记录类型的访问器</h3><p>和一般的访问器命名法有些差别，记录类型默认的访问器不使用 <code>getXXX</code> 命名，而是使用 <strong>数据成员的名字</strong> 直接命名。</p>
+<p>另外，一般真的不用改记录类型的访问器，如果需要改，那么说明这个类一定不是单纯的数据记录类，请用普通类型定义！</p>
+<h3 id="3-1-3-记录类型的-Object-重写方法"><a href="#3-1-3-记录类型的-Object-重写方法" class="headerlink" title="3.1.3 记录类型的 Object 重写方法"></a>3.1.3 记录类型的 Object 重写方法</h3><p>根据定义，<code>equals</code>、<code>hashCode</code> 一般都不需要你再次重写。</p>
+<p>在某些情况下，你可能想要自定义 <code>toString</code>，这没有问题，就和普通的类重写的方法一样。</p>
+<h3 id="3-1-4-记录类型的静态变量和方法"><a href="#3-1-4-记录类型的静态变量和方法" class="headerlink" title="3.1.4 记录类型的静态变量和方法"></a>3.1.4 记录类型的静态变量和方法</h3><p>虽然不允许有公有可写的属性，但记录类型允许定义 <strong>静态变量、静态方法，它们都可以是公有的</strong>。</p>
+<p>你可以把它们理解成对整个数据类型的配置，或者解释。</p>
+<h2 id="3-2-Java-Bean"><a href="#3-2-Java-Bean" class="headerlink" title="3.2 Java Bean"></a>3.2 Java Bean</h2><p>嗯，实际上，还有一种约定和 Java Record 应用很像的 <strong>Java 类型定义规范</strong>，它的名字是 Java Bean（Java 豆？）。</p>
+<p>没错，Java Bean 是 Java 的一种类型定义规范，和 record 类似，它们的共性是<u>用一个类来盛放一组数据</u>。</p>
+<p>但是，record 追求的是不可变数据类型（数据域不可变性）、一条记录的不可变性和易操作性，而 bean 追求的是：</p>
+<ol>
+<li><p>数据的取出放入的接口不变，保证兼容性；</p>
+</li>
+<li><p>数据序列化（serializable）和<u>传输方便</u>（注：Java Bean 出现的原因就在于此，为了让一组相关数据传输方便）；</p>
+<blockquote>
+<p>不过 Record 也很简单，传输起来也方便，但是不可变，应该看业务需求选择。</p>
+</blockquote>
+</li>
+</ol>
+<p>所以，Java Bean 没有像 record 一样，它规定了一组类型定义方式：</p>
+<ol>
+<li>提供一个默认的无参构造函数；</li>
+<li>需要被序列化并且实现了 Serializable 接口；</li>
+<li>可能有一系列可读写属性，并且一般是 private 的；</li>
+<li>有一系列的 getter 或 setter 方法；</li>
+</ol>
+<p>感性理解一下：想象一下存在这样一个箱子，其内部被分割成几个格子，每个格子用来存放特定的物品，工人取出或者放入物品后封箱，然后叫了个快递把箱子发出去了。这个箱子就是 Java Bean，取出、放入就是 getter、setter，物品就是属性，封箱发出就是序列化和传输。</p>
+<p>举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String newName)</span> &#123;</span><br><span class="line">        name = newName;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setAge</span><span class="params">(<span class="type">int</span> newAge)</span> &#123;</span><br><span class="line">        age = newAge;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getAge</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的 <code>Person</code> 类就是合格的 Java Bean（注：<code>Serializable</code> 接口已经在 Java 笔记1 中详细介绍）。</p>
+<h2 id="3-3-Java-Record-与-Java-Bean-的对比"><a href="#3-3-Java-Record-与-Java-Bean-的对比" class="headerlink" title="3.3 Java Record 与 Java Bean 的对比"></a>3.3 Java Record 与 Java Bean 的对比</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Java Record</th>
+<th>Java Bean</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>追求不可变数据类型、数据结果表示</td>
+<td>追求数据传输便捷性、数据访问接口规范性</td>
+</tr>
+<tr>
+<td>Java 14+ 使用关键字 record 辅助定义</td>
+<td>纯手工实现约定</td>
+</tr>
+<tr>
+<td>final class，不可被继承，也没有被继承需求</td>
+<td>普通 class，可以被继承</td>
+</tr>
+<tr>
+<td>常用于存放、比较 和 展示数据结果</td>
+<td>常用于完成如数据传输一类的业务逻辑</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="Chapter-4-反射"><a href="#Chapter-4-反射" class="headerlink" title="Chapter 4. 反射"></a>Chapter 4. 反射</h1><p>Java 中的反射机制是什么？</p>
+<p><img src="imgs/CompileAndExplain.png"></p>
+<p>复习一下 Java 的运行过程。我们知道，Java 虚拟机是一种解释器，是解释 Java 字节码（*.class）的一种程序。其大致运行过程如下：</p>
+<p>运行<strong>类加载器</strong>（ClassLoader）将字节码加载到内存中 —-&gt; 运行<strong>字节码验证器</strong>强制检查 Java 程序合法性和安全性，不符合安全规范的不予运行 —-&gt; 读取内存中的字节码逐句解释为机器码执行；</p>
+<p>可以说，在 Java 源文件编译为字节码之后，就形成了一个个 <code>*.class</code> 文件。这里的每个 <code>*.class</code> 文件都对应着这个类型的必要信息。在 Java 虚拟机中将这些字节码加载到内存中，构建了这个类对应的特殊的表示对象（称为 <code>Class</code> 对象）。这样在引用到这个类的位置就能正确地给出行为。</p>
+<blockquote>
+<p>注意，在 Java 中，<code>Class</code>（首字母大写，和关键字 <code>class</code> 是两回事）本身就是一个类型，是承载类的信息的类（元类，meta-class），它的实例对象就叫 <code>Class</code> 对象。</p>
+</blockquote>
+<p>而所谓的反射，可以说是上面的过程的运行时逆过程：</p>
+<p><u><strong>Java 的反射就是从加载到内存中的 <code>Class</code> 对象，反向获取其中的信息</strong></u>（或者说，反向映射）。</p>
+<h2 id="4-1-反射的意义使用场景"><a href="#4-1-反射的意义使用场景" class="headerlink" title="4.1 反射的意义使用场景"></a>4.1 反射的意义使用场景</h2><p>不过在介绍反射之前，首先谈谈它的坏处：</p>
+<ul>
+<li>破坏了类的封装性（因为反射是从 <code>Class</code> 对象反向获取信息，因此突破了类型可见性修饰符的约束，可以访问某个类的私有成员）；</li>
+<li><p>运行时确定类型，性能肯定不好，丢掉了静态类型语言的性能优势；</p>
+</li>
+<li><p>运行安全问题。</p>
+</li>
+</ul>
+<p>如此重要的缺点，已经注定了 Java 的反射机制不应该被随便使用，并且大部分场合下并不适合使用反射。</p>
+<p>但是因为反射的重要功能，少数场合又不得不用。举几个例子：</p>
+<ul>
+<li>Java codelinter 静态类型代码检查。比如 IDEA 的 LSP Server 在探查某个对象的方法和属性的时候（你在 IDEA 里写个对象，后面加个点就能弹出一堆方法和属性提示），除了分析上下文定义的方法以外，一种重要的手段就是通过反射分析；</li>
+<li>大型框架（例如 Springboot）很多都是配置化的（例如通过 XML 文件配置 Bean），为了保证框架的通用性，可能需要根据配置文件加载不同的类或者对象、调用不同的方法。这个时候就必须使用到反射了，它可以完成 “运行时动态加载需要的加载的对象” 的任务；</li>
+<li>Java 加载某些数据库驱动的时候，需要运行时动态构建类型信息，使用时就要用反射机制；</li>
+<li>某些注解的行为需要反射（下一章 “注解” 所需要了解的知识）。</li>
+</ul>
+<h2 id="4-2-反射-API"><a href="#4-2-反射-API" class="headerlink" title="4.2 反射 API"></a>4.2 反射 API</h2><p>了解它的地位后，在开始使用它。使用 Java 的反射就是使用 <code>java.lang.Class</code> 和 <code>java.lang.reflect.*</code> 的所有 API。</p>
+<p>首先列出可能用到的类型：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Java 类型</th>
+<th>类型说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Class</code></td>
+<td>用来在内存中描述一个 Java 类（所有继承于 Object 的类）</td>
+</tr>
+<tr>
+<td><code>Constructor</code></td>
+<td>用来在内存中描述一个 Java 类的构造函数信息，包括访问权限和动态调用信息等</td>
+</tr>
+<tr>
+<td><code>Field</code></td>
+<td>用来在内存中描述一个 Java 类或者 Java 接口的数据成员（或者说属性）信息，包括访问权限和动态修改等</td>
+</tr>
+<tr>
+<td><code>Method</code></td>
+<td>用来在内存中描述一个 Java 类或者 Java 接口的成员函数（或者说方法）信息，包括包括访问权限和动态调用信息等</td>
+</tr>
+<tr>
+<td><code>Modifier</code></td>
+<td>用来在内存中描述一个 Java 类或者 Java 接口的所有成员（包括属性、方法）的修饰属性，例如 <code>public/private/static/final/synchronized/abstract</code> 等信息</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="4-2-1-Class-类型与-Class-实例"><a href="#4-2-1-Class-类型与-Class-实例" class="headerlink" title="4.2.1 Class 类型与 Class 实例"></a>4.2.1 <code>Class</code> 类型与 <code>Class</code> 实例</h3><p>我们知道了，反射需要根据内存中的 <code>Class</code> 对象进行操作，那么怎么得到一个普通类型所对应的 <code>Class</code> 对象呢？Java 提供了 3 种方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* &lt;Object&gt; 表示任意类型，只要是 Object 的子类 */</span></span><br><span class="line"><span class="comment">/* &lt;Object Instance&gt; 表示任意类型对应的实例对象 */</span></span><br><span class="line">[Method]             &lt;Object Instance&gt;.getClass() -&gt; Class Instance;</span><br><span class="line">[Static Property]     &lt;Object&gt;.class -&gt; Class Instance;</span><br><span class="line">[Static Method]        Class.forName(String className) -&gt; Class Instance;</span><br></pre></td></tr></table></figure>
+<p>下面以获取 <code>String</code> 类对应的 <code>Class</code> 对象为例。</p>
+<ul>
+<li><p>通过该类（一定继承于基类 <code>Object</code>）的实例 中的 <code>getter</code> 方法：<code>&lt;Object&gt;.getClass()</code>；</p>
+<p>这个方法返回是这个对象所在的类型 的对应 <code>Class</code> 实例对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 获取的 stringClass 实例对象就是 String 类型在 JVM 内存中对应的 Class 对象 */</span></span><br><span class="line"><span class="type">Class</span> <span class="variable">stringClass</span> <span class="operator">=</span> name.getClass();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过该类的<strong>静态属性</strong>获得这个类所对应的 <code>Class</code> 实例对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">stringClass</span> <span class="operator">=</span> String.class;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>利用 <code>Class</code> 类型提供的静态方法，通过类名字符串查找当前内存中的 Class 对象；</p>
+<blockquote>
+<p>这种方法最常用，因为使用反射的时候，几乎都是不知道对象、不知道类型定义、只知道类型名的情况。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">stringClass</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;String&quot;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>知道类如何获取某个类型的 <code>Class</code> 对象，那么可以对这个 <code>Class</code> 对象进行哪些操作呢？</p>
+<ul>
+<li><p>判断任意对象是否是这个 <code>Class</code>  对象描述的类的实例，或者其他什么东西：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* obj 是否是这个 Class 对象描述的类型的实例 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">isInstance</span><span class="params">(Object obj)</span>;    <span class="comment">/* [Method] */</span></span><br><span class="line"><span class="comment">/* 这个 Class 对象描述的类型是否是 Interface 类型 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">isInterface</span><span class="params">()</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">isArray</span><span class="params">()</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">isPrimitive</span><span class="params">()</span>;    <span class="comment">/* 判断基本类型 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="type">boolean</span> <span class="title function_">isAnnotation</span><span class="params">()</span>;    <span class="comment">/* 判断注解 */</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>下面以这个 <code>Class</code> 类型存放的是普通 Java 类为例，叙述常见的方法。</p>
+<blockquote>
+<p>如果 <code>Class</code> 对象中描述的是注解，那么在下一章 “注解” 进行介绍。</p>
+<p>如果 <code>Class</code> 对象中描述的是接口，那么只能获取一些成员信息，可能能调用一些静态方法或属性。</p>
+</blockquote>
+<ul>
+<li><p>从 <code>Class</code> 对象创建实例（哪怕源码中没有这个类的定义也行，只要内存中有这个 <code>Class</code> 对象）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 按默认构造函数创建实例 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> Object <span class="title function_">newInstance</span><span class="params">()</span>;        <span class="comment">/* [Method] */</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取 <code>Class</code> 对象对应类的构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 获取 Class 对象描述的类型的：所有&quot;公有的&quot;构造方法 */</span></span><br><span class="line"><span class="keyword">public</span> Constructor[] getConstructors();</span><br><span class="line"><span class="comment">/* 获取所有的构造方法(包括私有、受保护、默认、公有) */</span></span><br><span class="line"><span class="keyword">public</span> Constructor[] getDeclaredConstructors();</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 获取指定的构造函数 */</span></span><br><span class="line"><span class="comment">/* 这里的参数列表是各个参数类型对应的 Class 对象！ */</span></span><br><span class="line"><span class="keyword">public</span> Constructor <span class="title function_">getConstructor</span><span class="params">(Class... parameterTypes)</span>;</span><br><span class="line"><span class="keyword">public</span> Constructor <span class="title function_">getDeclaredConstructor</span><span class="params">(Class... parameterTypes)</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取 <code>Class</code> 对象对应类的数据成员（属性，静态修饰不作单独区分）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 获取 Class 对象描述的类型的：所有&quot;公有的&quot;属性 */</span></span><br><span class="line"><span class="keyword">public</span> Field[] getFields();</span><br><span class="line"><span class="comment">/* 获取所有的属性(包括私有、受保护、默认、公有) */</span></span><br><span class="line"><span class="keyword">public</span> Field[] getDeclaredFields();</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 获取指定名称的属性 */</span></span><br><span class="line"><span class="keyword">public</span> Field <span class="title function_">getField</span><span class="params">(String fieldName)</span>;</span><br><span class="line"><span class="keyword">public</span> Field <span class="title function_">getDeclaredField</span><span class="params">(String fieldName)</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取 <code>Class</code> 对象对应类的成员函数（方法，静态修饰不作单独区分）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 获取 Class 对象描述的类型的：所有&quot;公有的&quot;方法 */</span></span><br><span class="line"><span class="keyword">public</span> Method[] getMethods();</span><br><span class="line"><span class="comment">/* 获取所有的属性(包括私有、受保护、默认、公有) */</span></span><br><span class="line"><span class="keyword">public</span> Method[] getDeclaredMethods();</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 获取指定名称的属性 */</span></span><br><span class="line"><span class="comment">/* 和构造函数不一样，这里需要先给定方法名 */</span></span><br><span class="line"><span class="keyword">public</span> Method <span class="title function_">getMethod</span><span class="params">(String methodName, Class... parameterTypes)</span>;</span><br><span class="line"><span class="keyword">public</span> Method <span class="title function_">getDeclaredMethod</span><span class="params">(String methodName, Class... parameterTypes)</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取 <code>Class</code> 对象对应类的修饰符：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 获取类型自身的修饰符 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getModifiers</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="4-2-2-Constructor-类型"><a href="#4-2-2-Constructor-类型" class="headerlink" title="4.2.2 Constructor 类型"></a>4.2.2 <code>Constructor</code> 类型</h3><p>在介绍 <code>Class</code> 类型时，我们了解了如何得到 <code>Constructor</code>（该类的构造函数信息）对象，那么应该如何操作它？</p>
+<p>最常用的方法是 <strong>调用这个构造函数</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* T 为泛型 */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> T <span class="title function_">newInstance</span><span class="params">(Object... parameterTypes)</span>;</span><br></pre></td></tr></table></figure>
+<p>警告：这里的参数类型必须要和取得 <code>Constructor</code> 对象时传入的形参类型一致。否则运行时错误。</p>
+<p>还可以获取 <code>Constructor</code> 的其他信息，具体请看官方文档。</p>
+<h3 id="4-2-3-Field-类型"><a href="#4-2-3-Field-类型" class="headerlink" title="4.2.3 Field 类型"></a>4.2.3 <code>Field</code> 类型</h3><p>在介绍 <code>Class</code> 类型时，我们了解了如何得到 <code>Field</code>（该类的属性）对象，那么应该如何操作它？</p>
+<p>常用的方法是，按查找到的属性信息设置对象属性、读取对象属性：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">set</span><span class="params">(Object target, Object value)</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">get</span><span class="params">(Object target)</span>;</span><br></pre></td></tr></table></figure>
+<p>这里为什么要给 <code>target</code> 参数呢？因为我们得到的 <code>Field</code> 对象只是保存了原来类型属性的一部分信息，不能指明这个属性是属于具体哪个对象的。所以取值和设置时需要给定对象。</p>
+<p>警告：这里的 <code>value</code> 必须和取得 <code>Field</code> 对象时原本类型一致，否则运行时错误。</p>
+<p>对于私有成员，想要访问它前需要强制越过可见性修饰符：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setAccessible</span><span class="params">(<span class="type">boolean</span> available)</span>;</span><br></pre></td></tr></table></figure>
+<p>可能产生的异常有 <code>FieldNotFoundException</code>，<code>IllegalAccessException</code> 等等；</p>
+<p>还可以获取 <code>Field</code> 的其他信息，具体请看官方文档。</p>
+<h3 id="4-2-4-Method-类型"><a href="#4-2-4-Method-类型" class="headerlink" title="4.2.4 Method 类型"></a>4.2.4 <code>Method</code> 类型</h3><p>在介绍 <code>Class</code> 类型时，我们也了解了如何得到 <code>Method</code>（该类的方法）对象，那么应该如何操作它？</p>
+<p>常用的方法是，调用它：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> ObjectObject <span class="title function_">invoke</span><span class="params">(Object target, Object... parameters)</span>;</span><br></pre></td></tr></table></figure>
+<p>如果是私有方法，也需要通过 <code>setAccessible</code> 调整访问可见性。</p>
+<p>还可以获取 <code>Method</code> 的其他信息，具体请看官方文档。</p>
+<h3 id="4-2-5-Modifier-类型"><a href="#4-2-5-Modifier-类型" class="headerlink" title="4.2.5 Modifier 类型"></a>4.2.5 <code>Modifier</code> 类型</h3><p>其实，除了 <code>Class</code> 类型，其他的 <code>Constructor/Field/Method</code> 类型都可以调用 <code>getModifiers()</code> 获取当前字段的修饰符。返回值是 <code>int</code>，但是可以通过 <code>Modifier</code> 静态方法转为可读的字符串：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">toString</span><span class="params">()</span>;</span><br></pre></td></tr></table></figure>
+<p>可以表示的修饰符不仅有可见性修饰符，还有各种像 <code>native / synchronized / transient / volatile / abstract / final / interface</code> 等等，都可以检查到，使用对应的 <code>isXXX()</code> 实例方法即可。</p>
+<h3 id="4-2-6-反射的使用实例"><a href="#4-2-6-反射的使用实例" class="headerlink" title="4.2.6 反射的使用实例"></a>4.2.6 反射的使用实例</h3><ul>
+<li>反射越过泛型检查；</li>
+<li>大型框架（以 SpringMVC 为例）字段名一类的数据类型配置反射处理相当简洁清晰；</li>
+<li>自定义注解（写 <code>RUNTIME</code> 注解逻辑，下一章详细叙述）；</li>
+</ul>
+<h1 id="Chapter-5-注解"><a href="#Chapter-5-注解" class="headerlink" title="Chapter 5. 注解"></a>Chapter 5. 注解</h1><p>Java 中一种语法称为注解，可能在大部分其他的语言中都有。在 Python / TypeScript 中，这种类似的做法称为 “装饰器”。</p>
+<blockquote>
+<p>严格来说，Java 的注解和 Python / TypeScript 的装饰器的机制不一样。因为前者只是改变了执行方式，而后者相当于是一种语法糖，处理后替换了被装饰的对象。但是它们的语法和最终作用真的很像。</p>
+</blockquote>
+<p>这种做法的特征是，在<u>不改变原代码内容和逻辑</u>的基础上，进行一些修饰和包装（就像给解释器注解这段代码的执行方式一样），使得解释执行（或者编译）这段代码时的方式有些许改变。</p>
+<p>你没看错，“注解“ 这个东西本身，不会对原先的代码的逻辑有任何影响（<u>这段代码编译出的字节码不会变</u>），只是<u>做个标记，告诉即将要读取这个注解的对象（可能是编译器、加载器，或者是程序中的其他代码），用约定好的方式来执行这段代码</u>（比如执行之前、执行之后插入了一些其他流程）。</p>
+<h2 id="5-1-注解的使用和分类"><a href="#5-1-注解的使用和分类" class="headerlink" title="5.1 注解的使用和分类"></a>5.1 注解的使用和分类</h2><p>你也许会在一些代码中见到这样的书写方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Resource(&quot;hello&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Hello</span> &#123;</span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    <span class="type">int</span> n;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostConstruct</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">hello</span><span class="params">(<span class="meta">@Param</span> String name)</span> &#123;</span><br><span class="line">        System.out.println(name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">toString</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>@Resource(&quot;Hello&quot;)</code> 是有参数的注解，<code>@PostConstruct / @Override</code> 是无参数的注解；</p>
+<p><code>@Resource(&quot;Hello&quot;)</code> 在这个例子中是修饰类的注解，<code>@PostConstruct / @Override</code> 在这个例子中是修饰方法的注解，<code>@Param</code> 在这个例子中是修饰形参的注解。</p>
+<p>注解的使用语法就这些，无非是无参数的 <code>@&lt;AnnotationName&gt;</code>，或者有参数的 <code>@&lt;AnnotationName&gt;(...)</code>，加在它们所指定的对象头部位置。</p>
+<p>要掌握好注解的使用方法，就先把它们按使用特征分类。一般来说，注解是按处理阶段进行分类：</p>
+<ul>
+<li><p>写给编译器看的注解（称为 <strong>编译时注解，Compile-time Annotation</strong>）。</p>
+<p><u>这类注解不会被编译进入 <code>.class</code> 字节码文件，它们在编译后就被编译器扔掉了</u>；举例：</p>
+<ul>
+<li><code>@Override</code>：让编译器检查该方法是否正确地实现了覆写（C++ <code>override</code> 关键字有同样的功能）；</li>
+<li><code>@SuppressWarnings</code>：告诉编译器忽略此处代码产生的警告。</li>
+</ul>
+</li>
+<li><p>写给 <code>classLoader</code> 或者其他加载时 ~ 运行时的工具看的注解（称为 <strong>加载时注解，Load-time Annotation</strong>）。</p>
+<p><u>这类注解会被编译进入 <code>.class</code> 文件，但加载结束后并不会存在于内存中</u>。这类注解只被一些底层库使用，一般我们不必自己处理。</p>
+<p>比如有些工具会在加载 class 的时候，对 class 做动态修改，实现一些特殊的功能。</p>
+</li>
+<li><p>写给运行时某一部分代码看的注解（称为 <strong>运行时注解，Run-time Annotation</strong>）。</p>
+<p>就算是运行时注解，JVM 也并不会通过注解主动进行一些操作。<u>只有部分代码通过 <strong>反射</strong> 读取指定的注解，进行业务逻辑的执行</u>。</p>
+<p><u>这也是最常用的注解形式，在许多框架中都会出现</u>。</p>
+</li>
+</ul>
+<h2 id="5-2-自定义注解"><a href="#5-2-自定义注解" class="headerlink" title="5.2 自定义注解"></a>5.2 自定义注解</h2><p>有些情况下（比如使用框架），你可能会用很多预先定义的注解，但是你很好奇这些注解是怎么运作的，于是你就要了解，一个注解是如何定义、如何生效（进行处理）的。</p>
+<p>搞清楚一个东西的最好方法就是从头开始做一遍，于是你准备动手搓一个自定义的注解出来。</p>
+<h3 id="5-2-1-注解的定义-和-实质"><a href="#5-2-1-注解的定义-和-实质" class="headerlink" title="5.2.1 注解的定义 和 实质"></a>5.2.1 注解的定义 和 实质</h3><p>Java 规定，注解使用 <code>@interface</code> 关键字定义注解。最基本的语法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyFirstAnnotation &#123;</span><br><span class="line">    <span class="comment">/* 强烈建议为注解的每个数据域都设置一个默认值 */</span></span><br><span class="line">    <span class="type">int</span> <span class="title function_">intData</span><span class="params">()</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line">    String <span class="title function_">stringData1</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;info&quot;</span>;</span><br><span class="line">    String <span class="title function_">stringData2</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="comment">/* 建议最常用的数据域名称设置为 value */</span></span><br><span class="line">    String <span class="title function_">value</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注解的定义和 Java 的记录类型一样简洁，<u>只需要声明要传给注解的参数即可（这些参数直接以访问器的形式定义，如上），不需要定义任何处理逻辑！</u></p>
+<p>因为注解的处理交由某些特定的代码完成（下一节介绍），注解的定义本身 <strong>就仅仅是一个 “注解”，或者说等待处理的标识而已</strong>。</p>
+<p>此外，还需要搞清楚一件事：注解的实质就是一个 Java 类型。所有的注解都继承于接口 <code>java.lang.annotation.Annotation</code>；因此，上面的定义方法只不过也是一种语法糖罢了。</p>
+<p>但是，只有这个定义还不够描述这个注解，比如，<strong><u>这个注解是前面分类中的什么类型？应该在什么阶段、被谁处理（生命周期）？允许修饰谁？</u></strong></p>
+<p>这些信息 <strong>可以交给描述注解的注解，也就是元注解（meta-annotation），来完成</strong>。</p>
+<p>Java 标准库中定义了一大批实用的元注解，所以一般不需要我们自己定义元注解，只要知道怎么使用元注解来定义注解就可以了。常用的元注解如下：</p>
+<ul>
+<li><p><code>@Target(&lt;ElementType/ElementTypes[]&gt;)</code> 元注解：<strong>解释当前注解所能修饰的对象类型</strong>。</p>
+<blockquote>
+<p>参数取值：<code>ElementType.TYPE</code>（允许修饰类、接口），<code>ElementType.FIELD</code>（允许修饰属性），<code>ElementType.METHOD</code>（允许修饰方法），<code>ElementType.CONSTRUCTOR</code>（允许修饰构造函数），<code>ElementType.PARAMETER</code>（允许修饰方法的形式参数）；</p>
+</blockquote>
+</li>
+<li><p><code>@Retention([RetentionPolicy])</code> 元注解：<strong>解释当前注解的声明周期（指定注解类型）</strong>。</p>
+<blockquote>
+<p>可选参数取值：<code>RetentionPolicy.SOURCE</code> 编译时注解、<code>RetentionPolicy.CLASS</code> 加载时注解（默认）、<code>RetentionPolicy.RUNTIME</code> 运行时注解；</p>
+</blockquote>
+</li>
+<li><p><code>@Repeatable(&lt;Annotation Class Instance&gt;)</code> 元注解：<strong>解释当前注解是否可以重复注解同一对象</strong>。</p>
+<blockquote>
+<p>要用的话，直接在注解的定义头部加上 <code>@Repeatable(&lt;AnnotationName&gt;.class)</code>；</p>
+<p>这里需要反射方法传入自定义注解类对应的 <code>Class</code> 对象。</p>
+</blockquote>
+</li>
+<li><p><code>@Inherited</code> 元注解：<strong>解释当前注解是否可继承</strong>。当且仅当 <code>@Target</code> 参数为 <code>ElementType.TYPE</code> 时有效。</p>
+<blockquote>
+<p>这个元注解的意思是，当前注解能不能随着继承交给子类。</p>
+</blockquote>
+</li>
+</ul>
+<p>使用示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 这个注解只能修饰方法 */</span></span><br><span class="line"><span class="meta">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyFirstAnnotation &#123;</span><br><span class="line">    <span class="type">int</span> <span class="title function_">intData</span><span class="params">()</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line">    String <span class="title function_">stringData1</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;info&quot;</span>;</span><br><span class="line">    String <span class="title function_">stringData2</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 这个注解既能修饰方法，又能修饰属性 */</span></span><br><span class="line"><span class="meta">@Target(&#123;</span></span><br><span class="line"><span class="meta">    ElementType.METHOD,</span></span><br><span class="line"><span class="meta">    ElementType.FIELD</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyFirstAnnotation2 &#123;</span><br><span class="line">    <span class="type">int</span> <span class="title function_">intData</span><span class="params">()</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line">    String <span class="title function_">stringData1</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;info&quot;</span>;</span><br><span class="line">    String <span class="title function_">stringData2</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 可以注解方法和构造函数的 运行时注解 */</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(&#123;</span></span><br><span class="line"><span class="meta">    ElementType.METHOD,</span></span><br><span class="line"><span class="meta">    ElementType.CONSTRUCTOR</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyFirstAnnotation1 &#123;</span><br><span class="line">    <span class="type">int</span> <span class="title function_">intData</span><span class="params">()</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line">    String <span class="title function_">stringData1</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;info&quot;</span>;</span><br><span class="line">    String <span class="title function_">stringData2</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="5-2-2-运行时注解的处理"><a href="#5-2-2-运行时注解的处理" class="headerlink" title="5.2.2 运行时注解的处理"></a>5.2.2 运行时注解的处理</h3><p>由于其他两类注解一般用不到（编译时注解由编译器使用，因此我们一般只使用，不编写；加载时注解主要由底层工具库使用，涉及到class的加载，一般我们很少用到），因此此处仅叙述运行时注解的处理。</p>
+<p>从现在开始，下文中的所有 “注解” 都指代 “运行时注解”。</p>
+<p>我们知道，注解本身只是个注解，<u>如果你不做任何处理，那么它将对原本的代码毫无影响，就像注释一样。</u></p>
+<p>我们还知道，注解只是一个 Java 类而已，但是这个类只存放一些参数，不与外界代码有任何关联。</p>
+<p>所以处理注解的方法一目了然：<u>使用上一章介绍的反射机制</u>，不仅能找到所有规定类型的注解，还能让注解发挥指定的效果。</p>
+<p>上一章中，我们只介绍了关于类型、接口的反射 API，这里我们补充一下针对注解的反射 API：</p>
+<ul>
+<li><p>判断 <code>Class</code> 对象本身是否描述的是注解：<code>public boolean isAnnotation();</code>；</p>
+</li>
+<li><p>判断注解是否存在于指定对象上：<code>isAnnotationPresent(&lt;Class Object of Annotation&gt;)</code>；</p>
+<blockquote>
+<p>这个方法在 <code>Class / Field / Method / Constructor</code> 类型中都有。</p>
+</blockquote>
+</li>
+<li><p>从指定对象上获取注解对象：<code>getAnnotation(&lt;Class Object of Annotation&gt;)</code>；</p>
+<blockquote>
+<p>这个方法在 <code>Class / Field / Method / Constructor</code> 类型中都有。</p>
+<p>注意：<u>可能会返回 <code>null</code>，所以使用前请用 <code>isAnnotationPresent</code> 检查！</u></p>
+</blockquote>
+</li>
+<li><p>从方法 / 构造函数中获得参数注解对象：<code>getParameterAnnotations() -&gt; Annotation[][]</code>；</p>
+<blockquote>
+<p>只有在 <code>Method / Constructor</code> 中存在。</p>
+</blockquote>
+</li>
+</ul>
+<p>再回想一下，注解是个类型，里面装的全是传入参数，并且直接提供各个传入参数的访问器方法。</p>
+<p>有了以上的知识，就能写一个自定义的注解了。</p>
+<h3 id="5-2-3-实战：自定义一个运行时注解"><a href="#5-2-3-实战：自定义一个运行时注解" class="headerlink" title="5.2.3 实战：自定义一个运行时注解"></a>5.2.3 实战：自定义一个运行时注解</h3><p>考虑一个需求，我想定义一个修饰属性的运行时注解，如果这个参数是整数，就限制这个参数的范围为注解参数给定的范围；如果这个参数是字符串，那么限制的是字符串长度。其中最大、最小值可选。代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* File: Range.java */</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(ElementType.FIELD)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Range &#123;</span><br><span class="line">    <span class="type">int</span> <span class="title function_">min</span><span class="params">()</span>: <span class="keyword">default</span> Integer.MIN_VALUE;</span><br><span class="line">    <span class="type">int</span> <span class="title function_">max</span><span class="params">()</span>: <span class="keyword">default</span> Integer.MAX_VALUE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* File: RangeChecker.java */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RangeChecker</span>&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">check</span><span class="params">(T obj)</span> <span class="keyword">throws</span> IllegalArgumentException &#123;</span><br><span class="line">        Class&lt;?&gt; objCls = obj.getClass();</span><br><span class="line">        <span class="keyword">for</span> (Field f: objCls.getFields()) &#123;</span><br><span class="line">            f.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            <span class="keyword">if</span> (f.isAnnotationPresent(Range.class)) &#123;</span><br><span class="line">                <span class="type">Range</span> <span class="variable">range</span> <span class="operator">=</span> f.getAnnotation(Range.class);</span><br><span class="line">                <span class="type">Object</span> <span class="variable">originVal</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    originVal = f.get(obj);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IllegalAccessException err) &#123;</span><br><span class="line">                    <span class="comment">/* Controls never reaches here. */</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (originVal <span class="keyword">instanceof</span> String s) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (s.length() &lt; range.min() || s.length() &gt; range.max()) &#123;</span><br><span class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Invalid field: &quot;</span> + f.getName());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (originVal <span class="keyword">instanceof</span> Integer i) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (i &lt; range.min() || i &gt; range.max()) &#123;</span><br><span class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Invalid field: &quot;</span> + f.getName());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>思考一下，<code>RangeChecker</code> 应该什么时候被使用？没错，这取决于你的业务逻辑。注解是 “惰性的”，只有你显式调用注解处理方法，注解的处理才会开始。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/">https://sjtuxhw.top/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myBlog/tags/Programming/">Programming</a><a class="post-meta__tags" href="/myBlog/tags/Java/">Java</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/java2.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/myBlog/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/myBlog/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/myBlog/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/" title="Java Spring Boot 入门"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/spring-boot.jpg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Java Spring Boot 入门</div></div></a></div><div class="next-post pull-right"><a href="/myBlog/2024/04/16/CSAPP-Notes-ECF-I-O/" title="CSAPP Notes: ECF &amp; I/O"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp-ecf.jpg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">CSAPP Notes: ECF &amp; I/O</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/myBlog/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/" title="Java Spring Boot 入门"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/spring-boot.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-06</div><div class="title">Java Spring Boot 入门</div></div></a></div><div><a href="/myBlog/2023/04/28/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Java 学习笔记（1）"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/java1.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="title">Java 学习笔记（1）</div></div></a></div><div><a href="/myBlog/2023/09/17/CSAPP-Notes-Basic/" title="CSAPP Notes Basic"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-17</div><div class="title">CSAPP Notes Basic</div></div></a></div><div><a href="/myBlog/2024/04/16/CSAPP-Notes-ECF-I-O/" title="CSAPP Notes: ECF &amp; I&#x2F;O"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp-ecf.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-16</div><div class="title">CSAPP Notes: ECF &amp; I&#x2F;O</div></div></a></div><div><a href="/myBlog/2024/04/10/CSAPP-Notes-Memory-Hierarchy-Cache-Opt/" title="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp-mh.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-10</div><div class="title">CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt</div></div></a></div><div><a href="/myBlog/2023/11/11/CSAPP-Notes-Scheduler-Arch/" title="CSAPP Notes: Scheduler &amp; Arch"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_p2.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-11</div><div class="title">CSAPP Notes: Scheduler &amp; Arch</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/myBlog/img/favicon.ico" onerror="this.onerror=null;this.src='/myBlog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SJTU-XHW</div><div class="author-info__description">A blog to document learning and life</div></div><div class="card-info-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">52</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.top/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! ‎|•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-3-Java-Record-amp-Java-Bean"><span class="toc-text">Chapter 3. Java Record &amp; Java Bean</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-Java-Record"><span class="toc-text">3.1 Java Record</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-1-%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="toc-text">3.1.1 记录类型的构造函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-2-%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%AE%BF%E9%97%AE%E5%99%A8"><span class="toc-text">3.1.2 记录类型的访问器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-3-%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B%E7%9A%84-Object-%E9%87%8D%E5%86%99%E6%96%B9%E6%B3%95"><span class="toc-text">3.1.3 记录类型的 Object 重写方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-4-%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B%E7%9A%84%E9%9D%99%E6%80%81%E5%8F%98%E9%87%8F%E5%92%8C%E6%96%B9%E6%B3%95"><span class="toc-text">3.1.4 记录类型的静态变量和方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-Java-Bean"><span class="toc-text">3.2 Java Bean</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-Java-Record-%E4%B8%8E-Java-Bean-%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-text">3.3 Java Record 与 Java Bean 的对比</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-4-%E5%8F%8D%E5%B0%84"><span class="toc-text">Chapter 4. 反射</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E5%8F%8D%E5%B0%84%E7%9A%84%E6%84%8F%E4%B9%89%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">4.1 反射的意义使用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-%E5%8F%8D%E5%B0%84-API"><span class="toc-text">4.2 反射 API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-1-Class-%E7%B1%BB%E5%9E%8B%E4%B8%8E-Class-%E5%AE%9E%E4%BE%8B"><span class="toc-text">4.2.1 Class 类型与 Class 实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-2-Constructor-%E7%B1%BB%E5%9E%8B"><span class="toc-text">4.2.2 Constructor 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-3-Field-%E7%B1%BB%E5%9E%8B"><span class="toc-text">4.2.3 Field 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-4-Method-%E7%B1%BB%E5%9E%8B"><span class="toc-text">4.2.4 Method 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-5-Modifier-%E7%B1%BB%E5%9E%8B"><span class="toc-text">4.2.5 Modifier 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-6-%E5%8F%8D%E5%B0%84%E7%9A%84%E4%BD%BF%E7%94%A8%E5%AE%9E%E4%BE%8B"><span class="toc-text">4.2.6 反射的使用实例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-5-%E6%B3%A8%E8%A7%A3"><span class="toc-text">Chapter 5. 注解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-1-%E6%B3%A8%E8%A7%A3%E7%9A%84%E4%BD%BF%E7%94%A8%E5%92%8C%E5%88%86%E7%B1%BB"><span class="toc-text">5.1 注解的使用和分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-2-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3"><span class="toc-text">5.2 自定义注解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-1-%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%AE%9A%E4%B9%89-%E5%92%8C-%E5%AE%9E%E8%B4%A8"><span class="toc-text">5.2.1 注解的定义 和 实质</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-2-%E8%BF%90%E8%A1%8C%E6%97%B6%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-text">5.2.2 运行时注解的处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-3-%E5%AE%9E%E6%88%98%EF%BC%9A%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA%E8%BF%90%E8%A1%8C%E6%97%B6%E6%B3%A8%E8%A7%A3"><span class="toc-text">5.2.3 实战：自定义一个运行时注解</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/" title="Java Spring Boot 入门"><img src="https://cdn.sjtuxhw.top/cover_imgs/spring-boot.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Java Spring Boot 入门"/></a><div class="content"><a class="title" href="/myBlog/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/" title="Java Spring Boot 入门">Java Spring Boot 入门</a><time datetime="2024-05-06T11:12:30.000Z" title="发表于 2024-05-06 19:12:30">2024-05-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="Java 学习笔记（二）"><img src="https://cdn.sjtuxhw.top/cover_imgs/java2.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Java 学习笔记（二）"/></a><div class="content"><a class="title" href="/myBlog/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="Java 学习笔记（二）">Java 学习笔记（二）</a><time datetime="2024-05-02T10:09:13.000Z" title="发表于 2024-05-02 18:09:13">2024-05-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/04/16/CSAPP-Notes-ECF-I-O/" title="CSAPP Notes: ECF &amp; I/O"><img src="https://cdn.sjtuxhw.top/cover_imgs/csapp-ecf.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes: ECF &amp; I/O"/></a><div class="content"><a class="title" href="/myBlog/2024/04/16/CSAPP-Notes-ECF-I-O/" title="CSAPP Notes: ECF &amp; I/O">CSAPP Notes: ECF &amp; I/O</a><time datetime="2024-04-16T05:58:54.000Z" title="发表于 2024-04-16 13:58:54">2024-04-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/04/10/CSAPP-Notes-Memory-Hierarchy-Cache-Opt/" title="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt"><img src="https://cdn.sjtuxhw.top/cover_imgs/csapp-mh.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt"/></a><div class="content"><a class="title" href="/myBlog/2024/04/10/CSAPP-Notes-Memory-Hierarchy-Cache-Opt/" title="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt">CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt</a><time datetime="2024-04-10T02:01:25.000Z" title="发表于 2024-04-10 10:01:25">2024-04-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/03/18/TypeScript%E7%AC%94%E8%AE%B0/" title="TypeScript笔记"><img src="https://cdn.sjtuxhw.top/cover_imgs/typescript.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="TypeScript笔记"/></a><div class="content"><a class="title" href="/myBlog/2024/03/18/TypeScript%E7%AC%94%E8%AE%B0/" title="TypeScript笔记">TypeScript笔记</a><time datetime="2024-03-18T14:56:29.000Z" title="发表于 2024-03-18 22:56:29">2024-03-18</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/myBlog/js/utils.js"></script><script src="/myBlog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+      GLOBAL_CONFIG_SITE.isPost && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://twikoo.sjtuxhw.top',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <div class='name'><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom.innerHTML= result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script src="/myBlog/js/jquery-3.7.0.min.js"></script><script src="/myBlog/js/rightmenu.js"></script><div class="aplayer no-destroy" data-id="6898044781" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false"></div><script src="/myBlog/js/mourn.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="/myBlog/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/myBlog/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>

@@ -1,0 +1,827 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Java Spring Boot 入门 | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前置条件：WEB 基础（Socket，HTTP 整套规范），SQL 和数据库基础，Java 语言基础、前端基础（至少了解一种前端框架，本文以 React 为例）；  Chapter 0. Basic Concepts0.1 Servlet, war &amp; jar在接触 Web 框架时，你肯定能碰到一个绕不开的词：Servlet。它是什么？ Servlet 本质上就是一种规范，在 Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java Spring Boot 入门">
+<meta property="og:url" content="https://sjtuxhw.top/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="前置条件：WEB 基础（Socket，HTTP 整套规范），SQL 和数据库基础，Java 语言基础、前端基础（至少了解一种前端框架，本文以 React 为例）；  Chapter 0. Basic Concepts0.1 Servlet, war &amp; jar在接触 Web 框架时，你肯定能碰到一个绕不开的词：Servlet。它是什么？ Servlet 本质上就是一种规范，在 Java">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/spring-boot.jpg">
+<meta property="article:published_time" content="2024-05-06T11:12:30.000Z">
+<meta property="article:modified_time" content="2024-05-16T11:35:11.352Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="Programming">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/spring-boot.jpg"><link rel="shortcut icon" href="/myBlog/img/favicon.ico"><link rel="canonical" href="https://sjtuxhw.top/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myBlog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?64dd3b0c09c8af7b916f8249d32097e2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = {
+  root: '/myBlog/',
+  algolia: undefined,
+  localSearch: {"path":"/myBlog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Java Spring Boot 入门',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-05-16 19:35:11'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/myBlog/css/mouseConfig.css"><link rel="stylesheet" href="/myBlog/css/valineBg.css"><link rel="stylesheet" href="/myBlog/css/rightmenu.css"><link rel="stylesheet" href="/myBlog/css/custom_music.css"><link rel="stylesheet" href="/myBlog/css/addFonts.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/myBlog/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/myBlog/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">52</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.sjtuxhw.top/cover_imgs/spring-boot.jpg')"><nav id="nav"><span id="blog-info"><a href="/myBlog/" title="SJTU-XHW's blog"><img class="site-icon" src="/myBlog/img/head_icon.png"/><span class="site-name">SJTU-XHW's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Java Spring Boot 入门</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-05-06T11:12:30.000Z" title="发表于 2024-05-06 19:12:30">2024-05-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-05-16T11:35:11.352Z" title="更新于 2024-05-16 19:35:11">2024-05-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">12.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>42分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/myBlog/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/#post-comment"><span id="twikoo-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>前置条件：WEB 基础（Socket，HTTP 整套规范），SQL 和数据库基础，Java 语言基础、前端基础（至少了解一种前端框架，本文以 React 为例）；</p>
+</blockquote>
+<h1 id="Chapter-0-Basic-Concepts"><a href="#Chapter-0-Basic-Concepts" class="headerlink" title="Chapter 0. Basic Concepts"></a>Chapter 0. Basic Concepts</h1><h2 id="0-1-Servlet-war-amp-jar"><a href="#0-1-Servlet-war-amp-jar" class="headerlink" title="0.1 Servlet, war &amp; jar"></a>0.1 Servlet, <code>war</code> &amp; <code>jar</code></h2><p>在接触 Web 框架时，你肯定能碰到一个绕不开的词：Servlet。它是什么？</p>
+<p>Servlet 本质上就是一种规范，在 Java 的实现中就是一个 Web 规范接口。</p>
+<p>所以，为什么要有这个规范？让我们回到最初的起点。</p>
+<hr>
+<p>假设你什么框架都不用，想要徒手写一个能提供服务的服务器，那需要做哪些工作？</p>
+<p>其实原理比较简单，遵循当今互联网的 HTTP 协议发报文就行：</p>
+<ul>
+<li>先编写基于多线程的 TCP 服务（Web 3.0 准备改用 UDP 了）；</li>
+<li>然后在一个 TCP 连接中读取 HTTP 请求，发送 HTTP 响应即可；</li>
+</ul>
+<p>但是其中还要考虑一些与网络协议相关、与业务逻辑无关的其他情况：</p>
+<ul>
+<li>识别正确和错误的 HTTP 请求；</li>
+<li>识别正确和错误的 HTTP 头；</li>
+<li>复用 TCP 连接；</li>
+<li>复用线程；</li>
+<li>IO 异常处理；</li>
+<li>…</li>
+</ul>
+<p>说到这里头都大了🥹 这些 “基础工作” 需要耗费大量的时间，并且经过长期测试才能稳定运行。如果我们只需要输出一个简单的 HTML 页面，就不得不编写上千行底层代码，那就根本无法做到高效而可靠地开发！</p>
+<p>人们为了简化这一过程，抽象出了一个中间层：Web Server。</p>
+<p>这些共性的、与业务逻辑无关的东西，我们统统交给现成的轮子（web server）去做，我们只需要在 web server 上写自己的应用，与 web server 做沟通就行。</p>
+<p>进一步地，人们为了统一 “应用程序与 Web Server” 的交互接口，进一步实现功能解耦（即如果换了另一个人写的 web server，上层的应用程序根本不需要变），在 Java 中就定义了一个 Web Server 的接口，称为 Servlet。</p>
+<p>上层应用程序可以通过继承于这个接口创建一个适用于自己程序的、处理 Web Server 发来的信息的类，以便把信息传入自己的业务逻辑中。其关系如下图所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">                 ┌───────────┐</span><br><span class="line">                 │My Servlet │</span><br><span class="line">                 ├───────────┤</span><br><span class="line">                 │Servlet API│</span><br><span class="line">┌───────┐  HTTP  ├───────────┤</span><br><span class="line">│Browser│&lt;──────&gt;│Web Server │</span><br><span class="line">└───────┘        └───────────┘</span><br></pre></td></tr></table></figure>
+<p>这里的 Web Server 又被称为 Servlet Container，它的作用就是，解析 client / browser 发起的 request，并组装出 HTTP Request、创建 HTTP Response，将二者交于内部自定义的 Servlet（My Servlet）处理和填充。</p>
+<blockquote>
+<p>像 Tomcat、Jetty、GlassFish 就是一些常见的 Web Server。</p>
+</blockquote>
+<p>现在还有一个问题没解决。如果由 Web Server 来帮助我们完成，那么我们写应用程序时，需要和 Web Server 一起编译打包吗？答案是不需要。</p>
+<p>在 Java 中，我们需要将自己写的 Servlet 以及其他业务逻辑的程序打包成一个 <code>*.war</code> 的文件（和 <code>*.jar</code> 不一样，不能直接运行），然后必须由含有 Servlet API 的 Web Server 动态加载进去执行，所以 Web Server 又叫 Servlet Container。</p>
+<p>那么具体自己如何编写 Servlet 呢？以 <code>javax.Servlet</code> 类为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Servlet</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 1. 初始化 */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">init</span><span class="params">(ServletConfig config)</span> <span class="keyword">throws</span> ServletException;</span><br><span class="line">    <span class="comment">/* 2. 获取配置 */</span></span><br><span class="line">    <span class="keyword">public</span> ServletConfig <span class="title function_">getServletConfig</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">/* 3. 发出服务 */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">service</span><span class="params">(ServletRequest req, ServletResponse res)</span></span><br><span class="line">            <span class="keyword">throws</span> ServletException, IOException;</span><br><span class="line">    <span class="comment">/* 4. 获得信息 */</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getServletInfo</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">/* 5. 销毁 */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">destroy</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从原理上讲，Servlet 可以处理<strong>任何类型</strong>的请求，但绝大多数情况下 Servlet 只用来扩展基于 HTTP 协议的 Web Server。</p>
+<h2 id="0-2-Spring-Spring-MVC-Spring-Boot"><a href="#0-2-Spring-Spring-MVC-Spring-Boot" class="headerlink" title="0.2 Spring, Spring MVC, Spring Boot"></a>0.2 Spring, Spring MVC, Spring Boot</h2><p>除了 Servlet，我们还要弄清楚 Spring 框架以及其中的各种常用术语。Spring MVC、Spring、Spring Boot 有什么关系？</p>
+<p>首先尝试理解一下 Spring 框架。</p>
+<blockquote>
+<p>以下部分内容引用自 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://blog.csdn.net/codeSmart/article/details/106836336">CSDN Blog - 狂野弘仁</a>；</p>
+</blockquote>
+<p>Spring，一般指代的是 Spring Framework，<strong>它是一个开源的应用程序框架</strong>，提供了一个简易的开发方式，通过这种开发方式，将避免那些可能致使代码变得繁杂混乱的大量的业务/工具对象（由框架来帮你管理这些对象，包括它的创建，销毁等）。</p>
+<p>Spring Framework 最重要也是最核心的特性是依赖注入。所有的 <strong>Spring 模块的核心就是 DI（依赖注入）或者 IoC（控制反转）</strong>。依赖注入或控制反转是 Spring Framework 最大的特性，当我们正确使用这二者时，可以开发出一个高内聚低耦合的应用程序，而这一一个低耦合的应用程序可以轻松的对其实施单元测试。这就是 Spring Framework 解决的最核心的问题。</p>
+<blockquote>
+<p>什么是控制反转？</p>
+<p>是一种软件设计思想，也是 Spring 框架的核心概念之一。</p>
+<p>假设类 <code>A</code> 需要类 <code>B</code> 作为组成部分，那么在传统设计理念下，类 <code>A</code> 初始化时，需要顺便创建 <code>B</code> 的对象，并且要在 <code>B</code> 的全部生命周期内维护它。这样做法虽然正确，但是有几个缺点：</p>
+<ol>
+<li>类型紧耦合。如果想要更换 <code>B</code>，那么需要找到类 <code>A</code> 中所有用到 <code>B</code> 的地方全部去改；</li>
+<li>全盘管理外部对象，加重编写负担，模糊业务逻辑，使维护难以进行。</li>
+</ol>
+<p>于是，人们想出一种方法，将数据对象封装成一个 Java Bean，把这个 Bean 交给一个容器管理（被称为 IoC Container，在 Spring 中由框架代码帮忙完成），要用到它的时候写注解自动注入，提升了组件的重用性，实现组件解耦。</p>
+<p>以 Spring 的两个注解为例：</p>
+<p><code>@Component</code>: 该注解将会告诉 Spring Framework，被此注解标注的类需要纳入到 Bean 管理器（IoC Container）中。<br><code>@Autowired</code>: 告诉 Spring Framework 需要找到一与其类型匹配的对象，并将其自动引入到所需要的类中。</p>
+<p>什么是依赖注入？</p>
+<p>可以这么理解：它们是同一个概念的不同角度描述。通俗来说就是 <strong>IoC是设计思想，DI是实现方式</strong>。二者的终极作用是<u>去除 Java 类之间的依赖关系，实现松耦合</u>，以便于开发测试。例如对于这个类型设计：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Player</span> &#123;  </span><br><span class="line"> <span class="keyword">private</span> Weapon weapon;  </span><br><span class="line"></span><br><span class="line"> <span class="comment">// weapon 注入</span></span><br><span class="line"> Player(Weapon weapon)&#123;  </span><br><span class="line">     <span class="built_in">this</span>.weapon = weapon;</span><br><span class="line"> &#125;  </span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">attack</span><span class="params">()</span> &#123;</span><br><span class="line">     weapon.attack();</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setWeapon</span><span class="params">(Weapon weapon)</span>&#123;  </span><br><span class="line">     <span class="built_in">this</span>.weapon = weapon;  </span><br><span class="line"> &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义 Spring Bean 配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;player&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.demo.Player&quot;</span>&gt;</span> </span><br><span class="line"> <span class="tag">&lt;<span class="name">construct-arg</span> <span class="attr">ref</span>=<span class="string">&quot;weapon&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;weapon&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.demo.Gun&quot;</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>我们对于 Weapon 的实例构造并不在 <code>Player</code> 内，而是放在配置文件中，依靠<strong>多态</strong>（<code>Gun</code> 继承于 <code>Weapon</code>）和<strong>反射</strong>（读配置、构造对象，外部设置类的行为）实现依赖注入，让两个业务类解耦合。</p>
+<p>或者说，在依赖解耦合方面，<u>控制反转是设计思想，依赖注入是一个设计模式，配置文件只是形式，反射和多态是底层实施手段</u>。</p>
+</blockquote>
+<p>而 Spring Framework 的其他高级特性，例如：Spring AOP、Spring JDBC、Spring MVC、Spring ORM、Spring Test，它们<u>都不是一个全新的功能</u>。因为在不使用 Spring Framework 的情况下，我们依然能够使用 JDBC 连接数据库、依然能够对视图和数据模型进行控制、依然能够使用第三方的 ORM 框架。</p>
+<p>Spring Framework 只是<u>对这些功能中的逻辑采用上述思想进行解耦合，以及进一步封装</u>。例如 Spring JDBC 与传统的 JDBC 相比，使用 JDBC Template 操作数据库，首先是代码量小了，其次是我们不需要再面对恐怖的 try-catch；</p>
+<blockquote>
+<p>如果你还使用过 C++ 配合 MySQL 原生驱动的组合的话，就完全明白这句话的分量……</p>
+</blockquote>
+<p>再比如 Spring Framework 的 MVC，提供了构建 Web 应用程序的全功能 MVC 模块，实现了 Web MVC 设计模式以及请求驱动类型的轻量级 Web 框架，即采用了 MVC 架构模式的思想，将 Web 层进行职责解耦。基于请求驱动指的是使用请求-响应模型，视图与数据模型分离：</p>
+<ul>
+<li>Dispatcher Servlet；</li>
+<li>ModelAndView；</li>
+<li>ViewResolver；</li>
+</ul>
+<p>这个功能模块是人们利用 Spring 解耦的组件进行进一步整合而得出的。</p>
+<p>而 Spring Boot 就像整合了常用配置的“懒人包”，实现多种自动配置：</p>
+<ul>
+<li><p>如果Hibernate的依赖被放到了类路径上，Spring Boot会自动配置数据源；</p>
+</li>
+<li><p>如果Spring MVC的依赖被放到了类路径上，Spring Boot又会自动配置Dispatcher Servlet；</p>
+</li>
+<li><p>当Spring Boot检测到有新的依赖包添加到类路径上，Spring Boot会采用默认的配置对新的依赖包进行设置，如果我们想自己配置依赖包时，只需要手动覆盖默认的配置项即可；</p>
+</li>
+<li><p>Spring Boot 已经内置了多个 Web server，如 Undertow, jetty, tomcat，因此我们不需要再额外的配置服务器（比如前一节提到的打包为 <code>war</code>，然后部署），就可以完成应用程序的调试工作；</p>
+</li>
+</ul>
+<p>所以，严格意义上讲，Spring Boot 并不是某种框架，它只是为开发人员提供了一个更好的更方便的使用 Spring Framework 的解决方案（相当于人家把环境都自动化配好了）。</p>
+<p><img src="imgs/spring-frame.png"></p>
+<h2 id="0-3-RESTful-API"><a href="#0-3-RESTful-API" class="headerlink" title="0.3 RESTful API"></a>0.3 RESTful API</h2><p>在开始前，还要了解一个概念，什么是 RESTful API（你们互联网事真多😅）。</p>
+<p>在互联网并没有完全流行的初期，移动端也没有那么盛行，页面请求和并发量也不高，那时候人们对网络的接口的要求没那么高。只是写一些静态页面、偶尔用用一些动态页面（jsp，整个页面同时刷新）、然后按照 HTTP 等规范手动 DIY 发一发报文，就能满足绝大多数的使用需求。</p>
+<p>但是随着互联网和移动设备的发展，人们对 Web 应用的使用需求也增加，传统的动态页面由于低效率而渐渐被 HTML + JavaScript (Ajax) 的前后端分离所取代，并且安卓、IOS、小程序等形式客户端层出不穷，客户端的种类出现多元化，<strong>而客户端和服务端就需要接口进行通信</strong>，但接口的<strong>规范性</strong>就又成了一个问题。</p>
+<p>假设服务供应方 <code>A</code> 做了一套通信接口，另一个服务供应方 <code>B</code> 又搓了一套通信接口，那么我想同时用这两家服务，难不成还要应用开发者写两套访问逻辑？太不优雅了！</p>
+<p>所以一套<strong>结构清晰、符合标准、易于理解、扩展方便</strong>让大部分人都能够理解接受的<u>接口风格</u>（或者说共同约定）就显得越来越重要。</p>
+<p>2000 年的时候，有个人在他的博士论文中提出了一套软件架构的设计风格（不是标准，只是一组设计原则、共同约定），它主要用于客户端（或浏览器）和服务器交互类的软件。这个人就是 Roy Thomas Fielding。</p>
+<p>基于这个风格设计的软件可以更简洁，更有层次，更易于实现缓存等机制。</p>
+<p>这个设计风格也被他命名为 “表述性状态转移”（Representational State Transfer，REST）的架构风格。满足这个架构风格的接口设计就被称为 RESTful API。</p>
+<p>那么这个风格的特征是什么？或者说它的 “共同约定” 是什么？</p>
+<p>REST 架构的 6 个限制条件，又称为 RESTful 6 大原则：</p>
+<ul>
+<li><p><strong>客户端-服务端分离</strong>（解耦）；</p>
+</li>
+<li><p><strong>无状态的（Stateless）</strong>：服务端不保存客户端状态，客户端保存状态信息每次请求携带状态信息；</p>
+</li>
+<li><p><strong>可缓存性（Cacheability）</strong> ：服务端需回复是否可以缓存以让客户端甄别是否缓存提高效率;</p>
+</li>
+<li><p><strong>统一接口（Uniform Interface）</strong>：通过一定原则设计接口降低耦合，简化系统架构，这是RESTful设计的基本出发点；</p>
+<blockquote>
+<p>这组接口就是针对资源的操作，包括获取、创建、修改、删除。</p>
+<p>恰好对应了 HTTP 协议提供的 GET、POST、PUT 和 DELETE 方法。</p>
+<p>注意，REST 原则强烈不建议接口动作与资源访问标识符混合使用。</p>
+<p>REST 认为，<strong>URI指向资源</strong>、以资源为基础，应该以名词标识，真正的动作应该从 HTTP 的请求动作上识别。</p>
+<p>注 1：Universal Resource Identifier 统一资源标志符，用来标识抽象或物理资源的一个紧凑字符串。URI 包括 URL（Locator）和 URN（Navigator）；</p>
+<p>注 2：一个资源可以是文本（通常以 JSON / HTML / XML 为载体）、二进制流等其他任何数据（一般从数据库中拿到的）；</p>
+</blockquote>
+</li>
+<li><p><strong>分层系统（Layered System）</strong>：客户端对服务端的情况无感，无法直接知道连接的到终端还是中间设备，分层允许灵活地部署服务端项目；</p>
+</li>
+<li><strong>按需代码（Code-On-Demand，可选）</strong>：允许我们灵活的发送一些看似特殊的代码给客户端例如 JavaScript 代码。</li>
+</ul>
+<blockquote>
+<p>当然，RESTful API 也是有缺陷的，例如过于重视资源的作用，导致一些与资源关系不大的场合（例如聊天服务器、通信服务器）如果使用 RESTful Web Service 则反而加重了开发负担。</p>
+</blockquote>
+<h3 id="补充：RESTful-API-设计规范"><a href="#补充：RESTful-API-设计规范" class="headerlink" title="补充：RESTful API 设计规范"></a>补充：RESTful API 设计规范</h3><blockquote>
+<p>本部分摘自 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://zhuanlan.zhihu.com/p/334809573">知乎专栏</a>；</p>
+</blockquote>
+<p>如果想要自己设计一个 RESTful API（而不是使用各大框架中的办法），那么就要遵循以上的约定。具体来说：</p>
+<p>URL 的 path 是需要认真考虑的，而 RESTful 对 path 的设计做了一些规范，通常一个 RESTful API 的 path 组成如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/&#123;version&#125;/&#123;resources&#125;/&#123;resource_id&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>version</code>：API 版本号，有些版本号放置在头信息中也可以，通过控制版本号有利于应用迭代；<br><code>resources</code>：资源，RESTful API 推荐用小写英文单词的复数形式；<br><code>resource_id</code>：资源的id，访问或操作该资源；</p>
+</blockquote>
+<p>当然，有时候可能资源级别较大，其下还可细分很多子资源也可以灵活设计 URL 的 path，例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/&#123;version&#125;/&#123;resources&#125;/&#123;resource_id&#125;/&#123;subresources&#125;/&#123;subresource_id&#125;</span><br></pre></td></tr></table></figure>
+<p>此外，有时可能增删改查无法满足业务要求，可以在 URL 末尾加上 action，例如</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/&#123;version&#125;/&#123;resources&#125;/&#123;resource_id&#125;/action</span><br></pre></td></tr></table></figure>
+<p>其中 action 就是对资源的操作。</p>
+<p>从大体样式了解 URL 路径组成之后，对于 RESTful API 的 URL 具体设计的规范如下：</p>
+<ol>
+<li>不用大写字母，所有单词使用英文且小写；</li>
+<li>连字符用中杠 <code>&quot;-&quot;</code> 而不用下杠 <code>&quot;_&quot;</code>；</li>
+<li>正确使用 <code>&quot;/&quot;</code> 表示层级关系,URL的层级不要过深，并且越靠前的层级应该相对越稳定；</li>
+<li>结尾不要包含正斜杠分隔符 <code>&quot;/&quot;</code>；</li>
+<li>URL中不出现动词，用请求方式表示动作；</li>
+<li>资源表示用复数不要用单数；</li>
+<li>不要使用文件扩展名；</li>
+</ol>
+<p>此外，在 RESTful API 中，不同的HTTP请求方法有各自的含义，这里就展示 GET,POST,PUT,DELETE 几种请求 API 的设计与含义分析。针对不同操作，具体的含义如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">GET /collection： 从服务器查询资源的列表（数组）</span><br><span class="line">GET /collection/resource： 从服务器查询单个资源</span><br><span class="line">POST /collection： 在服务器创建新的资源</span><br><span class="line">PUT /collection/resource： 更新服务器资源</span><br><span class="line">DELETE /collection/resource： 从服务器删除资源</span><br></pre></td></tr></table></figure>
+<p>在非 RESTful 风格的 API 中，我们通常使用 GET 请求和 POST 请求完成增删改查以及其他操作，查询和删除一般使用 GET 方式请求，更新和插入一般使用 POST 请求。从请求方式上无法知道 API 具体是干嘛的，所有在 URL 上都会有操作的动词来表示 API 进行的动作，例如：query，add，update，delete 等等。</p>
+<p>而 RESTful 风格的 API 则要求在 URL 上都以名词的方式出现，从几种请求方式上就可以看出想要进行的操作，这点与非 RESTful 风格的 API 形成鲜明对比。</p>
+<p>在谈及 GET,POST,PUT,DELETE 的时候，就必须提一下接口的<strong>安全性和幂等性</strong>，其中安全性是指方法不会修改资源状态，即读的为安全的，写的操作为非安全的。而幂等性的意思是操作一次和操作多次的最终效果相同，客户端重复调用也只返回同一个结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>HTTP Method</th>
+<th>安全性</th>
+<th>幂等性</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>安全</td>
+<td>幂等</td>
+<td>读操作（安全），查询多次结果一致</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>非安全</td>
+<td>非幂等</td>
+<td>写操作（非安全），每次插入后与上次的结果不一样</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>非安全</td>
+<td>幂等</td>
+<td>写操作（非安全），插入相同数据多次结果一致</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>非安全</td>
+<td>幂等</td>
+<td>写操作（非安全），删除相同数据多次结果一致</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="Tips-调试数据请求时的类型选择"><a href="#Tips-调试数据请求时的类型选择" class="headerlink" title="Tips. 调试数据请求时的类型选择"></a>Tips. 调试数据请求时的类型选择</h3><p>在使用类似 Postman 的工具发送请求时，可能会遇到不同种类可选的数据类型：</p>
+<ul>
+<li><strong>form-data</strong>： 就是 form 表单中的 multipart/form-data，会将表单数据处理为一条信息，用特定标签符将一条条信息分割开，而这个文件类型通常用来上传二进制文件；</li>
+<li><strong>x-www-form-urlencoded</strong>：就是application/x-www-form-urlencoded，是 form 表单默认的 encType，form 表单会将表单内的数据转换为键值对，这种格式不能上传文件；</li>
+<li><strong>raw</strong>：可以上传任意格式的文本，可以上传 Text，JSON，XML 等，但目前大部分还是上传 JSON 格式数据。当后端需要接收 JSON 格式数据处理的时候，可以采用这种格式来测试。</li>
+</ul>
+<blockquote>
+<p>这部分概念太多了，有些概念用到再说。</p>
+</blockquote>
+<h1 id="Chapter-1-Introduction-to-Spring-Boot"><a href="#Chapter-1-Introduction-to-Spring-Boot" class="headerlink" title="Chapter 1. Introduction to Spring Boot"></a>Chapter 1. Introduction to Spring Boot</h1><h2 id="1-1-First-Spring-Boot-Project-A-RESTful-Web-Service"><a href="#1-1-First-Spring-Boot-Project-A-RESTful-Web-Service" class="headerlink" title="1.1 First Spring Boot Project: A RESTful Web Service"></a>1.1 First Spring Boot Project: A RESTful Web Service</h2><p>在进入枯燥的概念和接口学习前，先用简单的方法构建一个简单的 RESTful Web Service 出来。</p>
+<p>首先使用 gradle 构建管理工具创建一个项目，引入依赖：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line">    id <span class="string">&#x27;java&#x27;</span></span><br><span class="line">    id <span class="string">&#x27;org.springframework.boot&#x27;</span> version <span class="string">&#x27;3.2.4&#x27;</span></span><br><span class="line">    id <span class="string">&#x27;io.spring.dependency-management&#x27;</span> version <span class="string">&#x27;1.1.4&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 包位置 priv.demo */</span></span><br><span class="line">group = <span class="string">&#x27;priv.demo&#x27;</span></span><br><span class="line">version = <span class="string">&#x27;0.0.1-SNAPSHOT&#x27;</span></span><br><span class="line"></span><br><span class="line">java &#123;                                                                                   sourceCompatibility = <span class="string">&#x27;21&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">repositories &#123;                                                                           mavenCentral()</span><br><span class="line">&#125;</span><br><span class="line">dependencies &#123;                                                                           implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-web&#x27;</span></span><br><span class="line">   testImplementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-test&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line">tasks.named(<span class="string">&#x27;test&#x27;</span>) &#123;</span><br><span class="line">    useJUnitPlatform()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建一个 Java 记录类型作为存放数据的结构：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> priv.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">Greeting</span><span class="params">(<span class="type">long</span> id, String content)</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>创建一个资源控制器（相当于 Servlet 的处理逻辑）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> priv.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicLong;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestParam;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GreetingController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">template</span> <span class="operator">=</span> <span class="string">&quot;Hello, %s!&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">AtomicLong</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicLong</span>();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/greeting&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Greeting <span class="title function_">greeting</span><span class="params">(<span class="meta">@RequestParam(value = &quot;name&quot;, defaultValue = &quot;World&quot;)</span> String name)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Greeting</span>(counter.incrementAndGet(), String.format(template, name));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>解释一下 <code>@GetMapping(&lt;path&gt;)</code>：保证所以筛选到 <code>&lt;path&gt;</code> 路径的 GET 请求被框架统一转发给被修饰的方法（这里是 <code>greeting</code>）。</p>
+<p>其中，如果要处理 HTTP 尾缀参数，那么被 <code>@GetMapping</code> 修饰的方法强烈建议使用 <code>@RequestParam(&lt;value&gt;, &lt;defaultValue&gt;)</code> 修饰参数，这样能清楚地知道处理参数的情况。</p>
+<p>例如上面的例子中，Servlet 能识别 <code>GET /greeting</code> 的请求，并且调用后端程序的 <code>greeting</code> 方法。返回的 record 对象会被框架自动解析并以 JSON 形式响应客户端（浏览器）。</p>
+<p>由于方法中写了 <code>@RequestParam</code>，因此可以接受任何 <code>/greeting?name=&lt;...&gt;</code> 的后缀参数信息。</p>
+<blockquote>
+<p>除了这里的 <code>@GetMapping</code>，还有 <code>@PostMapping</code>（对应 POST 请求）等等。</p>
+<p>此外，<code>@RequestMapping(method=GET)</code> 等价于 <code>@GetMapping</code>，相当于是其他各种 Mapping 的综合体。</p>
+</blockquote>
+<p>另外，我们使用了 <code>AtomicLong</code> 类型，保证多线程情况下的安全性。<code>counter</code> 为当前运行时请求编号；</p>
+<p>最后，还需要说明，这个类只有使用 <code>@RestController</code> 注解才能发挥作用。</p>
+<p>它的作用是标识这个类作为一个 RESTful API 的资源接收和控制器，并且<u>其中的每个方法都会返回 domain object，而不是一个 view（视图，传统 MVC Controller 都会返回视图）</u>。这个注解等价于 <code>@Controller</code> 和 <code>@ResponseBody</code>（表示这里生成的是 HTTP 响应体）联合使用。</p>
+<p>实际上，使用 <code>@RestController</code> 修饰的类中每个方法返回的 domain object 应该被转为 JSON（就是这里的 Greeting 对象应该转为 JSON）。但是因为有一个库 <code>Jackson 2</code> 的存在，Spring 会自动选择 <code>MappingJackson2HttpMessageConverter</code> 来将 record 实例转为 JSON。</p>
+<p>最后，我们创建一个 <code>main</code> 函数来启动服务：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> priv.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RestServiceApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(RestServiceApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意到，<code>@SpringBootApplication</code> 相当于以下 3 个注解的结合：</p>
+<ul>
+<li><p><code>@Configuration</code>：将被修饰的类标记为当前 Application 上下文的 Bean 的定义方；</p>
+<blockquote>
+<p>回忆 DI（依赖注入），这里相当于产生 Bean（之前的 Record 类型）的类型。</p>
+</blockquote>
+</li>
+<li><p><code>@EnableAutoConfiguration</code>: 告诉 Spring Boot 根据当前 classpath 中的设置来开始注入 beans，以及其他属性设置。例如，如果 <code>spring-webmvc</code> 在 classpath 中，那么这个注解的含义就是将这个类标记为 Web Application，并且激活一些重要的行为，例如设置启动 <code>DispatcherSevlet</code>；</p>
+</li>
+<li><p><code>@ComponentScan</code>：告诉 Sping 来查找其他的在 <code>priv/demo</code> 中的组件、设置和服务包，并且找到 Controller；</p>
+</li>
+</ul>
+<h2 id="1-2-What-is-MVC"><a href="#1-2-What-is-MVC" class="headerlink" title="1.2 What is MVC?"></a>1.2 What is MVC?</h2><p>MVC 是一种软件设计架构模式，大多数时候应用在 Web Application 中，主要分为 3 层：</p>
+<ul>
+<li>Control Layer：软件控制层。如果用在 Web App 上，这层的职责是<u><strong>解析</strong>从 Web Server 传来的对特定 URL 的请求，并转发给服务程序的相应逻辑块</u>；</li>
+<li>Model Layer：软件模型层。实际上的职责是<u>软件的数据表示</u>（就是对关系型数据库中存储的数据以及表单进行面向对象的表述），能让你轻松地从数据库中取出数据后放入对象中，并且轻松地展示在 Web 页面上；</li>
+<li>View Layer：软件视图层。在传统的 Web 应用架构中，前端的程序主导了这个任务（比如 React、Anngular）。但是在 MVC 架构中，这部分位于后端，并且它的职责是<u>收到从数据库传来的数据，并将其组织在 Web 页面上</u>。</li>
+</ul>
+<h2 id="1-3-What-is-Dispatcher-Servlet"><a href="#1-3-What-is-Dispatcher-Servlet" class="headerlink" title="1.3 What is Dispatcher Servlet?"></a>1.3 What is Dispatcher Servlet?</h2><p>在 Spring MVC 中，有些东西不解释清楚就没法开始。比如一个 Spring MVC 中的概念 Dispatcher Servlet。</p>
+<p>我们知道，Servlet 就是一种 Web Server 和 Web App 间的接口。在 Web App 软件层面只要按照 Servlet 接口实现一个 Servlet 就能与 Web Server 直接交互。</p>
+<p>所谓的 Dispatcher Servlet 是一种编码模式（code pattern），也是 Servlet 的一种实现方式，在 MVC 架构中，作为 Control Layer 的一部分。</p>
+<p>它在概念上主要完成了一件重要的事情：<strong>Request Handling &amp; Mapping</strong>。</p>
+<p>Dispatcher Servlet 实现了 Servlet 接口，能给接收从 Web Server 传来的 HTTP 请求。当一个请求到达 Spring MVC Application 时，它会首先到达 Control Layer 的 Dispatcher Servlet。</p>
+<p>Dispatcher Servlet 会根据 Spring Framework 对于请求的配置（底层配置在 <code>web.xml</code> 中，但 Spring MVC 已经包装在了像 <code>@ReuqestMapping</code> 一类的注解中了），映射（map）到相应的 Controller 中（通常被包装为一个方法）进行处理。</p>
+<p>此后，收到 Dispatcher Servlet 请求的 controller 中会对传入的数据进行详细处理，例如处理请求参数、访问数据库、准备响应体等等。</p>
+<p>再然后，Controller 会将处理好的数据交给指定的 view 进行组装。这里的 View Layer 会生成像 JSP / Thymeleaf templates / JSON 之类的数据结构，并且发送。</p>
+<blockquote>
+<p>Dispatcher Servlet 的这种职责实际上也是采用了一种编码模式，叫做 Front Controller。</p>
+</blockquote>
+<h2 id="1-4-What-does-Models-actually-do"><a href="#1-4-What-does-Models-actually-do" class="headerlink" title="1.4 What does Models actually do?"></a>1.4 What does Models actually do?</h2><p>在 Spring MVC 中，显然一个 Model 作为软件的数据表示，是一个至关重要的部分。但同时也是 Spring MVC 包装较好的部分、较简单的部分。</p>
+<p>一个 Model 通常可以是一个 “POJO”（Plain Old Java Class / Object）；</p>
+<blockquote>
+<p>什么是 POJO？</p>
+<p>Plain Old Java Object 特指那些 <strong>不用 extends / implements 其他外部框架的、不使用外部框架的 annotation 的 Java 类型</strong>。</p>
+<p>简言之，你能不依赖框架写出的手写 Java 类型的实例都是 POJO。例如 Java Bean 就是典型的 POJO（允许 extends Java 原生接口，例如 <code>Serializable</code>）。</p>
+<p>使用 POJO 的优势是，POJO 能够更加贴近、关注业务逻辑，不依赖外部框架代码（与外部框架解耦），不需要考虑外部代码对它的隐式影响。</p>
+</blockquote>
+<p>不过 Model 所包含的功能不止于用 POJO 保存信息，它还要完成一个重要的职责：<u>将 POJO 与关系型数据库表建立关联</u>（这个过程由 Spring JPA 模块完成）。</p>
+<p>那么，接下来如何让 Spring Framework 知道这个 POJO 对应的类型是个 Model，并且如何将 POJO 由 JPA 映射为关系型数据库的表记录呢？</p>
+<p>一般需要做 3 件事：</p>
+<ol>
+<li><p>确定描述 Model 的 POJO 类型。这件事就在告诉 Spring，这个类是个表示数据的类（即 Model），等会 JPA 可以按照这个类型创建关系型数据库的表单；</p>
+<blockquote>
+<p>这件事既可以由 <code>XML</code> 配置来做，也可以由 Spring Boot 包装好的注解 <code>@Entity</code> 来做。</p>
+<p>但是如果加了注解，原来的类就不再是 POJO 类型。所以为了便捷性，需要在规范上作出一些取舍。</p>
+</blockquote>
+</li>
+<li><p>确定 Model 中的哪个数据域为 POJO 的唯一识别符。这个表示建议 JPA 在创建数据库表时，将这个数据类型作为表的 <u>主键</u>；</p>
+<blockquote>
+<p>同样，这件事既可以由 <code>XML</code> 配置来做，也可以由 Spring Boot 包装好的注解 <code>@Id</code> 来做。</p>
+</blockquote>
+</li>
+<li><p>决定 Model 中的哪些数据域是需要框架 / 驱动来生成的，而不是用户（Requests）传入的。这个告诉 JPA，这个数据域外部不会给定，应该由程序根据情况生成。</p>
+<blockquote>
+<p>举个例子，你可能在第二条中，想要为每个同类型的 POJO 维护一个全局唯一的 id，但这个 id 肯定不能由用户指定，通常是数据库的自增键来自动生成。</p>
+<p>在 Spring Boot 中，提供了 <code>@GeneratedValue</code> 注解，相当于告诉 JPA，这个数据域应该生成而不是传入得到（通常是通过数据库当前的信息判断出来）。默认行为是在 JPA 生成数据库表时，将被修饰的数据域生成成为 “auto increment”（这种数据域被称为 database indentity）；</p>
+</blockquote>
+</li>
+</ol>
+<p>举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> priv.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> jakarta.persistence.*;</span><br><span class="line"><span class="keyword">import</span> lombok.AllArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> lombok.Builder;</span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"><span class="keyword">import</span> lombok.NoArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> org.hibernate.annotations.CreationTimestamp;</span><br><span class="line"><span class="keyword">import</span> org.hibernate.annotations.UpdateTimestamp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span>   <span class="comment">/* Equivalent to @Getter @Setter @RequiredArgsConstructor @ToString @EqualsAndHashCode.  */</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@Builder</span>    <span class="comment">/* Generate ClassBuilder static class */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="meta">@Table(name = &quot;posts&quot;)</span>  <span class="comment">/* Tell JPA to generate data into named table &#x27;books&#x27;. */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PostInfo</span> &#123;</span><br><span class="line">    <span class="meta">@Id</span> <span class="comment">/* Equivalent to: UNIQUE + NOT NULL + IMMUTABLE */</span></span><br><span class="line">    <span class="comment">/* It relies on an auto-incremented database column</span></span><br><span class="line"><span class="comment">     * and lets the database generate a new value with each insert operation.</span></span><br><span class="line"><span class="comment">     * But, this prevents it from using different optimization techniques like JDBC batching. */</span></span><br><span class="line">    <span class="meta">@GeneratedValue(strategy = GenerationType.IDENTITY)</span></span><br><span class="line">    <span class="keyword">private</span> Long postId;</span><br><span class="line">    <span class="keyword">private</span> String title;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@CreationTimestamp</span></span><br><span class="line">    <span class="keyword">private</span> LocalDateTime createdOn;</span><br><span class="line">    <span class="meta">@UpdateTimestamp</span></span><br><span class="line">    <span class="keyword">private</span> LocalDateTime updatedOn;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="1-5-N-Tier-Architecture"><a href="#1-5-N-Tier-Architecture" class="headerlink" title="1.5 N-Tier Architecture"></a>1.5 N-Tier Architecture</h2><blockquote>
+<p>前置知识：什么是 DTO？</p>
+<p>在 MVC 架构中，有一种对象称数据转移对象（Data Transfer Object）。它的作用是在 Application 的不同层级 / 子系统间传输数据。</p>
+<p>DTO 尤其常用在 N-Tiers 中使用，其好处是减少数据在各部分传输的量，使得程序信息能清晰地相互传输。具体的应用场景如下：</p>
+<ul>
+<li>假设数据库中原本抽象出的对象有很多属性，但是我在某些层级间传输时，只需要用到一部分。那么就没有必要把对象整体传来传去：我们可以定义一个 DTO 类型，属性是原类型的子集，使得功能清晰、传参无负担；</li>
+<li>假设有个方法需要传入 4 个以上参数，那么写方法签名、手动传参就不现实。可以定义一个 DTO 类型来向其传参，语义更清晰；</li>
+</ul>
+<p>所以，DTO 就是一种普通的类型，提取了某个类型的一些属性。</p>
+<p>例如，上一节定义的 <code>PostInfo</code> 中，有一些数据现在不需要在 App 中传输，那么可以这么定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> priv.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Builder;</span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PostDto</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> Long postId;</span><br><span class="line">    <span class="keyword">private</span> String title;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>在软件工程中有个非常有趣的事实是，90% 的时候都无需使用软件工程的设计原理（software engineering design patterns），但是应用在底层的架构设计是恰恰又需要用到。</p>
+<p>有一种软件设计架构叫 N-Tier（或者说 N-Tier Repository Pattern，Multi-Tier Architecture），也是接下来我们想要实践的架构。它是一种 C/S 架构设计模式，最广泛的使用方法是将其分为 3 个部分：</p>
+<ul>
+<li><p>Data Tier（Repository）：以 Web 开发为例，通常在 Java 后端服务中，此层是管理数据库的部分（在 Java 中通常封装为一个类型）。它通常具有 CRUD 四种方法，并且充当了在数据库表结果 和 对象之间转换的桥梁；</p>
+<blockquote>
+<p>在 Spring JPA 中提供了一个接口 <code>JpaRepository&lt;EntityType, EntityIdType&gt;</code> 轻松定义 custom query method（这样我们可通过方法名判断出对应的 SQL 语句）。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Optional;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> priv.demo.models.PostInfo;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.jpa.repository.JpaRepository;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">PostRepository</span> <span class="keyword">extends</span> <span class="title class_">JpaRepository</span>&lt;PostInfo, Long&gt; &#123;</span><br><span class="line"> Optional&lt;PostInfo&gt; <span class="title function_">findByPostId</span><span class="params">(Long postId)</span>;</span><br><span class="line"> List&lt;PostInfo&gt; <span class="title function_">findByTitle</span><span class="params">(String title)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里，<code>PostRepository</code> 又称 DAO（Data Access Object）类型。DAO 和 DTO 一样，也是一种编码模式（code pattern），它的作用是使用一组 API 将 application tier / bussiness logic 与 persistence layer 隔离开，达到模块解耦的作用。</p>
+</blockquote>
+</li>
+<li><p>Application Tier（Bussiness Logic）：以 Web 开发为例，通常在 Java 后端服务中，此层是通常是 Spring 框架中处理数据的业务逻辑部分；</p>
+<blockquote>
+<p>在使用 Spring MVC 时，除了我们直接写 Controllers 外，还建议抽象出一层 “Service”（服务层），这样可以把处理特定的数据库操作与业务逻辑解耦（即可以表示处理特定业务逻辑所需的操作），这样项目功能改变时就不用担心大幅度改代码，只需要到实现功能的 service 中改动就行，不会有 ”这块代码是干什么“ 的担忧。</p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> priv.demo.services;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> priv.demo.dto.PostDto;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Optional;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">PostService</span> &#123;</span><br><span class="line"> <span class="comment">/* Use predefined DTO in services */</span></span><br><span class="line"> List&lt;PostDto&gt; <span class="title function_">findAllPosts</span><span class="params">()</span>;</span><br><span class="line"> Optional&lt;PostDto&gt; <span class="title function_">findPostsById</span><span class="params">(Long id)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，我们再实现这个接口，注意因为服务抽象肯定需要 repository 的数据库操作，因此需要与 <code>JpaRepository</code> 组合。这个时候就用到了 Spring 的依赖注入的特性，让模块解耦：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> priv.demo.services.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> priv.demo.dto.PostDto;</span><br><span class="line"><span class="keyword">import</span> priv.demo.models.Post;</span><br><span class="line"><span class="keyword">import</span> priv.demo.repositories.PostRepository;</span><br><span class="line"><span class="keyword">import</span> priv.demo.services.PostService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Optional;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.Collectors;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Service</span>    <span class="comment">/* provide Spring with PostSerivce Bean */</span></span><br><span class="line">            <span class="comment">/* (可以在写 Controller 时再回来添加)  */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PostServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">PostService</span> &#123;</span><br><span class="line"></span><br><span class="line"> <span class="comment">/* Use Jpa Repository to achieve goals */</span></span><br><span class="line"> PostRepository postRepository;</span><br><span class="line"></span><br><span class="line"> <span class="comment">/* Use Spring Dependency Injection: inject repo to de-couple dependencies. */</span></span><br><span class="line"> <span class="comment">/* Also, we need to provide repository from other area.</span></span><br><span class="line"><span class="comment">     * Here we provide Spring with repo in  */</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">PostServiceImpl</span><span class="params">(PostRepository repository)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.postRepository = repository;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;PostDto&gt; <span class="title function_">findAllBooks</span><span class="params">()</span> &#123;</span><br><span class="line">        List&lt;PostInfo&gt; posts = postRepository.findAll();</span><br><span class="line">        <span class="keyword">return</span> posts.stream().map((post -&gt; mapToPostDto(post))).collect(Collectors.toList());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Optional&lt;PostDto&gt; <span class="title function_">findPostsById</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">        Optional&lt;Post&gt; src = postRepository.findByPostId(id);</span><br><span class="line">        <span class="keyword">return</span> (src.map(PostServiceImpl::mapToPostDto));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** <span class="doctag">@implNote</span> Private self-defined mapper.</span></span><br><span class="line"><span class="comment">     *  Covert model (database representation) to DTO (app representation).</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> PostDto <span class="title function_">mapToPostDto</span><span class="params">(PostInfo post)</span> &#123;</span><br><span class="line">        <span class="type">PostDto</span> <span class="variable">postDto</span> <span class="operator">=</span> postDto.builder()</span><br><span class="line">                .postId(post.getPostId())</span><br><span class="line">                .title(post.getTitle())</span><br><span class="line">                .build();</span><br><span class="line">        <span class="keyword">return</span> postDto;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意，以上从 <code>PostInfo</code>（数据库表示，即 model）向 <code>PostDto</code>（应用程序传输表示，即 DTO）转换时，需要自定义 <code>mapToPostDto</code> 的方法。</p>
+<p>此外，在数组元素处理时，我们还使用了 Java 中类似 JavaScript 的处理方法 <code>map</code>，对数组每个元素的处理方法就变简单了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;T&gt;.stream().map(&lt;mapFunc&gt;);    <span class="comment">/* 返回映射后的 Stream 对象 */</span></span><br><span class="line">Stream.collect(Collectors.toList());    <span class="comment">/* 将产生的 Stream 对象转换回 List&lt;T&gt; */</span></span><br></pre></td></tr></table></figure>
+<p>再聊聊 Controllers 的部分。后面的数据布置都已清晰，剩下来还要布置 Controller 处理 Web Server 发来的请求。</p>
+<p>除了在在 1.1 中见到的 <code>@RestController</code> 可以创建普通的 REST Controller 以外，还有普通的 Controller <code>@Controller</code>（少了将 Controller 方法组织成资源返回值的方法）；</p>
+<p>此外，<code>@RequestMapping()</code> 可以使用、<code>@GetMapping/@PostMapping/@DeleteMapping/...</code> 注解也可以使用。</p>
+</blockquote>
+</li>
+<li><p>Presentation Tier（Frontend）：以 Web 开发为例，通常在前端服务中，此层就是渲染 Web Page 页面的部分，可以由 React 等框架解决。</p>
+</li>
+</ul>
+<h2 id="1-6-CRUD-Read-Data"><a href="#1-6-CRUD-Read-Data" class="headerlink" title="1.6 CRUD: Read Data"></a>1.6 CRUD: Read Data</h2><p>以上的所有知识已经足够我们将前端、后端连接起来。当然，后端如果要处理数据，还得把接下来几节学完。</p>
+<p>现在让我们一起巩固所学，将前端和后端连接起来，先了解 “前端读取后端数据” 的效果如何达成。</p>
+<p>首先，我们由上面的示例，已经能利用 JPA 从数据库中获取数据，并且呈现 JSON 结果了。因此我们只需要修改事先写好的前端，加入 <code>fetch</code> API，读取从后端传来的数据，再呈现在页面上即可。只要你完全了解了上面的理论，那么 read data 就是简单地在前端加上 <code>fetch</code> 获取资源，仅此而已。</p>
+<p>值得注意的是，如果你做的项目也是前后端分离的（服务在不同端口上），那么 CORS 将会是一大问题。请自行查阅资料解决，笔者贴上自己的解决方案（Spring Boot）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> priv.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.config.annotation.CorsRegistry;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.config.annotation.WebMvcConfigurer;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Configurations</span> &#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> WebMvcConfigurer <span class="title function_">corsMappingConfigurer</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">WebMvcConfigurer</span>() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addCorsMappings</span><span class="params">(CorsRegistry registry)</span> &#123;</span><br><span class="line">                registry.addMapping(<span class="string">&quot;/**&quot;</span>)</span><br><span class="line">                        <span class="comment">/* Frontend server runs at localhost:3000 */</span></span><br><span class="line">                        .allowedOrigins(<span class="string">&quot;http://localhost:3000&quot;</span>)</span><br><span class="line">                        .allowedMethods(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;POST&quot;</span>, <span class="string">&quot;PATCH&quot;</span>, <span class="string">&quot;PUT&quot;</span>, <span class="string">&quot;DELETE&quot;</span>, <span class="string">&quot;OPTIONS&quot;</span>, <span class="string">&quot;HEAD&quot;</span>)</span><br><span class="line">                        .maxAge(<span class="number">3600</span>)</span><br><span class="line">                        .allowedHeaders(<span class="string">&quot;*&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="1-7-Validation-in-Backend"><a href="#1-7-Validation-in-Backend" class="headerlink" title="1.7 Validation in Backend"></a>1.7 Validation in Backend</h2><p>在后端的 DTO 类型中，往往可以添加许多注解来代替我们完成繁琐且常见的数据校验操作，例如：</p>
+<p><code>@NotNull</code>, <code>@NotBlank</code>, <code>@NotEmpty</code>, <code>@Email</code>, <code>@Min</code>, <code>@Max</code>, <code>@Size</code>, <code>@Pattern</code>, <code>@Phone</code>, <code>@Past</code>；</p>
+<p>以上是库 <code>spring-boot-starter-validation</code> 的校验注解，需要自行安装。但由于它们注解在类的属性上，所以只有当你在 Controller 中获取表单参数时加入 <code>@Valid</code>，并配合 <code>BindingResult</code>（请添加第二参数）才会使这些注解生效。</p>
+<h2 id="1-8-CRUD-Create-Data-Update-Data"><a href="#1-8-CRUD-Create-Data-Update-Data" class="headerlink" title="1.8 CRUD: Create Data / Update Data"></a>1.8 CRUD: Create Data / Update Data</h2><p>用户可能会通过表单向前端提交数据，这个过程通常会造成数据库的某些信息的修改。因此，我们有必要了解一下从前端传入数据，到后端修改数据的过程。</p>
+<p>本节先对 “CRUD” 中的 Create 进行介绍，介绍在以上的 N-Tiers 架构设计中，Create 动作是如何完成的。</p>
+<p>通常情况下，用户会在前端的 <code>&lt;form&gt; &gt; &lt;input&gt;</code> 中填写数据，再 submit，前端会使用 <code>fetch</code> API 向后端发送表单信息。</p>
+<p>对于 Create Data 而言，常常不是幂等的，因此使用 <code>PostMapping</code>，而 Update Data 而言大多数情况下是幂等的，因此使用 <code>PutMapping</code>；</p>
+<p>在 JPA 中，对于简单的数据表而言，一条 <code>repository.save(Entity)</code> 即可完成创建或者更新的操作。</p>
+<h2 id="1-9-CRUD-Delete-Data"><a href="#1-9-CRUD-Delete-Data" class="headerlink" title="1.9 CRUD: Delete Data"></a>1.9 CRUD: Delete Data</h2><p>对于 JPA 的简单表而言，一条 <code>repository.delete(Entity)</code> 即可完成任务。</p>
+<h2 id="1-10-JPQL-Search-Data"><a href="#1-10-JPQL-Search-Data" class="headerlink" title="1.10 JPQL: Search Data"></a>1.10 JPQL: Search Data</h2><p>除了前面的对于数据库的操作过于简单，我们无需写 SQL 语句以外，在用户的搜索场景中，由于搜索条件的复杂性，导致 Spring JPA 生成的 SQL 语句通常有性能问题。</p>
+<p>所以自己写 SQL 语句查询往往是个好选择，开发者还可以根据自己写的 SQL 语句进行自行优化。</p>
+<p>值得注意的是，在模糊搜索中 <code>CONTAINS</code> 和 <code>LIKE</code> 关键字的性能由数据库的类型决定，谨慎使用。</p>
+<p>此外，有两种索引方式：name index、normal index。前者表示在代码中使用参数名嵌入 SQL 索引，后者表示使用类似 <code>?1</code> 指定参数位来嵌入 SQL 索引。</p>
+<p>例如，查找 SQL：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT post FROM posts WHERE post.title LIKE &quot;%hello%&quot;</span><br></pre></td></tr></table></figure>
+<p>那么在 Spring JPA 中，提供了 <code>@Query</code> 方法可以在 <code>JpaRepository</code> 中使用，语法如下（以 name index 为例）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">PostRepository</span> <span class="keyword">extends</span> <span class="title class_">JpaRepository</span>&lt;PostInfo, Long&gt; &#123;</span><br><span class="line">    <span class="comment">/* Other methods... */</span></span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Query(&quot;SELECT post FROM Post post WHERE post.title LIKE CONCAT(&#x27;%&#x27;, :input, &#x27;%&#x27;) &quot;)</span></span><br><span class="line">    List&lt;PostInfo&gt; <span class="title function_">searchPost</span><span class="params">(String input)</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* Other methods... */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意到：</p>
+<ul>
+<li>在内嵌 SQL 语句中，name index 前使用 <code>:</code> 来标识；</li>
+<li>由于插入了变量，因此字符串需要拼接而不是直接使用；</li>
+</ul>
+<h2 id="1-11-One-To-Many-Spring-Data"><a href="#1-11-One-To-Many-Spring-Data" class="headerlink" title="1.11 One-To-Many Spring Data"></a>1.11 One-To-Many Spring Data</h2><p>关系型数据库中，有一种关系是一对多的数据关系。例如，一个用户可以对应持有多个订单。</p>
+<p>这种关系在 Spring JPA 中以 <code>@OneToMany</code> 来表示。值得注意的是，这种关系是有关联的，通常要求父数据（One）被删除时，与该父数据关联的子数据（Many）需要一并全部删除，这种删除关系被称为 Cascade（级联），更详细的信息请参见数据库教程。</p>
+<p>此外，如果是一对多的关系，在关系型数据库中通常还要联接表的列，以便联接查询。在 Spring JPA 中还提供了 <code>@JoinColumn</code> 注解，可以注解到要存放关联列的表的列 field 中（通常位于 “Many” 子数据表中）。</p>
+<h1 id="Chapter-2-Spring-Security"><a href="#Chapter-2-Spring-Security" class="headerlink" title="Chapter 2. Spring Security"></a>Chapter 2. Spring Security</h1><h2 id="2-1-Spring-Security-Overview-Servlet-App"><a href="#2-1-Spring-Security-Overview-Servlet-App" class="headerlink" title="2.1 Spring Security Overview (Servlet App)"></a>2.1 Spring Security Overview (Servlet App)</h2><p>强烈建议至少阅读 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.spring.io/spring-security/reference/servlet/architecture.html">官方文档的 架构总览</a> 章节，以获得对于 Spring Security 在 Servlet 应用中的宏观上的认识。</p>
+<p>总结下来，Spring Security 在 Servlet 应用上的架构有如下几个重要的点：</p>
+<ul>
+<li><p>以过滤器（filter）为核心。Spring Security 内置很多层 Filter：</p>
+<p><img src="imgs/filterchain.png" width="200px"></p>
+<p><img src="imgs/filterchain2.png" height="250px"></p>
+<blockquote>
+<p>Spring Security包含了众多的过滤器，这些过滤器形成了一条链，所有请求都必须通过这些过滤器后才能成功访问到资源。</p>
+<ul>
+<li><code>UsernamePasswordAuthenticationFilter</code> 过滤器用于处理基于表单方式的登录认证；</li>
+<li><code>BasicAuthenticationFilter</code> 用于处理基于HTTP Basic方式的登录验证，后面还可能包含一系列别的过滤器（可以通过相应配置开启）；</li>
+<li><code>FilterSecurityInterceptor</code> 用于判断当前请求身份认证是否成功，是否有相应的权限，当身份认证失败或者权限不足的时候便会抛出相应的异常；</li>
+<li><code>ExceptionTranslationFilter</code> 能够捕获来自 FilterChain 所有的异常，并进行处理。但是它只会处理两类异常： <code>AuthenticationException</code> 和 <code>AccessDeniedException</code>，其它的异常它会继续抛出。</li>
+</ul>
+<p>另外，可以打印出内部的默认部署的 filters 情况：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">org.springframework.security.web.session.DisableEncodeUrlFilter@404db674,</span><br><span class="line">org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@50f097b5,</span><br><span class="line">org.springframework.security.web.context.SecurityContextHolderFilter@6fc6deb7,</span><br><span class="line">org.springframework.security.web.header.HeaderWriterFilter@6f76c2cc,</span><br><span class="line">org.springframework.security.web.csrf.CsrfFilter@c29fe36,</span><br><span class="line">org.springframework.security.web.authentication.logout.LogoutFilter@ef60710,</span><br><span class="line">org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@7c2dfa2,</span><br><span class="line">org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@4397a639,</span><br><span class="line">org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@7add838c,</span><br><span class="line">org.springframework.security.web.authentication.www.BasicAuthenticationFilter@5cc9d3d0,</span><br><span class="line">org.springframework.security.web.savedrequest.RequestCacheAwareFilter@7da39774,</span><br><span class="line">org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@32b0876c,</span><br><span class="line">org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3662bdff,</span><br><span class="line">org.springframework.security.web.access.ExceptionTranslationFilter@77681ce4,</span><br><span class="line">org.springframework.security.web.access.intercept.AuthorizationFilter@169268a7]</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li><p>Spring Security 认证、授权的大致原理就是，借助这些 filters 判断这个请求是否有效，无效则抛出异常拒绝访问；</p>
+</li>
+<li><p>对 Spring Security 的设置，可以说就是对这些 filters 的配置、自定义；</p>
+<ul>
+<li>配置：可以禁用、启用其中的 filters，为其中的 filters 设置参数等；</li>
+<li>自定义：基于 Spring Security 提供的接口类，自定义 filters；</li>
+</ul>
+</li>
+</ul>
+<p>实际上，Spring Security 相当灵活，能够胜任：认证（像登录工作）、授权（像当前登录用户是否有权限）、外部授权服务器的认证和授权（像 OAuth2 协议）等任务。</p>
+<p>其中，使用用户名-密码的方式认证、授权是最简单的一种，本章不作详细介绍。</p>
+<p>最后，如果你发现自己写了一个配置，测试时却怎么都连不上，可以在 <code>application.properties</code> 内打开测试日志，帮助 debug：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">logging.level.org.springframework.security</span>=<span class="string">TRACE</span></span><br></pre></td></tr></table></figure>
+<h2 id="2-2-Spring-Security-OAuth2-0"><a href="#2-2-Spring-Security-OAuth2-0" class="headerlink" title="2.2 Spring Security: OAuth2.0"></a>2.2 Spring Security: OAuth2.0</h2><h3 id="2-2-1-OAuth2-0-Overview"><a href="#2-2-1-OAuth2-0-Overview" class="headerlink" title="2.2.1 OAuth2.0 Overview"></a>2.2.1 OAuth2.0 Overview</h3><p>Spring Security 除了普通的自定义用户名-密码验证，还支持 OAuth2.0 外部的授权服务器验证。</p>
+<p>在了解 Spring Security 如何操作前，先了解 OAuth2.0 的协议是什么。</p>
+<p>查看 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.rfc-editor.org/rfc/rfc6749">RFC 6749 标准</a>，其提供了抽象的协议流程：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">+--------+                               +---------------+</span><br><span class="line">|        |--(A)- Authorization Request -&gt;|   Resource    |</span><br><span class="line">|        |                               |     Owner     |</span><br><span class="line">|        |&lt;-(B)-- Authorization Grant ---|               |</span><br><span class="line">|        |                               +---------------+</span><br><span class="line">|        |</span><br><span class="line">|        |                               +---------------+</span><br><span class="line">|        |--(C)-- Authorization Grant --&gt;| Authorization |</span><br><span class="line">| Client |                               |     Server    |</span><br><span class="line">|        |&lt;-(D)----- Access Token -------|               |</span><br><span class="line">|        |                               +---------------+</span><br><span class="line">|        |</span><br><span class="line">|        |                               +---------------+</span><br><span class="line">|        |--(E)----- Access Token ------&gt;|    Resource   |</span><br><span class="line">|        |                               |     Server    |</span><br><span class="line">|        |&lt;-(F)--- Protected Resource ---|               |</span><br><span class="line">+--------+                               +---------------+</span><br></pre></td></tr></table></figure>
+<p>简单来说，OAuth2.0 协议的过程如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">(A) 用户（就是 resource owner）访问客户端，客户端将用户导向认证服务器。</span><br><span class="line"></span><br><span class="line">(B) 用户选择是否给予客户端授权。</span><br><span class="line"></span><br><span class="line">(C) 假设用户给予授权，认证服务器先生成一个授权码，并返回给用户，认证服务器将用户导向客户端事先指定的“重定向URI”（redirect uri），同时附上一个授权码（code）。</span><br><span class="line"></span><br><span class="line">(D) 客户端收到授权码，附上早先的“重定向URI”，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成的，对用户不可见。</span><br><span class="line"></span><br><span class="line">(E) 认证服务器核对了授权码和重定向URI，确认无误后，向客户端发送访问令牌（access token）或更新令牌（refresh token）。</span><br><span class="line"></span><br><span class="line">(F) 客户端验证身份令牌信息的完整性和正确性，并解析获取当前用户信息。</span><br></pre></td></tr></table></figure>
+<p>这就是 OAuth2.0 协议最规范、最完整、最常用、最安全的使用方法：授权码模式。RFC 6749 标准还规定了其他 3 种获取令牌（token）的模式：</p>
+<ul>
+<li>简化模式；</li>
+<li>密码模式；</li>
+<li>客户端模式；</li>
+</ul>
+<p>这些方法的安全性和规范性依次递减。</p>
+<p>此外，我们从上图可知，一个后端程序想要使用 OAuth2.0，我们至少需要搭建：</p>
+<ul>
+<li>一个 OAuth2.0 客户端（用于处理用户、授权服务器、资源服务器之间的交互）；</li>
+<li>一个授权服务器（用户的认证信息存放位置）；</li>
+<li>一个资源服务器（用户的资源存放位置）；</li>
+</ul>
+<p>如果你使用第三方的 OAuth2.0 认证服务，就是说，使用第三方的认证服务来获取这个用户的有限的身份信息，那么只需要开发自己的客户端（client）即可，<strong>授权服务器（Authorization Server）和资源服务器（Resource Server）都是由第三方提供的</strong>。</p>
+<blockquote>
+<p>举个例子，Github 第三方授权见过吧？很多网站都支持 QQ / 微信第三方登录吧？它们的底层都可以使用 OAuth2.0 来完成。</p>
+<p>使用 OAuth2.0 可以验证当前的用户的身份，只不过是：在不需要知道用户的密钥的前提下，将用户的认证、授权委托给第三方（授权服务器）来完成，客户端（client）只要询问第三方，这个用户合不合法、用户的基本信息是什么（<u>有限的信息，给多少取决于第三方授权服务器，以及用户在弹出的授权框里自己指定</u>），就能证明这个用户的身份了。</p>
+</blockquote>
+<p>本章也不说 OAuth2.0 授权服务器、资源服务器的搭建，只说 OAuth2.0 客户端的搭建。</p>
+<p>如果使用的是第三方授权服务器、资源服务器，一般第三方平台会给你接口说明（客户端怎么访问授权服务器和资源服务器），并要求你出示自己的身份，注册一对 <code>client_id</code>、<code>client_key</code>；</p>
+<p>为什么需要你注册一个 <code>client_id/client_key</code> 呢？这是为了保护 App 使用者（最终用户）的合法权益，确保客户端是可信的，不是什么伪造的中间人都可以访问授权服务器、读取用户信息的。</p>
+<p>有了这对 <code>client_id</code>、<code>client_key</code>，就可以认证应用开发者和客户端的身份，在与第三方授权服务器通信时携带，就可以确保客户端是合法的。</p>
+<h3 id="2-2-2-OAuth2-0-Client-in-Spring-Security"><a href="#2-2-2-OAuth2-0-Client-in-Spring-Security" class="headerlink" title="2.2.2 OAuth2.0 Client in Spring Security"></a>2.2.2 OAuth2.0 Client in Spring Security</h3><blockquote>
+<p>那么 Spring Security 是怎么支持 OAuth2.0 的呢？我们不妨先了解一下 Spring Security 的历史：</p>
+<p>大约十年前，Spring 引入了一个社区驱动的开源项目 Spring Security OAuth， 并将其纳入 Spring 项目组合中。到今天为止，这个项目己经发展成为一个成熟的项目，可以支持大部分 OAuth 规范，包括资源服务器、 客户端和授权服务器等。</p>
+<p>然而早期的项目存在一些问题，例如：</p>
+<ul>
+<li>OAuth 是在早期完成的，开发者无法预料未来的变化以及这些代码到底要被怎么使用， 这导致很多 Spring 项目提供了自己的 OAuth 支持，也就带来了 OAuth 支持的碎片化。</li>
+<li>最早的OAuth项目同时支特 OAuth1.0 和 OAuth2.0，而现在 OAuth1.0 早已经不再使用， 可以放弃了。</li>
+<li>现在我们有更多的库可以选择，可以在这些库的基础上去开发，以便更好地支持JWT等新技术。</li>
+</ul>
+<p>基于以上这些原因，官方决定重写 Spring Security OAuth，以便更好地协调 Spring 和 OAuth，并简化代码库，使 Spring 的 OAuth 支持更加灵活。然而，在重写的过程中，发生了不少波折。</p>
+<p>2018年1月30日，Spring 官方发了一个通知，表示要逐渐停止现有的 OAuth2支持，然后在 Spring Security  5中构建下一代 OAuth2.0 支持。这么做的原因是因为当时 OAuth2 的落地方案比较混乱，在 Spring Security  OAuth、 Spring Cloud Security、Spring Boot 1.5.x 以及当时最新的Spring Security  5.x 中都提供了对 OAuth2 的实现。以至于当开发者需要使用 OAuth2 时，不得不问，到底选哪一个依赖合适呢？</p>
+<p>所以 Spring 官方决定有必要将 OAuth2.0 的支持统一到一个项目中，以便为用户提供明确的选择，并避免任何潜在的混乱，同时 OAuth2.0 的开发文档也要重新编写，以方便开发人员学习。所有的决定将在 Spring Security 5 中开始，构建下一代 OAuth2.0 的支持。从那个时候起，Spring Security OAuth  项目就正式处于维护模式。官方将提供至少一年的错识/安全修复程序，并且会考虑添加次要功能，但不会添加主要功能。同时将 Spring Security OAuth 中的所有功能重构到 Spring Security 5.x 中。</p>
+<p>到了2019年11月14日，Spring 官方又发布一个通知，这次的通知首先表示 Spring Security OAuth 在迁往  Spring Security 5.x 的过程非常顺利，大部分迁程工作已经完成了，剩下的将在 5.3 版本中完成迁移，在迁移的过程中还添加了许多新功能。包括对 OpenID Connect1.0 的支持。同时还宣布将不再支持授权服务器，不支持的原因有两个：</p>
+<ol>
+<li>在2019年，已经有大量的商业和开源授权服务器可用；</li>
+<li>授权服务器是使用一个库来构建产品，而 Spring Security 作为框架，并不适合做这件事情。</li>
+</ol>
+<p>一石激起千层浪，许多开发者表示对此难以接受。这件事也在Spring 社区引发了激烈的讨论，好在 Spring 官方愿意倾听来自社区的声音。</p>
+<p>到了2020年4月15日，Spring 官方宣布启动 Spring Authorization server 项目。这是一个由  Spring Security 团队领导的社区驱动的项目，致力于向 Spring 社区提供 Authorization  Server支持，也就是说，Spring 又重新支持授权服务器了。</p>
+<p>于是在 2020年8月21日，Spring Authorization Server 0.0.1 正式发布。</p>
+</blockquote>
+<p>当前的 Spring Security 对于 OAuth2.0 的支持主要分为 2 个部分：</p>
+<ul>
+<li>OAuth2.0 Client（内置提供了强大的 OAuth2.0 登录功能）；</li>
+<li>OAuth2.0 Resources Server；</li>
+</ul>
+<p>授权服务器的部分已经从 Spring Security 项目中独立出去了（Spring Authorization Server）。</p>
+<p>这里就详细讨论 OAuth2.0 客户端的设计和使用。在 Gradle 中这么导入：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-oauth2-client&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>Spring Security OAuth2.0 Client 支持：</p>
+<ul>
+<li>认证：JWT Bearer 令牌的处理；</li>
+<li>授权：授权码的保存、刷新令牌的操作、客户端认证信息的操作、用户认证信息的保存……</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/">https://sjtuxhw.top/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myBlog/tags/Programming/">Programming</a><a class="post-meta__tags" href="/myBlog/tags/Java/">Java</a><a class="post-meta__tags" href="/myBlog/tags/Spring/">Spring</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/spring-boot.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/myBlog/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/myBlog/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/myBlog/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="Java 学习笔记（二）"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/java2.jpg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Java 学习笔记（二）</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/myBlog/2023/04/28/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Java 学习笔记（1）"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/java1.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="title">Java 学习笔记（1）</div></div></a></div><div><a href="/myBlog/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="Java 学习笔记（二）"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/java2.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-02</div><div class="title">Java 学习笔记（二）</div></div></a></div><div><a href="/myBlog/2023/09/17/CSAPP-Notes-Basic/" title="CSAPP Notes Basic"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-17</div><div class="title">CSAPP Notes Basic</div></div></a></div><div><a href="/myBlog/2024/04/16/CSAPP-Notes-ECF-I-O/" title="CSAPP Notes: ECF &amp; I&#x2F;O"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp-ecf.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-16</div><div class="title">CSAPP Notes: ECF &amp; I&#x2F;O</div></div></a></div><div><a href="/myBlog/2024/04/10/CSAPP-Notes-Memory-Hierarchy-Cache-Opt/" title="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp-mh.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-10</div><div class="title">CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt</div></div></a></div><div><a href="/myBlog/2023/11/11/CSAPP-Notes-Scheduler-Arch/" title="CSAPP Notes: Scheduler &amp; Arch"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_p2.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-11</div><div class="title">CSAPP Notes: Scheduler &amp; Arch</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/myBlog/img/favicon.ico" onerror="this.onerror=null;this.src='/myBlog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SJTU-XHW</div><div class="author-info__description">A blog to document learning and life</div></div><div class="card-info-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">52</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.top/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! ‎|•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-0-Basic-Concepts"><span class="toc-text">Chapter 0. Basic Concepts</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-1-Servlet-war-amp-jar"><span class="toc-text">0.1 Servlet, war &amp; jar</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0-2-Spring-Spring-MVC-Spring-Boot"><span class="toc-text">0.2 Spring, Spring MVC, Spring Boot</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0-3-RESTful-API"><span class="toc-text">0.3 RESTful API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%EF%BC%9ARESTful-API-%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83"><span class="toc-text">补充：RESTful API 设计规范</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tips-%E8%B0%83%E8%AF%95%E6%95%B0%E6%8D%AE%E8%AF%B7%E6%B1%82%E6%97%B6%E7%9A%84%E7%B1%BB%E5%9E%8B%E9%80%89%E6%8B%A9"><span class="toc-text">Tips. 调试数据请求时的类型选择</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-1-Introduction-to-Spring-Boot"><span class="toc-text">Chapter 1. Introduction to Spring Boot</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-First-Spring-Boot-Project-A-RESTful-Web-Service"><span class="toc-text">1.1 First Spring Boot Project: A RESTful Web Service</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-What-is-MVC"><span class="toc-text">1.2 What is MVC?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-What-is-Dispatcher-Servlet"><span class="toc-text">1.3 What is Dispatcher Servlet?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-What-does-Models-actually-do"><span class="toc-text">1.4 What does Models actually do?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-5-N-Tier-Architecture"><span class="toc-text">1.5 N-Tier Architecture</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-6-CRUD-Read-Data"><span class="toc-text">1.6 CRUD: Read Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-7-Validation-in-Backend"><span class="toc-text">1.7 Validation in Backend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-8-CRUD-Create-Data-Update-Data"><span class="toc-text">1.8 CRUD: Create Data &#x2F; Update Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-9-CRUD-Delete-Data"><span class="toc-text">1.9 CRUD: Delete Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-10-JPQL-Search-Data"><span class="toc-text">1.10 JPQL: Search Data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-11-One-To-Many-Spring-Data"><span class="toc-text">1.11 One-To-Many Spring Data</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-2-Spring-Security"><span class="toc-text">Chapter 2. Spring Security</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-Spring-Security-Overview-Servlet-App"><span class="toc-text">2.1 Spring Security Overview (Servlet App)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-Spring-Security-OAuth2-0"><span class="toc-text">2.2 Spring Security: OAuth2.0</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1-OAuth2-0-Overview"><span class="toc-text">2.2.1 OAuth2.0 Overview</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-2-OAuth2-0-Client-in-Spring-Security"><span class="toc-text">2.2.2 OAuth2.0 Client in Spring Security</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/" title="Java Spring Boot 入门"><img src="https://cdn.sjtuxhw.top/cover_imgs/spring-boot.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Java Spring Boot 入门"/></a><div class="content"><a class="title" href="/myBlog/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/" title="Java Spring Boot 入门">Java Spring Boot 入门</a><time datetime="2024-05-06T11:12:30.000Z" title="发表于 2024-05-06 19:12:30">2024-05-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="Java 学习笔记（二）"><img src="https://cdn.sjtuxhw.top/cover_imgs/java2.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Java 学习笔记（二）"/></a><div class="content"><a class="title" href="/myBlog/2024/05/02/Java-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="Java 学习笔记（二）">Java 学习笔记（二）</a><time datetime="2024-05-02T10:09:13.000Z" title="发表于 2024-05-02 18:09:13">2024-05-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/04/16/CSAPP-Notes-ECF-I-O/" title="CSAPP Notes: ECF &amp; I/O"><img src="https://cdn.sjtuxhw.top/cover_imgs/csapp-ecf.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes: ECF &amp; I/O"/></a><div class="content"><a class="title" href="/myBlog/2024/04/16/CSAPP-Notes-ECF-I-O/" title="CSAPP Notes: ECF &amp; I/O">CSAPP Notes: ECF &amp; I/O</a><time datetime="2024-04-16T05:58:54.000Z" title="发表于 2024-04-16 13:58:54">2024-04-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/04/10/CSAPP-Notes-Memory-Hierarchy-Cache-Opt/" title="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt"><img src="https://cdn.sjtuxhw.top/cover_imgs/csapp-mh.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt"/></a><div class="content"><a class="title" href="/myBlog/2024/04/10/CSAPP-Notes-Memory-Hierarchy-Cache-Opt/" title="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt">CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt</a><time datetime="2024-04-10T02:01:25.000Z" title="发表于 2024-04-10 10:01:25">2024-04-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/03/18/TypeScript%E7%AC%94%E8%AE%B0/" title="TypeScript笔记"><img src="https://cdn.sjtuxhw.top/cover_imgs/typescript.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="TypeScript笔记"/></a><div class="content"><a class="title" href="/myBlog/2024/03/18/TypeScript%E7%AC%94%E8%AE%B0/" title="TypeScript笔记">TypeScript笔记</a><time datetime="2024-03-18T14:56:29.000Z" title="发表于 2024-03-18 22:56:29">2024-03-18</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/myBlog/js/utils.js"></script><script src="/myBlog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+      GLOBAL_CONFIG_SITE.isPost && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://twikoo.sjtuxhw.top',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <div class='name'><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom.innerHTML= result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script src="/myBlog/js/jquery-3.7.0.min.js"></script><script src="/myBlog/js/rightmenu.js"></script><div class="aplayer no-destroy" data-id="6898044781" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false"></div><script src="/myBlog/js/mourn.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="/myBlog/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/myBlog/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>
