@@ -4,6 +4,37 @@
   
     
     <entry>
+      <title>Semaphore, Mutex, CV</title>
+      <link href="/myBlog/2024/05/11/Semaphore-Mutex-CV/"/>
+      <url>/myBlog/2024/05/11/Semaphore-Mutex-CV/</url>
+      
+        <content type="html"><![CDATA[<p>学习 ICS 的并行一章之后，笔者有些疑惑，semaphore（信号量）、mutex（互斥锁）、conditional variables（条件变量）这 3 者之间究竟该怎么区分它们的使用场景？</p><p>首先我们需要去阐述清楚它们各自的定义和效果。</p><p>学术界认为 mutex 是 semaphore 的特例，因此像著名的书籍 CSAPP 就先以 semaphore 为例讲了讲并发程序的资源控制问题。但是实际上有相当一部分实践派和语义派认为二者不应该混为一谈。像 Linus 本人在一次将 Linux 内核的一部分 semaphore 重构为 mutex 后，发现不仅改善了代码语义，还在一定程度上提升了性能。这件事也说明了，虽然在理论上一方可以替代另一方，但实践上它们各有所长。</p><h2 id="Semaphore-vs-Mutex"><a href="#Semaphore-vs-Mutex" class="headerlink" title="Semaphore vs Mutex"></a>Semaphore vs Mutex</h2><p>我们先讨论 semaphore。</p><p>CSAPP 中先从 “线程间变量共享” 的情况说起，它指出，程序对内存的更改并不直接在内存上完成，在汇编中可以看到，大致经历了 load（从内存到 CPU 寄存器）、update（在 CPU 寄存器内更新数据）、store（将 CPU 寄存器数据写回内存）这 3 步。</p><p>而根据程序的局部性原理、context switch 的随机性，出现脏读、不可重复读的情况几乎是必然的。这样的话两个线程甚至无法完成简单的累加计算。</p><p>为了解决这个问题，CSAPP 引入了 semaphore，这种做法就等价于建立了一个资源临界区，而 semaphore 的初始值则限制了 <u>能同时访问在 semaphore 保护下的代码 并发执行的线程数量</u>。</p><p>semaphore 中有一个特殊情况，也就是初值为 1 的情况，只允许一个线程并发执行受保护的代码。这种特殊的信号量就被称为 Binary Semaphore。</p><p>现在看 Mutex（互斥锁），我们发现，互斥锁的作用实际上要说明<u>任何线程对 mutex 包含的资源的访问都是互斥的（同一时间仅能有一个线程访问）</u>。</p><p>但是有人说，这不就是 binary semaphore 的定义吗！</p><p>实际上，Binary Semaphore 和  <strong>互斥锁</strong>（<code>mutex</code>）有些微妙的区别。</p><p>Mutex 相比 binary semaphore 增加了<strong>所有权的概念</strong>，<u>一只锁住的 Mutex 只能由给它上锁的线程解开</u>，只有系铃人才能解铃。Mutex 的功能也就因而限制在了构造 unsafe region 的 “围墙” 上。</p><p>Binary semaphore 则可以由任一线程解开。比如某进程读取磁盘并进入睡眠，等待中断读取盘块结束之后来唤醒它，而这种情况 Mutex 是解决不了的。</p><p>这是因为 semaphore 的语义有两个功能：<strong>保护资源 + 通知</strong>。除了限制资源并发数量，semaphore 的释放还能通知等待 semaphore 的线程。</p><p>Mutex 相较 semaphore 的优势在于，Mutex 职责更单一，语义更清晰，实现的效率稍微高一点。</p><h2 id="Semaphore-vs-Conditional-Variable"><a href="#Semaphore-vs-Conditional-Variable" class="headerlink" title="Semaphore vs Conditional Variable"></a>Semaphore vs Conditional Variable</h2><p>你可能会想，semaphore 有通知的语义，那条件变量不也有吗？它们俩又有什么区别呢？</p><p>实际上，你可以把条件变量理解成一个抽象层级更高的机制。</p><p>条件变量实际上是一种<strong>等待队列</strong>，<strong>提供了 “唤醒”（wake）和 “阻塞等待”（blocking-wait）两类操作</strong>，也就是入队时等待、出队时唤醒。不过这个出队条件由条件决定，唤醒和阻塞的机制交由 OS 的系统调用完成。</p><p>它们俩的共同点是，semaphore 和 CV 底层都可以用 Mutex（互斥锁在这里就是低层级同步原语，low-level synchronizing primitive）实现，它们共同的使用场景是<strong>对共享资源访问的同步机制（通知）</strong>。</p><p>然后我们再以使用场景来说明它们的不同点。</p><p>条件变量常常被用于避免资源的 Busy Waiting，像这样：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">while (!queue.empty()) &#123;</span><br><span class="line">    sleep(1);</span><br><span class="line">&#125;</span><br><span class="line">/* do something */</span><br></pre></td></tr></table></figure><p>这种行为会浪费大量的处理器资源。那么为什么不能有个变量让线程等待在上面，直到 available 后自动提醒这个线程继续运行？</p><p>条件变量的作用就在这里。它可以<u>同步多个线程对于某个条件的判断，当该条件触发时（通常是另一个线程对这个条件变量执行了操作），会随机/全部唤醒正在等待条件的线程</u>。可以说条件变量是有条件的提醒机制。</p><blockquote><p>举个例子，比如并行计算中的 checkpoints 要求线程池中，之前一阶段分配过任务的所有线程都完成计算后，才进行下一阶段的计算任务。这就是多线程的条件，这个场合就适合使用条件变量。</p></blockquote><p>semaphore 虽然也有提醒的意思，但它的语义重点不在条件上，它的重点在于 “<strong>根据某个整数（常常是共享资源的数量）来限制和提醒某个共享资源是否可用</strong>”。</p><p>而这层含义就天然的让 semaphore 比 mutex 和 CV <strong>在语义上更适合解决生产者消费者模型（Consumer / Producer Model）有关的问题</strong>。</p><blockquote><p>因为它们在某些情况下都能解决这个问题，但是语义上有优劣之分。</p></blockquote><p>大家不妨再回想一下 读者/写者模型，在 CSAPP 书中是使用 semaphore 完成的，但是实际上这个模型在语义上更适合 Conditional Variables 完成。因为这需要资源有条件的提醒机制。使用 semaphore 虽然实现上更简单，但是破坏了一部分的语义，也可能出现额外的 “虚假唤醒” 的问题。</p><blockquote><ul><li><p>例如为什么一定要记录当前读者数、等待的写者数、写者数？我不关心呢？是不是增加了冗余复杂度？</p></li><li><p>semaphore 没有显式地提醒某一类等待的线程，而是通过可用数量的方式<strong>间接</strong>展示了资源的可用性。</p><p>这并不准确，在多核、很多线程等待的情况下可能<u>无法像 CV 一样，能控制同时唤醒多个线程，还是只唤醒一个等待的线程</u>。</p></li></ul></blockquote><p>相信在上面的分析中大家以已经看到了，conditional variable 和 semaphore 在实现上能相互替代，只不过有语义和实现复杂度的 trade off 罢了，它们的使用场景也存在重叠的情况。</p><h2 id="Application-Parallel-MST-Algorithm"><a href="#Application-Parallel-MST-Algorithm" class="headerlink" title="Application: Parallel MST Algorithm"></a>Application: Parallel MST Algorithm</h2><p>其中一个比较有名的多线程同步的应用场景是，<strong>并行最小生成树的计算</strong>。由于计算最小生成树是很多算法依赖的基本算法，因此优化这个算法曾是学界比较热门的话题。</p><p>以并行的 Kruskal 算法（基于最小边的贪婪算法）为例，其主体思想与非并行化的 Kruskal 算法大致相同。</p><p>通过对图的划分，将原图分为若干不相交的分区，交由不同的进程或线程计算最小边权，从而达到加速计算的效果。</p><p>整个算法分为由各并行线程完成的 “部分算法” 与由一个主线程完成的 “仲裁算法”。</p><p>在“部分算法”中，当各进程<strong>收到来自全局进程的计算通知</strong>后，选出本分区当中具有最小权重的边并发送给全局进程，并且等待，直到本分区没有待处理的边或收到全局进程的结束通知时结束进程。</p><p>在 “仲裁算法” 中：</p><ol><li>全局进程首先向所有并行进程发送消息获取各分区最小权重边构成队列 $Q_i$；</li><li>接下来循环取出 $Q_i$ 中权值最小的边 $e_j=\min\limits_{i}{e_i}$，并向提供边 $e$ 的进程 $j=\text{argmin }e_i$ 发送消息请求补充新的最小权重边至 $Q_j$ 中；</li><li>如果取出的边 $e_j$ 加入到结果集 $T$ 中不会构成环路则保留此边，若会构成环路则将其丢弃。</li><li>当 $T$ 中的边的数量为 $|V|-1$ 或队列 $Q_i$ 均为空时算法结束，同时通知各进程结束算法。</li></ol><p>这里我们发现有多次的信息的通知语义，而且是针对特定线程。因此这里没法采用 semaphore 和 mutex，采取条件变量控制是较为合适的。</p><h2 id="Extra-Recursive-Mutex-amp-Lock-in-C"><a href="#Extra-Recursive-Mutex-amp-Lock-in-C" class="headerlink" title="Extra: Recursive Mutex &amp; Lock in C++"></a>Extra: Recursive Mutex &amp; Lock in C++</h2><p>C++ STL 库中存在的 Recursive Mutex 就是一个进程加了几次锁，就要释放几次锁，才能解除对资源的锁定。这一般用在一些特殊的业务逻辑场景中。</p><p>Lock 是利用面向对象的方法对 Mutex 进行了包装。在 Lock 的构造函数中加锁、析构函数中解锁，起到在 Lock 生命周期作用域内保护资源的作用，减轻了编码人员的编码负担。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> technical </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> GNU </tag>
+            
+            <tag> CSAPP </tag>
+            
+            <tag> ICS </tag>
+            
+            <tag> Programming </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Java Spring Boot 入门</title>
       <link href="/myBlog/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/"/>
       <url>/myBlog/2024/05/06/Java-Spring-Boot-%E5%85%A5%E9%97%A8/</url>
