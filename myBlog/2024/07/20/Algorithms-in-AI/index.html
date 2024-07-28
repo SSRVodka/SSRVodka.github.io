@@ -1,0 +1,924 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Algorithms in AI | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Chapter 0. Intro0.1 The definition of Artificial Intelligence Think rationally -&gt; Think like people -&gt; Act like people -&gt; Act rationally.  The system maximumly achieving predefined goals. -&amp;g">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Algorithms in AI">
+<meta property="og:url" content="https://sjtuxhw.top/2024/07/20/Algorithms-in-AI/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="Chapter 0. Intro0.1 The definition of Artificial Intelligence Think rationally -&gt; Think like people -&gt; Act like people -&gt; Act rationally.  The system maximumly achieving predefined goals. -&amp;g">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg">
+<meta property="article:published_time" content="2024-07-20T07:23:40.000Z">
+<meta property="article:modified_time" content="2024-07-28T08:24:19.760Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Algorithm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg"><link rel="shortcut icon" href="/myBlog/img/favicon.ico"><link rel="canonical" href="https://sjtuxhw.top/2024/07/20/Algorithms-in-AI/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myBlog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?64dd3b0c09c8af7b916f8249d32097e2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = {
+  root: '/myBlog/',
+  algolia: undefined,
+  localSearch: {"path":"/myBlog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Algorithms in AI',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-07-28 16:24:19'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/myBlog/css/mouseConfig.css"><link rel="stylesheet" href="/myBlog/css/valineBg.css"><link rel="stylesheet" href="/myBlog/css/rightmenu.css"><link rel="stylesheet" href="/myBlog/css/custom_music.css"><link rel="stylesheet" href="/myBlog/css/addFonts.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/myBlog/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/myBlog/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">44</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">56</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg')"><nav id="nav"><span id="blog-info"><a href="/myBlog/" title="SJTU-XHW's blog"><img class="site-icon" src="/myBlog/img/head_icon.png"/><span class="site-name">SJTU-XHW's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Algorithms in AI</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-07-20T07:23:40.000Z" title="发表于 2024-07-20 15:23:40">2024-07-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-07-28T08:24:19.760Z" title="更新于 2024-07-28 16:24:19">2024-07-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>31分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/myBlog/2024/07/20/Algorithms-in-AI/#post-comment"><span id="twikoo-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Chapter-0-Intro"><a href="#Chapter-0-Intro" class="headerlink" title="Chapter 0. Intro"></a>Chapter 0. Intro</h1><h2 id="0-1-The-definition-of-Artificial-Intelligence"><a href="#0-1-The-definition-of-Artificial-Intelligence" class="headerlink" title="0.1 The definition of Artificial Intelligence"></a>0.1 The definition of Artificial Intelligence</h2><ul>
+<li><p>Think rationally -&gt; Think like people -&gt; Act like people -&gt; <strong>Act rationally</strong>.</p>
+<blockquote>
+<p>The system <strong>maximumly achieving predefined goals</strong>.</p>
+<p>-&gt; <strong>Maximize the expected utility.</strong> (最大化预期效用)</p>
+</blockquote>
+</li>
+<li><p>Brains and AI</p>
+<ul>
+<li><p>Why not reverse engineering the brains? -&gt; Not as modular as software.</p>
+</li>
+<li><p>But there are the lessons <strong>learned from the brain</strong> (interleave, 交织在一起):</p>
+<ul>
+<li><p><strong>Memory (data): Judge situations depending on the previous experiences (statistics)</strong>.</p>
+<blockquote>
+<p>e.g., Bayes’ nets, Decision theory, <strong>Machine learning</strong>,…</p>
+</blockquote>
+</li>
+<li><p><strong>Simulation (computation): Predict the future depending on the models</strong>.</p>
+<blockquote>
+<p>e.g., Search, Satisfying constraints, Adversarial and uncertain search,… (<strong>Algorithms</strong>)</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="0-2-The-History-of-AI"><a href="#0-2-The-History-of-AI" class="headerlink" title="0.2 The History of AI"></a>0.2 The History of AI</h2><h2 id="0-3-The-Applications-of-AI"><a href="#0-3-The-Applications-of-AI" class="headerlink" title="0.3 The Applications of AI"></a>0.3 The Applications of AI</h2><ul>
+<li><strong>Natural language</strong>: speech technology (+context), language processing technologies (Q&amp;A / translation / web search …);</li>
+<li><p><strong>Computer vision</strong> (perception)</p>
+</li>
+<li><p><strong>Game playing</strong>;</p>
+</li>
+<li><strong>Logic</strong>: Theorems provers, NASA fault diagnosis, …</li>
+</ul>
+<h2 id="0-4-Designing-Rational-Agents"><a href="#0-4-Designing-Rational-Agents" class="headerlink" title="0.4 Designing Rational Agents"></a>0.4 Designing Rational Agents</h2><ul>
+<li>Agent: An agent is an entity that perceives and acts.</li>
+<li><strong>Environment -&gt; sensors of an agent -&gt; agent functions -&gt; actuators -&gt; effect on environment</strong>.</li>
+</ul>
+<h1 id="Chapter-1-Search"><a href="#Chapter-1-Search" class="headerlink" title="Chapter 1. Search"></a>Chapter 1. Search</h1><blockquote>
+<p>Discuss agents that <strong>plan ahead</strong> rather than just react to a current situation.</p>
+<p><strong>将现实问题 formalize 为数学问题，并使用算法模拟搜索求解</strong>。</p>
+</blockquote>
+<h2 id="1-1-Reflex-Agents"><a href="#1-1-Reflex-Agents" class="headerlink" title="1.1 Reflex Agents"></a>1.1 Reflex Agents</h2><ul>
+<li><p>They have a current percept, <strong>and maybe make decision based on these memory but <u>without consideration of the consequences of their actions</u>.</strong></p>
+<blockquote>
+<p>仅根据当前状态，直接进行当前最优动作；</p>
+<p>例如，根据当前 successor 的结果谁更接近 goal 就进行什么操作。</p>
+</blockquote>
+</li>
+<li><p>类似贪心算法，有时 rational，但有时并不是；</p>
+</li>
+</ul>
+<h2 id="1-2-Planing-Agents"><a href="#1-2-Planing-Agents" class="headerlink" title="1.2 Planing Agents"></a>1.2 Planing Agents</h2><ul>
+<li><p>They have the model of what the world works, and the goals. <strong>根据一系列动作，结合模型假设后果，并根据后果和目标的关系来决定是否进行这个操作</strong>。</p>
+<blockquote>
+<p>实现 1 (master-mind)：先遍历查找动作序列，再行动（时间花费很大）；</p>
+<p>实现 2 (re-planning)：先遍历最近的动作序列，行动，然后再遍历下一段的动作序列，再行动，以此往复（类似结合了贪心法的动态规划）；</p>
+</blockquote>
+</li>
+<li><p>Optimal Planning（最优计划） &amp; Complete Planning（能解决问题的存在性计划）</p>
+</li>
+</ul>
+<h2 id="1-3-Search-Problem（Uninformed-Search）"><a href="#1-3-Search-Problem（Uninformed-Search）" class="headerlink" title="1.3 Search Problem（Uninformed Search）"></a>1.3 Search Problem（Uninformed Search）</h2><h3 id="1-3-1-Definitions"><a href="#1-3-1-Definitions" class="headerlink" title="1.3.1 Definitions"></a>1.3.1 Definitions</h3><blockquote>
+<p>什么是计算机中的搜索问题？</p>
+</blockquote>
+<ul>
+<li><p>一个搜索问题包含：</p>
+<ul>
+<li><p>状态空间（a state space，存放环境信息）；</p>
+</li>
+<li><p>后继函数（a successor function，包含动作、动作开销）；</p>
+<blockquote>
+<p><strong>有哪些可行的动作？动作执行后的结果状态如何？——这个函数编码了 “how the world works”</strong></p>
+</blockquote>
+</li>
+<li><p>初始状态（a start state）和目标检查（a goal test）；</p>
+</li>
+</ul>
+</li>
+<li><p>搜索问题的解：<strong>就是一个从初始状态到目标状态的动作序列（a sequence of actions / a plan）</strong>.</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>以上可以称为搜索问题的模板，可以看作接口（interface）</strong>，这意味着我们可以将现实生活中的问题抽象到上面的模板中（casting to search problem），再对照模板设计算法，就能解决实际问题。</p>
+</blockquote>
+<h3 id="1-3-2-Examples"><a href="#1-3-2-Examples" class="headerlink" title="1.3.2 Examples"></a>1.3.2 Examples</h3><blockquote>
+<p>搜索问题本质上是一个模型。举例：</p>
+</blockquote>
+<ul>
+<li>城市导航路线图<ul>
+<li>state space: cities;</li>
+<li>successor function: roads (go to adjacent cities with <strong>cost (可以是距离、交通情况等)</strong>);</li>
+<li>start state: 位于起点的状态；</li>
+<li>goal test: <strong>当前状态是否是位于终点的状态</strong>；</li>
+<li>solution: 有向路径；</li>
+</ul>
+</li>
+<li>pac-man 游戏（目标是走到指定位置）<ul>
+<li>state space: (x, y) 实体的位置信息；action: NSEW；successor function: <strong>update location only</strong>；goal test: 是否有 (x,y)==DESTINATION；</li>
+</ul>
+</li>
+<li>pac-man 游戏（目标是吃完所有豆子）<ul>
+<li>state space: (x, y) 位置 + 是否有食物的布尔值；action: NSEW；successor function: <strong>更新位置和食物情况</strong>；goal test: 是否有所有食物布尔值都为 false；</li>
+</ul>
+</li>
+</ul>
+<h3 id="1-3-3-Mathematical-amp-Algorithmic-Representation"><a href="#1-3-3-Mathematical-amp-Algorithmic-Representation" class="headerlink" title="1.3.3 Mathematical &amp; Algorithmic Representation"></a>1.3.3 Mathematical &amp; Algorithmic Representation</h3><ul>
+<li><p><strong>搜索问题的数学表示：状态图和搜索树</strong>（state space graphs &amp; search tree）</p>
+<ul>
+<li><strong>它们一般过于庞大，画不出来，只需要有这样的概念就行</strong>；</li>
+<li>搜索树结点数一般远大于状态图，因为<strong>搜索树中可以有多个结点代表同一个状态</strong>；</li>
+</ul>
+</li>
+<li><p>搜索树（General Tree Search）解决 <strong>等权 / 非等权搜索问题</strong></p>
+<blockquote>
+<p>本部分就是数据结构中图的相关算法。涉及解决<strong>等权图最短路</strong>、<strong>非等正权图最短路</strong>等问题的经典算法。但<strong>有所不同，因为是 Tree Search，所以不会记录 visited 结点——意味着会重复搜索（具体会在 1.5 中进行阐释和改进）</strong>；</p>
+</blockquote>
+<ul>
+<li><p>Important Ideas:</p>
+<ul>
+<li><strong>Fringe (原义条纹 / 边缘，这里指的是 a set of leaf nodes that are waiting to be expanded，通常是存放等待处理的数据结点的结构，可以是栈、队列等)</strong>;</li>
+<li>Expansion (查找过程中再向树中插入合法结点);</li>
+<li>Exploration strategy (<strong>DFS / BFS / Uniform Cost Search</strong>)</li>
+</ul>
+</li>
+<li><p>Pseudo Code:</p>
+<p><img src="imgs/tree_search_pseudo_code.png"></p>
+</li>
+</ul>
+</li>
+<li><p>Search Algorithm Properties of General Tree Search（<strong>针对所有 “利用搜索树” 解决搜索问题的算法</strong>）</p>
+<ul>
+<li><p><strong>如果 expansion strategy 算法是 DFS</strong>：</p>
+<ul>
+<li>实现方式：<strong>栈</strong>；</li>
+<li>时间复杂度为 $O(b^m)$，b 为每个结点的后继结点数量级，m 为搜索树中最大深度的数量级；空间复杂度为 $O(b\cdot m)$；</li>
+<li><strong>算法是 complete 的（如果对于无限树，且存在解，则能够找到至少一个解）</strong>；</li>
+<li><strong>算法不是 optimal 的（DFS 无法自动找到最优解，除非你一直找，再手动比较）</strong>；</li>
+</ul>
+</li>
+<li><p><strong>如果算法是 BFS</strong>：</p>
+<ul>
+<li>实现方式：<strong>队列</strong>；</li>
+<li>时间复杂度为 $O(b^s)$，b 为每个结点的后继结点数量级，s 为搜索到最近的 goal state 所在层数的数量级；空间复杂度也是 $O(b^s)$;</li>
+<li><strong>算法是 complete 的</strong>（不遍历结束、得出结果，则不会退出）；</li>
+<li><strong>如果 cost 是相等的——即等权图，则算法是 optimal 的，因为按照层级（tier）从近处向远处找</strong>；</li>
+</ul>
+</li>
+<li><p>综合上面特点发现，DFS 空间性能更好，但 BFS 能够找到等权情况下的最短路；<strong>那么我们有没有一种算法综合它们的优点呢？有的！它就是 Iterative Deepening</strong>；</p>
+<blockquote>
+<p><strong>Iterative Deepening（迭代深搜）</strong>利用了 DFS 空间优势。在搜索开始后，先执行 DFS，<strong>以 depth=1 和 goal 为终止条件</strong>，如果找到，就结束；否则证明 depth=1 的深度无解，将 depth 结束条件放宽至 depth=2，继续 DFS，以此类推。</p>
+<p>这就将 DFS 和 BFS 的优势结合了起来。</p>
+<p>不用担心每次都把前几层重复检查，因为理论上搜索树每层结点指数增长，下一层结点数往往远大于前几层结点数之和，所以重复检查的部分微不足道。</p>
+</blockquote>
+</li>
+<li><p>Uniform Cost Search（UCS，一致代价搜索） 解决 <strong>Cost-sensitive Search（非等权搜索问题）</strong></p>
+<ul>
+<li>实现方式：<strong>优先级队列</strong>；</li>
+<li>时间复杂度 $O(b^{C^<em>/\varepsilon})$，b 为每个结点后继结点数量级，C\</em> 为解的 cost 数量级，ε 为各个结点间（每一步）的最小 cost 数量级；空间复杂度与时间相同； </li>
+<li>此算法借鉴了 BFS 的思路，在 expansion 的时候选取 cost 最小的；</li>
+<li><strong>算法在<u>最小权为正数</u>的情况下是 complete 和 optimal 的</strong>。</li>
+<li>优点很好，但缺点也很严重——<strong>一般情况下开销极大，因为遍历了一个正权下的所有状态结点</strong>（可以通过 goal 的信息进行优化，后面介绍，就是 <strong>informed search</strong>）；</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="1-4-Informed-Search"><a href="#1-4-Informed-Search" class="headerlink" title="1.4 Informed Search"></a>1.4 Informed Search</h2><blockquote>
+<p>搜索问题的定义是相同的，只不过 informed search（有提示搜索）的 <strong>expanding strategy</strong> 会考虑到距离 goal 的远近程度（在 uninformed search 的基础上进行改进）而已。</p>
+<p>所以下面仅比较不同的 expanding strategy。</p>
+</blockquote>
+<h3 id="1-4-1-Search-Heuristics"><a href="#1-4-1-Search-Heuristics" class="headerlink" title="1.4.1 Search Heuristics"></a>1.4.1 Search Heuristics</h3><blockquote>
+<p>启发式搜索，<strong>即启发函数</strong>，是后面 informed search 算法的基础。</p>
+</blockquote>
+<ul>
+<li><p>The definition for a heuristic</p>
+<ul>
+<li><p>A function that estimates <strong>how close a state is to a goal</strong>.</p>
+</li>
+<li><p>Designed for a particular search problem （<strong>因为距离判断因问题而异</strong>）；</p>
+<blockquote>
+<p>可以是 Manhattan distance，Euclidean distance……（for pathing）</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>Examples</p>
+<ul>
+<li>The pac-man game（去往特定的有食物的地点）：“距离”（heuristic function）可以是与终点的欧式距离、曼哈顿距离（因为上下左右移动）；</li>
+<li>The pancake problem（完成从上到下饼依此增大的排列）：heuristics function 可以是<strong>位置正确的煎饼个数</strong>、<strong>位置不正确的最大煎饼编号（因为和汉诺塔类似，势必要先把最大煎饼先挪到底层）</strong>；</li>
+</ul>
+<blockquote>
+<p>具体选择哪种 heuristic function，<strong>可以举几种固定情况（例如画一部分状态图），看谁的 heuristic function 的值在接近 goal 时表现更好</strong>。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="1-4-2-Expanding-Strategy-Greedy-Search（贪婪法）"><a href="#1-4-2-Expanding-Strategy-Greedy-Search（贪婪法）" class="headerlink" title="1.4.2 Expanding Strategy: Greedy Search（贪婪法）"></a>1.4.2 Expanding Strategy: <strong>Greedy Search（贪婪法）</strong></h3><ul>
+<li>思路：选择 fringe 中 heuristic function 最接近 goal 的结点进行 expand；</li>
+<li>优点：在某些情况下搜索非常迅速，并且开销很小；</li>
+<li>缺陷：局部最优解不一定是全局最优解，即贪婪法不一定是正确的（<strong>算法不一定是 optimal 的</strong>），最坏情况是 <strong>badly-guided DFS</strong>，尤其是当 heuristics function 没选好的时候；</li>
+</ul>
+<h3 id="1-4-3-Expanding-Strategy-A-Search（A-搜索）"><a href="#1-4-3-Expanding-Strategy-A-Search（A-搜索）" class="headerlink" title="1.4.3 Expanding Strategy: A* Search（A* 搜索）"></a>1.4.3 Expanding Strategy: <strong>A* Search（A* 搜索）</strong></h3><blockquote>
+<p>理解 A star Search 前，先以龟兔赛跑的寓言故事（fable）作比：<strong>Uniform Cost Search (uninformed)</strong> 就像 tortoise，虽然缓慢，但会搜索到同一权重下的所有状态情况，如果有的话确保一定找到最优解；<strong>Greedy Search</strong> 就像 hare，非常迅速，但容易走错方向，找不到最优解。</p>
+<p><strong>所以 A star search 相当于是坐在乌龟上的兔子，既结合了 Uniform Cost Search 的稳妥，又具有 Greedy Search 部分的借助 heuristic function 迅速搜索的特点</strong>。现在看看是如何实现的：</p>
+</blockquote>
+<p>以一个例子来阐释：</p>
+<p><img src="imgs/AStar.png" height="275"></p>
+<p>对于这个正权有向图而言，Uniform Cost Search 的 expanding strategy 是按照<strong>当前步的累计 cost（理解为“深度”）<code>g(n)</code> 来评定的</strong>，而 Greedy Search 的 heuristic function 是按照<strong>距离 goal 的加权路径距离和 <code>h(n)</code> 来评定的</strong>。将 <strong>这两个标准相加得到 A* 的评价标准 <code>f(n)</code></strong>，这样既考虑到了下一步的 cost，又考虑到了距离终点的相对位置，达到了一个较好的效果。</p>
+<blockquote>
+<p>因为如果仅仅是 Uniform cost search，则要搜索 6 个结点才能找到 optimal solution；仅用 Greedy Search 只能找到非 optimal 的解；而用 A-star search 只需搜索 4 个结点就找到了 optimal solution.</p>
+<p>有同学可能会问，为什么上面图中 <code>e</code> 结点的 h = 1 而不是 2？因为这和 heuristic function 的取法有关系。这里可能不是到达终点的路径长度和，而是直线距离。</p>
+<p>思考：为什么只能在结点出队的时候才能检查它是不是 goal 然后再结束？进队的时候不行吗？</p>
+<p>答案：不行。进队的时候，没法保证该结点一定比 fringe 内其他所有结点都要优；</p>
+</blockquote>
+<ul>
+<li><p><strong>A* 算法不一定是 optimal 的</strong>，因为可以举出反例：</p>
+<p><img src="imgs/AStar_counterExample.png" height="200px"></p>
+<p>上面的反例可以看出，<strong>如果 heuristic function 函数没有选好，选的过于 pessimistic，那么很有可能会误导 agent，导致正确的 optimal solution 迟迟无法出队</strong>，这就是 A* 不一定 optimal 的原因——<strong>heuristic function 选取失误</strong>。</p>
+</li>
+<li><p>为了减少以上情况的出现，即优化这个算法，我们引入 <strong>Admissibility</strong> 来评价一个 heuristic function：</p>
+<ul>
+<li><p>如果 heuristic function 在<strong>任意</strong>结点的值 $h(n)$ 小于等于实际到 optimal solution 的加权路径长度 $h^<em>(n)$（<strong>我们在不知道结果前时无法得知，但它数学上客观存在</strong>），那么称为 <strong>optimistic heuristic function</strong>，这样的 A\</em> Search 会得到 optimal solution；</p>
+<blockquote>
+<p>即 optimistic (admissible) heuristic function 的定义为：</p>
+<script type="math/tex; mode=display">
+\forall\space node\space n,\space 0\le h(n)\le h^*(n)\Longrightarrow h(n)\space is\space admissible</script></blockquote>
+</li>
+<li><p>如果 heuristic function 在某一结点的值大于实际到 optimal solution 的加权路径长度，则称为 <strong>pessimistic heuristic function</strong>，这样的 A* Search 很可能无法得到 optimal solution；</p>
+</li>
+</ul>
+<p><strong>重要的是，虽然我们不知道 $h^<em>(n)$，但这已经足以我们判断一些情况下使用 A\</em> Search 能否得到 optimal solution了</strong>：</p>
+<p>例如在 pac-man game 的例子中，如果取到 goal 的 Manhattan distance 为 heuristic function，那么<strong>它一定是 optimistic 的，所以用 A* Search 一定能得到正确的 optimal solution</strong>（因为 Manhattan distance 考虑没有墙的情况下的距离，一定是乐观的）；</p>
+<p>再例如在 pancake problem 的例子中，如果取 <strong>错位的薄饼的最大编号</strong> 为 heuristic function，那么 <strong>它也一定是 optimistic 的</strong>（因为你至少还要移动编号个数的薄饼次数才能达到 goal）；</p>
+<p><strong>所以到目前为止，选取 heuristic function 的标准一个是举例子看看在某些结点上，$h(n)$ 是否接近 $g(n)$；另一个就是看看能否判断出 optimistic (admissible)，如果能，则能证明 A* Search 算法的 optimality，那么一定比 Uniform Cost Search 要好</strong>。</p>
+</li>
+</ul>
+<h3 id="1-4-4-拓展：A-Search-的-optimality-证明"><a href="#1-4-4-拓展：A-Search-的-optimality-证明" class="headerlink" title="1.4.4 拓展：A* Search 的 optimality 证明"></a>1.4.4 拓展：A* Search 的 optimality 证明</h3><blockquote>
+<p><strong>为啥取了 admissible 的 heuristic function，A* Search 就一定是 optimal 的？</strong></p>
+</blockquote>
+<p><strong>定义命题：</strong></p>
+<script type="math/tex; mode=display">
+P:\quad h(n)\space is\space admissible\Longrightarrow A^*\space Search\space is\space optimal</script><p>下面证明命题 $P$：</p>
+<ol>
+<li><p>假设 A* Search tree 如下图所示，具有一个 optimal solution A 和 suboptimal solution B，由于二者的任意性，所以只要能证明 A 能在 B 之前出队并 expand，则就能证明 $P$；</p>
+</li>
+<li><p>再假设 B 在 fringe 中的情况（即 B 在搜索队列中），否则 $P$ 直接成立；</p>
+</li>
+<li><p>再假设 A 或 A 的祖先结点一定在 fringe 中，否则<strong>A 及其祖先节点一定都已经 expand 完毕了（因为 A，至少 A 的祖先节点，是 $f(n)$ 值小于 B 的 “候选结点”）</strong>，这个时候 $P$ 也直接成立；所以记在 fringe 中的 A 或其祖先结点为 n，如下图所示；</p>
+</li>
+<li><p>则可以证明 $f(n)\le f(A)$：由 $f(n)$ 的定义可知，$f(n)=g(n)+h(n)$，再由 admissibility 的定义可知，</p>
+<script type="math/tex; mode=display">
+h(n)\space is\space admissible\Longrightarrow h(n)\le h^*(n)\Longrightarrow g(n)+h(n)\le g(n)+h^*(n)</script><p><strong>即 $f(n)\le g(A)$</strong>；再根据 heuristic function 的定义，$h(A)=0$，所以 $g(A)=f(A)$，进而得出 $f(n)\le f(A)$；</p>
+</li>
+<li><p>能够证明 $f(A)\lt f(B)$：由 suboptimal solution 的定义，$g(A)\lt g(B)$，由于 $h(A)=h(B)=0$，所以 $f(A)\lt f(B)$；</p>
+</li>
+<li><p>由第 4 条和第 5 条，能够证明 n 必然在 B 之前 expand，即 $f(n)\lt f(B)$（因为 $f(n)\le f(A)\lt f(B)$）；</p>
+</li>
+<li><p><strong>由于祖先结点 n 的任意性，所以 A 或 A 的祖先结点一定都在 B 之前 expand</strong>，所以 任意的 optimal solution A 一定在 suboptimal solution B 之前 expand，因此 A* Search 的 solution 必然是 optimal solution，$P$ 成立，原命题得证。</p>
+</li>
+</ol>
+<p><img src="imgs/AStar_optimality_proof.png" height="200px"></p>
+<blockquote>
+<p>Q：为什么第 5 条 $f(A)\lt f(B)$ 不就能说明 A 在 B 前 expand 了吗？</p>
+<p>A：其实不然，我们在第 5 条的时候还缺少一个条件——我们当时还不能证明 A 结点一定在 fringe 当中。我们只知道 A 的祖先结点在 fringe 当中。</p>
+</blockquote>
+<h3 id="1-4-5-How-to-Create-Admissible-Heuristic-Functions"><a href="#1-4-5-How-to-Create-Admissible-Heuristic-Functions" class="headerlink" title="1.4.5 How to Create Admissible Heuristic Functions ?"></a>1.4.5 How to Create Admissible Heuristic Functions ?</h3><ul>
+<li><p>example: 8 puzzle（8 格华容道）</p>
+<p><img src="imgs/8puzzles.png" height="275px"></p>
+<ul>
+<li>取法 1：状态结点 n 中，错位的数字数目定为 heuristic function $h(n)$，此时易得 $h(n)$ 是 admissible 的；</li>
+<li><strong>结论 1</strong>：<strong>将原问题转化为 relaxed-problem heuristic 来讨论</strong>，例如在 8-puzzle 里面，如果能够直接把数字拆下来，直接安装到正确位置，那么这个问题就变简单了，action 数目一定变少了，而这个新问题就叫做 <strong>relaxed-problem</strong>；显然有：<strong>新问题的总步数（cost）小于原问题的 optimal solution 的步数（cost）</strong>；</li>
+<li>取法 2：状态结点 n 中，所有数字距离正确位置的 Manhattan distance 的总和定为 $h(n)$，这个做法就是上述结论的应用。这种取法对应的 relaxed-problem 是 <strong>忽略数字方块之间的格挡限制</strong>，可以证明这种取法的 $h(n)$ 不仅是 admissible 的，而且<strong>比取法 1 更接近真实 optimal solution 的 cost</strong>；</li>
+</ul>
+</li>
+<li><p><strong>总而言之，Heuristic function 的选取就在 <u>node expansion 的空间消耗</u> 和  $h(n)$ <u>计算的时间消耗</u> 之间抉择、权衡</strong>。但一般无论哪个方向，都<strong>必须要是 admissible 的（因为如果不是的话，就不能保证 A* Search 的 optimality，那还不如用 Greedy search）</strong>。</p>
+<ul>
+<li>要么 $h(n)$ 选取一些 admissible 且方便计算的函数，但平均需要更多的 node expansion 才能找到 optimal solution；</li>
+<li>要么 $h(n)$ 选取一些 admissible 且更接近真实 optimal solution cost 的函数，但一般平均需要花费更长时间才能计算出 $h(n)$ 在某一结点的值；</li>
+</ul>
+</li>
+<li><p><strong>结论 2</strong>：两个 admissible heuristic function 的最大值函数一定是更接近于真实 optimal solution cost 的 admissible heuristic function；如下图：</p>
+<p><img src="imgs/h_semilattice.png" height="300px"></p>
+<blockquote>
+<p>注：如果 $\forall n,\space h(n)=0$，则 A* search 退化为 Uniform Cost Search（相当于提供 goal 的信息被 “磨平了”，各结点处都一样了）</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="1-4-6-From-Tree-Search-to-Graph-Search"><a href="#1-4-6-From-Tree-Search-to-Graph-Search" class="headerlink" title="1.4.6 From Tree Search to Graph Search"></a>1.4.6 From Tree Search to Graph Search</h3><p>前面说的算法，从 uninformed search (DFS、BFS、Uniform Cost Search) 到 informed search (Greedy Search、A* Search)，都借助了 <strong>Tree Search</strong> 的思想，没有标注 visited 结点，导致大量重复冗余的 node expansion（同一状态结点入队多次）。</p>
+<p>我们借鉴图算法的思想，只需要在前面 Tree Search 算法中 <strong>expansion strategy 前</strong> 加入 visited 判断，即可变成 Graph Search。具体实现方法可以借助 <strong>closed set</strong>（闭集，就是集合结构的数学名称）（别用列表，因为<strong>线性表查找元素是否存在的时间复杂度远大于集合结构</strong>）</p>
+<p>易得，<strong>Tree Search 算法和同等的 Graph Search 算法的 complete 性质相同</strong>。因为它们理论上都能遍历完有限结点。</p>
+<p>但！<strong>转换为 Graph Search 后，却不一定有同等的 optimality</strong>。因为在某些情况下，如果某些 admissible heuristic function 选的不好，很有可能导致 visited 会放弃掉 optimal solution，例如下面这种情况：</p>
+<p><img src="imgs/AStarGraph_counterExample.png" height="270px"></p>
+<p><strong>这是因为 heuristic function 选取的不一致性（inconsistency）导致的</strong>，通常是因为<strong>两个结点之间的 $h(n)$ 值之差大于它们间的 cost</strong>，导致其中一个结点<strong>需要第二次进队才有可能找到 optimal solution</strong>。这里结点 A 和 C 之间就存在这个问题，$h(A)-h(C)=3\gt cost(A,C)=1$，所以当 C 结点在 A* Tree Search 第二次进队时，才算 optimal solution。如果贸然转换为 Graph Search，就会丢失这个 optimal solution。</p>
+<p>所以，考虑对于一个 admissible heuristic function，如果每两个结点之间的 $h(n)$ 值之差必然小于等于它们之间的 cost，<strong>所以称这个 admissible heuristic 为 consistent 的</strong>。</p>
+<p>只有 heuristic function 是 consistent 的，<strong>越靠 fringe 后面弹出的 node，其 $f(n)$ 越大，越不可能是 optimal solution</strong>，否则不能满足这个特性。</p>
+<p><img src="imgs/consistency_of_heuristics.png" height="275px"></p>
+<ul>
+<li>性质 1： <strong>Consistency 蕴含（implies）Admissibility</strong>（一个 consistent heuristic function 一定是 admissible heuristic function）；</li>
+<li>性质 2：只有选取了 Consistent heuristic function，A* Graph Search 才能保证 optimality，但 A* Tree Search 只需要 Admissible heuristic function 就能保证 optimality；</li>
+</ul>
+<p>因此，<strong>如果选取的 heuristic 具备 consistency</strong>，那么将之前的所有 Tree Search 算法加上 visited 判断变成 Graph Search 算法，均不改变其 completion 和 optimality，并且可以减少 node expansion 的数目，实现算法的优化。</p>
+<p><strong>值得庆幸的是，大部分自然得到的 admissible heuristic functions 都是 consistent 的，尤其是由 relaxed problems 取得的</strong>。所以大可以认为，用 relaxed problems 方法取得的 heuristic functions 都具有 consistency，而无需证明。</p>
+<p>上面的 “一致性” 比较抽象，有位知乎网友 <code>@Hepta</code> 解释的好，截下来给大家参考：</p>
+<p><img src="imgs/zhihu_explain.png" height="400px"></p>
+<p>这可以认为，这个 heuristic function 取得确实是 admissible（每个结点的 $h(n)$ 总趋势都是越接近 goal 就越接近0，并且是<strong>乐观估计</strong>的），但是每个路线上的 “乐观估计程度不相同”，如果存在一种情况：<strong>一个实际更长（cost 更大）的路径比一个实际更短（cost 更小）路径的 $h(n)$ 更乐观——即虽然它们各自都正确反映了 goal 远近的性质（admissible），但相对远近反映不一致（inconsistent），这就是 heuristic function 的不一致性</strong>。</p>
+<p>这种不一致就会影响搜索，导致<strong>suboptimal solution 的路径比 optimal solution 的路径更快到达 solution <u>附近停下来</u></strong>（但总体受到 admissible 的限制，suboptimal solution 不会先进队的），所以这个时候如果附近的结点又恰好唯一，并且还有 visited 不允许重复进队，那么 optimal solution 的路径就会被 suboptimal solution 的路径截断，造成错误地丢失正确最优解。</p>
+<p>所以上面说 “relaxed problems 得到的 admissible heuristic function 都有 consistency” 是符合一般规律的，故意设计的 heuristic function 可能不满足 consistency、满足 admissible，但它一般不能从 relaxed problems 得出。</p>
+<h3 id="1-4-7-补充：Dijkstra-Algorithm-amp-A-Algorithm"><a href="#1-4-7-补充：Dijkstra-Algorithm-amp-A-Algorithm" class="headerlink" title="1.4.7 补充：Dijkstra Algorithm &amp; A* Algorithm"></a>1.4.7 补充：<code>Dijkstra</code> Algorithm &amp; A* Algorithm</h3><p>其实细心的同学已经发现，<code>Dijkstra</code> 算法不就是 A* 算法的特殊情况嘛！当我们仅仅以当前步累计的 cost（去掉距离 goal 的 cost）作为 heuristic function 时，A* 算法就退化为了 <code>Dijkstra</code> 算法。</p>
+<p>它们都只能解决非负边权值图的最短路径问题。</p>
+<h2 id="1-5-Summary"><a href="#1-5-Summary" class="headerlink" title="1.5 Summary"></a>1.5 Summary</h2><p>本章讲述了 <strong>搜索问题</strong> 的基本定义和算法。我们可以总结出：</p>
+<ul>
+<li><p>搜索问题的使用场景：用于一类很特定的问题，它们满足搜索问题的模板。例如地图导航的最短路搜索、没有敌人并且是去往特定位置的 pac-man 游戏；</p>
+</li>
+<li><p>搜索问题中 Agent 的性质：<strong>Planning Agent</strong>，即先根据算法计算，得出一系列动作序列之后再行动，<strong>更关注 master-mind，即固定的动作序列解法来得到最优解</strong>；</p>
+</li>
+<li><p>搜索问题的前提假设：单个 Agent（<strong>没有其他 agent 做出不确定 (uncertain) 或者对抗性 (adversarial) 的 actions 对当前 agent 造成影响</strong>）、可决定的 Actions、完全可观测的 States、离散的 State space；</p>
+</li>
+<li><p>搜索问题的目标</p>
+<ul>
+<li><p><strong>获取路径</strong>：此时 Agent 的性质是 <strong>Planning Agent</strong>，即先根据算法计算，得出一系列动作序列之后再行动，<strong>更关注 master-mind，即固定的动作序列解法（即路径）来得到最优解</strong>；</p>
+<blockquote>
+<p>本章讲述的几乎所有内容都是关于这个方面的；</p>
+</blockquote>
+</li>
+<li><p><strong>获得结果</strong>：此时动作序列并不重要，只关心这个动作序列能否达到 goal；通常这种目标下不会考虑 costs；</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>所以搜索问题的假设很多，在这个问题基础上，我们添加了一些信息，例如路径是否等权？权重大小多少？是否可以用 goal 信息来 inform 搜索的方法？</p>
+<p>对应的算法常见的有：Tree Search 的 DFS、BFS、UCS（都是 uninformed）和 Greedy Search、A Star Search；进一步进行改进还有对应的 Graph Search。</p>
+<p>以后几章，我们将一点点解除这些前提假设的限制，让问题发生变化，并探讨新问题的算法。</p>
+<h1 id="Chapter-2-Constraint-Satisfaction-Problems-CSPs"><a href="#Chapter-2-Constraint-Satisfaction-Problems-CSPs" class="headerlink" title="Chapter 2. Constraint Satisfaction Problems (CSPs)"></a>Chapter 2. Constraint Satisfaction Problems (CSPs)</h1><h2 id="2-1-The-Introduction-to-CSP"><a href="#2-1-The-Introduction-to-CSP" class="headerlink" title="2.1 The Introduction to CSP"></a>2.1 The Introduction to CSP</h2><p>正如上一章总结所说，CSP 只是一种特殊的 “获取结果” 的 Search Problem，它对问题作了如下假设：</p>
+<ul>
+<li>状态空间是个<strong>黑盒</strong>，可以是任何数据结构，无法直接访问状态空间的信息；</li>
+<li>目标测试也可以是任何形式的函数，也是黑盒，只能调用（即从结果上看是否达到目标）；</li>
+<li>后继函数仍然是黑盒，你只能通过调用来取得可能的后继状态；</li>
+</ul>
+<p>因此我们可以问题抽象为新的数学表示：</p>
+<ul>
+<li>CSP 就是 Search Problem 的一个特殊子集，目标本质是找到 goal；</li>
+<li>所有的<strong>状态</strong>可以被定义为一组变量：$X_i$，其值在定义域 $D$ 中变化（<strong>有的时候 $D$ 取决于 $i$</strong>）；</li>
+<li><strong>后继函数</strong>的运作方法类似为这些状态变量赋值；</li>
+<li><strong>目标测试</strong>就是一组<strong>限制条件（Constraints）</strong>，指明了最终的 goal，即可接受的<strong>状态序列（由可接受的一组 $X_i$ 的值组成）</strong>，这也是为什么这个问题被称为 “Constraint Satisfaction Problems”；</li>
+</ul>
+<p>它的应用相当广泛，生活中几乎都能见到。</p>
+<h3 id="2-1-1-Example-1-地图上色"><a href="#2-1-1-Example-1-地图上色" class="headerlink" title="2.1.1 Example 1: 地图上色"></a>2.1.1 Example 1: 地图上色</h3><p>举一个例子，计算机证明 <strong>四色定理</strong> 时需要正确地为地图分配颜色。现在我们想要为地图上一片有划分的区域填色，要求<strong>相邻区域颜色不得相同</strong>。具体做法如下：</p>
+<ol>
+<li>首先把问题抽象为 CSP。很显然，问题的<strong>状态可以由一组区域变量表示</strong>，其定义域为各自不同颜色组成的集合，这里假设有 6 个区域，在 $x_1\sim x_6$；</li>
+<li>这里可以把颜色定义域设置为 3 种颜色：<code>D = &#123; red, green, blue &#125;</code>；</li>
+<li>目标测试（限制条件）<ul>
+<li>Implicit（隐含）：adjacent regions must have different colors（体现在代码中就是每两个相邻区域变量不相等）；</li>
+<li>Explicit（明确）： $(x_i,x_j)\in\{(red,green),(red,blue),\cdots\}$；</li>
+</ul>
+</li>
+<li>解决方案（solution）：就是一组或多组符合限制条件的 $x_i$ 的赋值（assignments），<strong>CSP 问题的解只需要找到一个解即可</strong>；</li>
+</ol>
+<hr>
+<p>除了使用变量 + 限制条件的方法，还有一种方法可以描述 CSP 问题：<strong>Constraint Graphs</strong>：</p>
+<ul>
+<li><p>每个变量由图中的一个结点代替；</p>
+</li>
+<li><p><strong>如果限制条件是 二元 的</strong>（是/否、有/无、等于/不等于，等等），那么可以用结点之间是否连接边来表示；</p>
+<blockquote>
+<p>注意：<strong>限制图的边只是表示哪里有限制，没有说明限制是什么</strong>，所以应该是二元的限制条件；</p>
+</blockquote>
+</li>
+</ul>
+<p>这种<strong>最多每两个变量之间</strong>具有<strong>二元限制条件</strong>的 CSP  问题被称为 Binary CSP，对应的限制图被称为 Binary Constraint Graph；</p>
+<p>相对应的还有<strong>一元限制条件（Unary Constraint）</strong>，即指定变量必须为某特定值；后面会具体说。</p>
+<h3 id="2-1-2-Example-2-N-Queens-问题"><a href="#2-1-2-Example-2-N-Queens-问题" class="headerlink" title="2.1.2 Example 2: N-Queens 问题"></a>2.1.2 Example 2: N-Queens 问题</h3><p>我们听过 “八皇后问题”，那么对于 N-皇后问题，除了使用递归+回溯的经典解法，还可以将其转化为 CSP 求解：</p>
+<ul>
+<li><p>表示方法 1：逐格表示</p>
+<ul>
+<li><p>状态：就是 N × N 的数组，用于保存其上是否存在 “皇后” 棋，定义域为 <code>&#123;0, 1&#125;</code>；</p>
+</li>
+<li><p>目标测试（限制条件）：</p>
+<ol>
+<li>$\forall i,j,k\space(X_{ij},X_{ik})\in\{(0,0),(0,1),(1,0)\}$（不能在同一行）</li>
+<li>$\forall i,j,k\space(X_{ij},X_{kj})\in\{(0,0),(0,1),(1,0)\}$（不能在同一列）</li>
+<li>$\forall i,j,k\space(X_{ij},X_{i+k,\space j+k})\in\{(0,0),(0,1),(1,0)\}$（不能在对角线下半部分）</li>
+<li>$\forall i,j,k\space(X_{ij},X_{i+k,\space j-k})\in\{(0,0),(0,1),(1,0)\}$（不能在对角线上半部分）</li>
+<li>$\sum_{i,j}X_{ij}=N$；</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>表示方法 2：列表示</p>
+<ul>
+<li>状态：第 $k$ 行的 queen 位于的列数 $Q_k$，定义域为 <code>&#123;1, 2, ..., N&#125;</code>；</li>
+<li>限制条件：$(Q_1,Q_2)\in\{(1,3),\space(1,4),\cdots\}$ ……;</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-1-3-Example-3-Cryptarithmetic-加密运算"><a href="#2-1-3-Example-3-Cryptarithmetic-加密运算" class="headerlink" title="2.1.3 Example 3: Cryptarithmetic 加密运算"></a>2.1.3 Example 3: Cryptarithmetic 加密运算</h3><p>例如对加法式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">    T W O</span><br><span class="line">  + T W O</span><br><span class="line">-----------</span><br><span class="line">  F O U R</span><br></pre></td></tr></table></figure>
+<p>解出每个字母所代表的数字（0 ~ 9）；可以抽象出如下 CSP 问题：</p>
+<ul>
+<li>变量 F、T、U、W、R、O、C1（第一位进位）、C2、C3；定义域 <code>&#123;0,1,...,9&#125;</code>；</li>
+<li>限制条件<ul>
+<li>alldiff(F, T, U, W, R, O)，字母各不相同；</li>
+<li>O + O = R + 10 * C1, ……;</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-1-4-Example-4-Sudoku"><a href="#2-1-4-Example-4-Sudoku" class="headerlink" title="2.1.4 Example 4: Sudoku"></a>2.1.4 Example 4: Sudoku</h3><p>对于数独而言，转化为 CSP 可以是：</p>
+<ul>
+<li>变量即每一个没有填数的方块，定义域 0 ~ 9 的整数；</li>
+<li>限制条件<ul>
+<li>每一行所有元素不得相同；</li>
+<li>每一列所有元素不得相同；</li>
+<li>每一小正方形区域所有元素不得相同；</li>
+<li>本身填有数的方块为 Unary Constraint，要求必须为某个数字；</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-1-5-Example-5-The-Waltz-Algorithm-Deprecated"><a href="#2-1-5-Example-5-The-Waltz-Algorithm-Deprecated" class="headerlink" title="2.1.5 Example 5: The Waltz Algorithm (Deprecated)"></a>2.1.5 Example 5: The Waltz Algorithm (Deprecated)</h3><p>早期计算机视觉使用这个算法来识别 3D 图形的顶点是向外凸，还是向内凹。基本原理是：将立体中的所有顶点作为一个变量，限制条件就是<strong>相邻两个点不能一个是凸顶点，一个是凹顶点</strong>；</p>
+<h2 id="2-2-Varieties-of-CSPs"><a href="#2-2-Varieties-of-CSPs" class="headerlink" title="2.2 Varieties of CSPs"></a>2.2 Varieties of CSPs</h2><h3 id="2-2-1-Varieties-of-Variables"><a href="#2-2-1-Varieties-of-Variables" class="headerlink" title="2.2.1 Varieties of Variables"></a>2.2.1 Varieties of Variables</h3><p>研究 CSPs 算法前，先弄清楚 CSPs 的详细信息。首先 CSP 总的来说有两种变量类型：</p>
+<ul>
+<li>离散型变量（Discrete Variables）<ul>
+<li>有穷定义域（$card(D)=d$）：存在 $O(d^n)$ 种完全指配；例如 二元 CSP，有些是 NP-完全 问题；</li>
+<li>无穷定义域（整型、字符串等）：更加困难，例如工作安排问题（某些问题必须在另一些问题之前完成）；<strong>仅线性约束可解</strong>。</li>
+</ul>
+</li>
+<li>连续型变量（Continuous Variables）<ul>
+<li>例如与时间变化有关的问题，<strong>线性约束可解，并且是多项式时间内可以利用 LP 方法完成</strong>；</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-2-2-Varieties-of-Constraints"><a href="#2-2-2-Varieties-of-Constraints" class="headerlink" title="2.2.2 Varieties of Constraints"></a>2.2.2 Varieties of Constraints</h3><ul>
+<li><p>Unary Constraint：<strong>与单个变量有关，等价于减小定义域</strong>，例如：$x=1$、$y\ne2$；</p>
+</li>
+<li><p>Binary Constraint：<strong>仅与一对变量有关</strong>，例如：$x=y$、$a\ne b$；</p>
+</li>
+<li><p>Higher-order Constraint: involve 3 or more variables，例如 2.1.3 加密计算；</p>
+</li>
+<li><p>Soft Constraint: Preferences（非强制的倾向），实现方法是<strong>加权，并且转化为限制优化问题</strong>；</p>
+<blockquote>
+<p>本章会忽略这种情况，到 <strong>贝叶斯网络</strong> 再讨论这个问题。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="2-3-The-formulations-for-Binary-CSPs"><a href="#2-3-The-formulations-for-Binary-CSPs" class="headerlink" title="2.3 The formulations for Binary CSPs"></a>2.3 The formulations for Binary CSPs</h2><blockquote>
+<p>本节仅讨论 <strong>Constraint 至多与 2 个变量有关</strong>的问题。</p>
+</blockquote>
+<h3 id="2-3-1-Standard-Search-Formulation"><a href="#2-3-1-Standard-Search-Formulation" class="headerlink" title="2.3.1 Standard Search Formulation"></a>2.3.1 Standard Search Formulation</h3><p>一种常用解决 CSP 问题的方法被称为 Standard Search Formulation，方法将 CSP 问题看作一种特殊的搜索问题，定义如下：</p>
+<ul>
+<li>状态：defined by the values assigned so far；</li>
+<li>初始状态：空指派；</li>
+<li>后继函数：为一个没有指派的变量从定义域种指派一个值；</li>
+<li>目标测试：当前指配是否为完全指派，并且满足所有约束条件；</li>
+</ul>
+<p>现在讨论这种思路下的算法，从最原始的方法开始来一步步优化。</p>
+<p>现在以上面任一个 Example 为例。</p>
+<h4 id="BFS-遍历"><a href="#BFS-遍历" class="headerlink" title="BFS 遍历"></a>BFS 遍历</h4><p>我们考虑最原始的 BFS 遍历，发现这是最差的算法，没有之一。因为这个问题中，所有的解法都在搜索树的最底层。意味着 BFS 需要遍历几乎所有状态才能找到至少一个解。我们大可以直接放弃这个方法。</p>
+<h4 id="DFS-遍历"><a href="#DFS-遍历" class="headerlink" title="DFS 遍历"></a>DFS 遍历</h4><p>在这个问题中，DFS 方法要比 BFS 好一些，<strong>所以这一节中接下来的优化算法都基于此</strong>。这和上一章解决普通 Search Problem 的思路不一样，那个时候的算法几乎都从 BFS 的思路出发（UCS / A Star）。</p>
+<p>实现思路是先一步步沿搜索树向下指派变量，<strong>全部指派结束后，再检查目标测试</strong>，不满足则从栈中弹出最上面的赋值（最后一个赋值），换一个值，如此递归进行。</p>
+<p>实现思路简单，但是非常繁琐，接下来进行优化。</p>
+<h4 id="Backtracking-Search"><a href="#Backtracking-Search" class="headerlink" title="Backtracking Search"></a>Backtracking Search</h4><p>是一种解决 CSP 的 basic uninformed algorithm，思路如下：</p>
+<ul>
+<li><p>一次仅对一个变量进行操作</p>
+<ul>
+<li><strong>变量指派是可交换顺序的，所以首先定下顺序</strong>（例如先赋值 $x=1$，再赋值 $y=2$ 和 先赋值 $y=2$，再赋值 $x=1$ 是等价的），只要将定义域排序，并且按序指派就能实现；</li>
+<li><strong>每一步只需要考虑一个单独变量的指派</strong>；</li>
+</ul>
+</li>
+<li><p><strong>每一步都检查限制条件</strong>：一旦违反条件，立即更换当前最近一次的指派。</p>
+<blockquote>
+<p><strong>这主要因为 CSP 问题在前一步违反条件后，后面指派就没有机会弥补，或者说使状态重新符合条件</strong>。类似一种剪枝。</p>
+</blockquote>
+</li>
+</ul>
+<p>使用以上两个思路优化的 DFS 被称为 Backtracking Search（回溯搜索）；</p>
+<p>这种算法在解决 Example 2 的 N-queens 时，能够解出在 N ≤ 25 范围的问题。</p>
+<p><img src="imgs/backtracking_search_pseudo_code.png" height="300px"></p>
+<p>现在考虑 backtracking 能否继续优化？从以下方面考虑：</p>
+<ul>
+<li>指派定义域排序：<strong>下一个先指派定义域中的谁？按什么顺序？</strong></li>
+<li>中途过滤：<strong>能否在违反限制之前就检测到可能的风险，并且尽早规避？</strong>（使得递归深度减小）</li>
+<li>数据结构：能否进一步改进问题的数据结构，使其更高效？</li>
+</ul>
+<p>先从方便下手的部分开始：中途过滤。</p>
+<p><strong>优化方案 1: Forward Checking</strong></p>
+<p>思路之一是 <strong>Forward Checking</strong>，在为一个变量指派时，同时根据限制<strong>缩小其他变量（必须仅仅是有限制联系的，no further）的定义域</strong>（排除不符合限制的取值）。一旦发现有变量的定义域为空，则提前检测到了违反限制的情况，所以提前排除这种指派，重新为当前变量指派。</p>
+<blockquote>
+<p>In general, forward checking is going to propagate information from assigned values to unassigned values, but <strong>doesn’t provide early detection for all failures</strong> (looming conflicts between unassigned and other unassigned variables).</p>
+</blockquote>
+<p><strong>优化方案 2: Rich Filtering Algorithm - Graph Arc Consistency Checking</strong></p>
+<p>这种方法还可以继续向前预测，因为在地图上色例子中，当地图两个相邻区域定义域只有相同颜色时，也希望被提前检测到。这就需要 <strong>reason from constraint to constraint</strong>（从一个限制条件推广传递至另一个），用到的技术是 <strong>arc consistency</strong>（限制图有向边一致性，<strong>arc 和 edge 都可以指图的边</strong>）。</p>
+<p>在 Forward Checking 中，我们让每一步都按照<strong>给定的限制条件检查并更新定义域</strong>，但是某些限制条件之间可以推出另外的限制条件，让违反限制的情况更早地被检查到。我们可以通过 <strong>arc consistency</strong> 来检查。</p>
+<p>首先给出 arc consistency 的定义：<strong>在限制图中，对于一个 constraint 对应的有向边，如果对起始结点（tail）当前定义域中<u>任意</u>指派，终止结点（head）当前定义域中都<u>存在</u>一个指派，使得二者不违反 constraint，则称这条边是一致的</strong>。</p>
+<p>因此，我们可以发现，前面的 forward checking <strong>只是保证了指向 new assignment（head）的任意有 constraint 结点（tail）的边具有 consistency，没有检查 “unassigned 结点之间边的 consistency”</strong>。</p>
+<p>所以，新方法应该一开始把所有的边放在一个集合中等待遍历。每一轮检查限制条件、更新定义域时，同时对其他所有有 constraint 相连的结点也进行检查（对于 unassigned 结点，一般是双向的），<strong>如果不满足，那么从起始结点的定义域中移除违反限制的取值</strong>（正是因为从起始结点移除，所以 arc consistency 的定义是 ”起始结点任意指派 -&gt; 终止 结点存在指派“）。<strong>非常难过的一点是，如果我们正在遍历 arc 检查 consistency 时，对某个结点（tail）移除了一个 value，那么之前所有指向这个结点（这时作为 head）所建立的 consistency 都不一定成立了，需要重新检查所有指向这个结点的边的 consistency</strong>。</p>
+<p>这个优化算法的名称叫做 <strong>Forward Checking + AC3</strong>，可以保证每次指派后，限制图都有 graph arc consistency。</p>
+<p>这个时候，我们发现每指派一步所进行的 checking 步骤（即 Graph Arc Consistency Checking）过于复杂，以至于我们应该把这个步骤单独提出为一个函数，如下：</p>
+<p><img src="imgs/AC3.png" height="350px"></p>
+<p>每次我们递归地指派一个结点的值，我们在检查是否违反 constraint 的时候，都要调用一次 <code>AC3</code> 函数，进行如下检查：</p>
+<ol>
+<li>获取当前所有结点变量及其定义域，并将限制图中每条<strong>有向边</strong>（如果限制条件是无向的，就等价于放双向边）都放入一个队列中；</li>
+<li>当队列非空时，从队列取出一条有向边（限制条件），检查边的一致性（使用定义），如果违反，那么删去起始结点定义域中导致冲突的值，并且将当前边的起始结点<strong>作为终止结点时的</strong>所有边放入队列，等待重新检查一致性（代码就是 <code>REMOVE-INCONSISTENT-VALUES</code>）；</li>
+<li>重复第 2 步直至队列中没有边（所有边都通过了一致性检查，又或者至少有一条边的定义域为空，即当前指派无解）；</li>
+</ol>
+<p>这里大家会发现，虽然这个算法确实提前避免违反限制的情况，但是时间复杂度是肉眼可见的大（时间复杂度 $O(n^2d^3)$，通过数据结构优化可以达到 $O(n^2d^2)$，n 为结点数量级，d 为 每个结点变量的定义域大小数量级）。所以这里就需要在 <strong>详细的检查以在浅处避免违反限制</strong> 和 <strong>简单的检查但平均递归深度较大时才能发现违反限制并放弃</strong> 这两种情况抉择。</p>
+<blockquote>
+<p>如果数据结点相当多，不希望递归深度很大，那么 AC3 算法为优；如果限制条件相当多，结点数又相对较少，不希望在检查上浪费太多时间，那么 forward checking 算法为优。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://sjtuxhw.top/2024/07/20/Algorithms-in-AI/">https://sjtuxhw.top/2024/07/20/Algorithms-in-AI/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myBlog/tags/AI/">AI</a><a class="post-meta__tags" href="/myBlog/tags/Algorithm/">Algorithm</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/myBlog/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/myBlog/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/myBlog/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/myBlog/2024/06/15/Convex-Optimizations/" title="Convex &amp; Optimizations"><img class="cover" src="https://cdn.sjtuxhw.top/cover_imgs/convex.jpg" onerror="onerror=null;src='/myBlog/img/404.png'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Convex &amp; Optimizations</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/myBlog/img/favicon.ico" onerror="this.onerror=null;this.src='/myBlog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SJTU-XHW</div><div class="author-info__description">A blog to document learning and life</div></div><div class="card-info-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">44</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">56</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.top/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! ‎|•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-0-Intro"><span class="toc-text">Chapter 0. Intro</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-1-The-definition-of-Artificial-Intelligence"><span class="toc-text">0.1 The definition of Artificial Intelligence</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0-2-The-History-of-AI"><span class="toc-text">0.2 The History of AI</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0-3-The-Applications-of-AI"><span class="toc-text">0.3 The Applications of AI</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0-4-Designing-Rational-Agents"><span class="toc-text">0.4 Designing Rational Agents</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-1-Search"><span class="toc-text">Chapter 1. Search</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-Reflex-Agents"><span class="toc-text">1.1 Reflex Agents</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-Planing-Agents"><span class="toc-text">1.2 Planing Agents</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-Search-Problem%EF%BC%88Uninformed-Search%EF%BC%89"><span class="toc-text">1.3 Search Problem（Uninformed Search）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-1-Definitions"><span class="toc-text">1.3.1 Definitions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-2-Examples"><span class="toc-text">1.3.2 Examples</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-3-Mathematical-amp-Algorithmic-Representation"><span class="toc-text">1.3.3 Mathematical &amp; Algorithmic Representation</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-Informed-Search"><span class="toc-text">1.4 Informed Search</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-1-Search-Heuristics"><span class="toc-text">1.4.1 Search Heuristics</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-2-Expanding-Strategy-Greedy-Search%EF%BC%88%E8%B4%AA%E5%A9%AA%E6%B3%95%EF%BC%89"><span class="toc-text">1.4.2 Expanding Strategy: Greedy Search（贪婪法）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-3-Expanding-Strategy-A-Search%EF%BC%88A-%E6%90%9C%E7%B4%A2%EF%BC%89"><span class="toc-text">1.4.3 Expanding Strategy: A* Search（A* 搜索）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-4-%E6%8B%93%E5%B1%95%EF%BC%9AA-Search-%E7%9A%84-optimality-%E8%AF%81%E6%98%8E"><span class="toc-text">1.4.4 拓展：A* Search 的 optimality 证明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-5-How-to-Create-Admissible-Heuristic-Functions"><span class="toc-text">1.4.5 How to Create Admissible Heuristic Functions ?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-6-From-Tree-Search-to-Graph-Search"><span class="toc-text">1.4.6 From Tree Search to Graph Search</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-7-%E8%A1%A5%E5%85%85%EF%BC%9ADijkstra-Algorithm-amp-A-Algorithm"><span class="toc-text">1.4.7 补充：Dijkstra Algorithm &amp; A* Algorithm</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-5-Summary"><span class="toc-text">1.5 Summary</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-2-Constraint-Satisfaction-Problems-CSPs"><span class="toc-text">Chapter 2. Constraint Satisfaction Problems (CSPs)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-The-Introduction-to-CSP"><span class="toc-text">2.1 The Introduction to CSP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-1-Example-1-%E5%9C%B0%E5%9B%BE%E4%B8%8A%E8%89%B2"><span class="toc-text">2.1.1 Example 1: 地图上色</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-2-Example-2-N-Queens-%E9%97%AE%E9%A2%98"><span class="toc-text">2.1.2 Example 2: N-Queens 问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-3-Example-3-Cryptarithmetic-%E5%8A%A0%E5%AF%86%E8%BF%90%E7%AE%97"><span class="toc-text">2.1.3 Example 3: Cryptarithmetic 加密运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-4-Example-4-Sudoku"><span class="toc-text">2.1.4 Example 4: Sudoku</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-5-Example-5-The-Waltz-Algorithm-Deprecated"><span class="toc-text">2.1.5 Example 5: The Waltz Algorithm (Deprecated)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-Varieties-of-CSPs"><span class="toc-text">2.2 Varieties of CSPs</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1-Varieties-of-Variables"><span class="toc-text">2.2.1 Varieties of Variables</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-2-Varieties-of-Constraints"><span class="toc-text">2.2.2 Varieties of Constraints</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-The-formulations-for-Binary-CSPs"><span class="toc-text">2.3 The formulations for Binary CSPs</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-1-Standard-Search-Formulation"><span class="toc-text">2.3.1 Standard Search Formulation</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BFS-%E9%81%8D%E5%8E%86"><span class="toc-text">BFS 遍历</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DFS-%E9%81%8D%E5%8E%86"><span class="toc-text">DFS 遍历</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Backtracking-Search"><span class="toc-text">Backtracking Search</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/07/20/Algorithms-in-AI/" title="Algorithms in AI"><img src="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Algorithms in AI"/></a><div class="content"><a class="title" href="/myBlog/2024/07/20/Algorithms-in-AI/" title="Algorithms in AI">Algorithms in AI</a><time datetime="2024-07-20T07:23:40.000Z" title="发表于 2024-07-20 15:23:40">2024-07-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/06/15/Convex-Optimizations/" title="Convex &amp; Optimizations"><img src="https://cdn.sjtuxhw.top/cover_imgs/convex.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Convex &amp; Optimizations"/></a><div class="content"><a class="title" href="/myBlog/2024/06/15/Convex-Optimizations/" title="Convex &amp; Optimizations">Convex &amp; Optimizations</a><time datetime="2024-06-15T07:18:39.000Z" title="发表于 2024-06-15 15:18:39">2024-06-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/06/12/Numeric-Analysis-for-Beginners/" title="Numeric Analysis for Beginners"><img src="https://cdn.sjtuxhw.top/cover_imgs/numeric-analysis.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Numeric Analysis for Beginners"/></a><div class="content"><a class="title" href="/myBlog/2024/06/12/Numeric-Analysis-for-Beginners/" title="Numeric Analysis for Beginners">Numeric Analysis for Beginners</a><time datetime="2024-06-12T05:11:56.000Z" title="发表于 2024-06-12 13:11:56">2024-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/06/01/Introduction-to-Rabbit-MQ/" title="Introduction to Rabbit MQ"><img src="https://cdn.sjtuxhw.top/cover_imgs/rabbit.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Introduction to Rabbit MQ"/></a><div class="content"><a class="title" href="/myBlog/2024/06/01/Introduction-to-Rabbit-MQ/" title="Introduction to Rabbit MQ">Introduction to Rabbit MQ</a><time datetime="2024-06-01T08:31:33.000Z" title="发表于 2024-06-01 16:31:33">2024-06-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/05/21/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%88%9D%E6%8E%A2/" title="微服务初探"><img src="https://cdn.sjtuxhw.top/cover_imgs/micro.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="微服务初探"/></a><div class="content"><a class="title" href="/myBlog/2024/05/21/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%88%9D%E6%8E%A2/" title="微服务初探">微服务初探</a><time datetime="2024-05-21T03:27:40.000Z" title="发表于 2024-05-21 11:27:40">2024-05-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/myBlog/js/utils.js"></script><script src="/myBlog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+      GLOBAL_CONFIG_SITE.isPost && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://twikoo.sjtuxhw.top',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <div class='name'><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom.innerHTML= result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script src="/myBlog/js/jquery-3.7.0.min.js"></script><script src="/myBlog/js/rightmenu.js"></script><div class="aplayer no-destroy" data-id="6898044781" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false"></div><script src="/myBlog/js/mourn.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="/myBlog/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/myBlog/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>
