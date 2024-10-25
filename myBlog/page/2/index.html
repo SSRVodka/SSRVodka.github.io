@@ -9,23 +9,117 @@
 <meta property="article:author" content="SJTU-XHW">
 <meta property="article:tag" content="博客,sjtu-xhw,blog,sjtu-xhw的博客,SJTU">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://sjtuxhw.top/img/favicon.ico"><link rel="shortcut icon" href="/myBlog/img/favicon.ico"><link rel="canonical" href="https://sjtuxhw.top/page/2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myBlog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+<meta name="twitter:image" content="https://sjtuxhw.top/img/favicon.ico"><link rel="shortcut icon" href="/myBlog/img/favicon.ico"><link rel="canonical" href="https://sjtuxhw.top/page/2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/myBlog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        if (name && globalFn[key][name]) return
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
 (function() {
   var hm = document.createElement("script");
   hm.src = "https://hm.baidu.com/hm.js?64dd3b0c09c8af7b916f8249d32097e2";
   var s = document.getElementsByTagName("script")[0]; 
   s.parentNode.insertBefore(hm, s);
 })();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
 </script><script>const GLOBAL_CONFIG = {
   root: '/myBlog/',
   algolia: undefined,
-  localSearch: {"path":"/myBlog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  localSearch: {"path":"/myBlog/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
   translate: undefined,
   noticeOutdate: undefined,
-  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
   copy: {
     success: '复制成功',
-    error: '复制错误',
+    error: '复制失败',
     noSupport: '浏览器不支持'
   },
   relativeDate: {
@@ -61,254 +155,80 @@
   isHome: true,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2024-07-28 16:25:11'
-}</script><script>(win=>{
-      win.saveToLocal = {
-        set: (key, value, ttl) => {
-          if (ttl === 0) return
-          const now = Date.now()
-          const expiry = now + ttl * 86400000
-          const item = {
-            value,
-            expiry
-          }
-          localStorage.setItem(key, JSON.stringify(item))
-        },
-      
-        get: key => {
-          const itemStr = localStorage.getItem(key)
-      
-          if (!itemStr) {
-            return undefined
-          }
-          const item = JSON.parse(itemStr)
-          const now = Date.now()
-      
-          if (now > item.expiry) {
-            localStorage.removeItem(key)
-            return undefined
-          }
-          return item.value
-        }
-      }
-    
-      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        script.onerror = reject
-        script.onload = script.onreadystatechange = function() {
-          const loadState = this.readyState
-          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-          script.onload = script.onreadystatechange = null
-          resolve()
-        }
-
-        Object.keys(attr).forEach(key => {
-          script.setAttribute(key, attr[key])
-        })
-
-        document.head.appendChild(script)
-      })
-    
-      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onerror = reject
-        link.onload = link.onreadystatechange = function() {
-          const loadState = this.readyState
-          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-          link.onload = link.onreadystatechange = null
-          resolve()
-        }
-        document.head.appendChild(link)
-      })
-    
-      win.activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      win.activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
-      const t = saveToLocal.get('theme')
-    
-        if (t === 'dark') activateDarkMode()
-        else if (t === 'light') activateLightMode()
-      
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        if (asideStatus === 'hide') {
-          document.documentElement.classList.add('hide-aside')
-        } else {
-          document.documentElement.classList.remove('hide-aside')
-        }
-      }
-    
-      const detectApple = () => {
-        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
-          document.documentElement.classList.add('apple')
-        }
-      }
-      detectApple()
-    })(window)</script><link rel="stylesheet" href="/myBlog/css/mouseConfig.css"><link rel="stylesheet" href="/myBlog/css/valineBg.css"><link rel="stylesheet" href="/myBlog/css/rightmenu.css"><link rel="stylesheet" href="/myBlog/css/custom_music.css"><link rel="stylesheet" href="/myBlog/css/addFonts.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/myBlog/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
-</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
-  const $loadingBox = document.getElementById('loading-box')
-  const $body = document.body
-  const preloader = {
-    endLoading: () => {
-      $body.style.overflow = ''
-      $loadingBox.classList.add('loaded')
-    },
-    initLoading: () => {
-      $body.style.overflow = 'hidden'
-      $loadingBox.classList.remove('loaded')
-    }
-  }
-
-  preloader.initLoading()
-  window.addEventListener('load',() => { preloader.endLoading() })
-
-  if (true) {
-    document.addEventListener('pjax:send', () => { preloader.initLoading() })
-    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
-  }
-})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/myBlog/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">44</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">56</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/myBlog/img/bg.jpg')"><nav id="nav"><span id="blog-info"><a href="/myBlog/" title="SJTU-XHW's blog"><img class="site-icon" src="/myBlog/img/head_icon.png"/><span class="site-name">SJTU-XHW's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/update-log/v0.3.0-Beta.html"><i class="fa-fw fa fa-arrow-circle-up"></i><span> Update</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">SJTU-XHW's blog</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.top/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="post_cover left"><a href="/myBlog/2024/03/18/TypeScript%E7%AC%94%E8%AE%B0/" title="TypeScript笔记"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/typescript.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="TypeScript笔记"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/03/18/TypeScript%E7%AC%94%E8%AE%B0/" title="TypeScript笔记">TypeScript笔记</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-03-18T14:56:29.000Z" title="发表于 2024-03-18 22:56:29">2024-03-18</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">Written by SJTU-XHW
-Reference:  MDN Doc &amp;&amp; TypeScript Doc
-本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！
-
-
-Chapter 1. 与 JS 比较：类型声明 与 作用域TypeScript 是个静态类型语言，变量类型/对象成员/函数签名 在定义后就不能更改！
-
-定义变量时，请使用规范的类型声明定义方式：
-1234567/* Variable */var foo: number;var bar: string = &quot;Hello, TypeScript!&quot;;/* Function */function toString(num: number): string &#123;    return String(num);&#125;
-
-天大的福音：只声明变量、不赋值就使用会报错！这下不用担心讨厌的 undefined 了；
-12let x: number;console.log(x); // TypeError
-而且开启了编译选项 strictNullChecks 后，undef ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/myBlog/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/" title="React框架速通"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/react.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="React框架速通"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/" title="React框架速通">React框架速通</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-02-27T07:30:41.000Z" title="发表于 2024-02-27 15:30:41">2024-02-27</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">Written by SJTU-XHW
-Reference:  MDN Doc &amp;&amp; React Doc
-本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！
-
-
-Chapter 0. 5 分钟速通 React 框架
-如果你只有 5 分钟时间，则只需阅读这一章；否则请从 Chapter 1 开始。
-建议有一定的原生 JavaScript 基础，至少包括：JS 基本类型、内置引用类型、函数表达式的各种操作，简单 DOM 操作，JavaScript 事件，JavaScript 异步（Promise）。
-
-0.1 基本概念
-React 应用程序是由 组件 组成的。
-
-一个组件是 UI 的一部分，它拥有自己的逻辑和外观。组件可以小到一个按钮，也可以大到整个页面。
-
-
-React 组件是返回标签的 JavaScript 函数。
-12345function MyButton() &#123;    return (        &lt;button&gt;I&#x27;m a button&lt;/button&gt;    );&#125;;
-React 组件的使 ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/myBlog/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/" title="JavaScript入门笔记-(2)"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/javascript2.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="JavaScript入门笔记-(2)"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/" title="JavaScript入门笔记-(2)">JavaScript入门笔记-(2)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-02-25T03:25:22.000Z" title="发表于 2024-02-25 11:25:22">2024-02-25</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">Written by SJTU-XHW
-Reference: 《Professional JavaScript for Web Developers》 3rd Edition
-本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！
-
-
-Chapter 7. 简单使用 DOM假设你学习了初级数据结构，那么把 HTML 页面想象成一个以元素为结点的一般树。JavaScript DOM 操作就是操作这个文档树，达到改变前端页面的目的。
-在浏览器运行的 JavaScript 引擎中，全局运行环境中会自动设置一个变量 document（DOM 对象），操作它就是在动态操作 HTML 页面。
-7.1 基本操作
-假设你学习了 CSS 的基础用法。
-
-
-document.querySelector(&lt;selectorStr&gt;)：JavaScript DOM 中的重要方法，document 对象的 按选择器查找 HTML 中的元素（CSS 中有效的所有选择器，除了伪类选择器都行）；
-
-如果有多个符合选择器的对象，那么只会返回一个。想要返回全部，请使用 querySelectorA ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/myBlog/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="JavaScript入门笔记"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/javascript.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="JavaScript入门笔记"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="JavaScript入门笔记">JavaScript入门笔记</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-02-20T13:17:09.000Z" title="发表于 2024-02-20 21:17:09">2024-02-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">Written by SJTU-XHW
-Reference: 《Professional JavaScript for Web Developers》 3rd Edition
-本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！
-
-
-Chapter 0. JavaScript 起源0.1 历史
-Web 流行早期（上世纪末），Internet 用户上网速度 28.8 KB/s，但网页的大小和复杂性却不断增加。为完成简单的表单验证而频繁地与服务器交换数据只会加重用户的负担。于是，为了开发一种客户端语言，仅用来处理表单的简单验证工作，Netscape 公司在其发布的应用 Netscape Navigator 2 上加入一种脚本语言 LiveScript，认为是 JavaScript 的前身之一；
-
-1995 年 2 月，Netscape 与 Sun 合作，为了搭上媒体热炒 Java 的顺风车，临时把 LiveScript 改名为 JavaScript，这就是 JavaScript 1.0；
-
-其后不久，微软在自家作品 IE 3 中加入 JScript（是 JavaScript  ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/myBlog/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/" title="浅析 TTY Subsystem"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/tty.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="浅析 TTY Subsystem"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/" title="浅析 TTY Subsystem">浅析 TTY Subsystem</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-01-14T23:12:02.000Z" title="发表于 2024-01-15 07:12:02">2024-01-15</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">written by SJTU-XHW
-References: 参考文献见文章末尾。
-本人学识有限，解析难免有错，恳请读者能够批评指正，本人将不胜感激！
-
-
-为什么讨论 TTY在 Linux 系统中，TTY 是一个相当有名的子系统。当你输入 ls -l /dev 的时候，你能看到许许多多以 tty 为前缀的字符设备，这就是对 TTY 子系统在文件上的抽象。
-虽然我们无论是命令行还是 GUI 使用 Linux 的时候，TTY 似乎对我们无感，但是，当我因为一个小问题在互联网上查了很多关于 TTY 资料，却仍然很难找到一个完整的知识资料的时候，我发现这个 TTY 子系统的重要性被很多人忽视了。在整理了相关资料后，我愿意相信，搞清楚 Linux 的 TTY 子系统，属实是入门 Linux 系统的必由之路。
-尤其是，如果你想要写一些更接近 Linux 底层的、I/O interactive 方面的应用程序，那么 TTY 的知识就显得更加重要。
-前段时间，我在写 CSAPP 的 shell lab，工作量不大所以很快就完成了。但是文档里有句话让我不解，“这个 tiny shell 不需要支持运行 ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/myBlog/2024/01/13/%E6%94%BE%E5%81%87%EF%BC%81%E5%90%90%E6%A7%BD%EF%BC%81/" title="放假！吐槽！"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/tease.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="放假！吐槽！"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/01/13/%E6%94%BE%E5%81%87%EF%BC%81%E5%90%90%E6%A7%BD%EF%BC%81/" title="放假！吐槽！">放假！吐槽！</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-01-13T06:33:01.000Z" title="发表于 2024-01-13 14:33:01">2024-01-13</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/Chat/">Chat</a></span></div><div class="content">Hooray !家人们，经历了大半个月的期末周，终于来到假期了！我又活过来了😭 上个学期的时间安排实在是不太充裕，我想我得调整下节奏了🤔
-ツッコミ吐槽一下，在准备考试的时候，我和同学们为了分数反复写一些固定的题型，尤其是物理题。不是说我们不应该做物理题，而是这样的做法时间利用的效率真的不高。
-之前看到过一篇文章说的感觉挺有道理的。我们常常听一些教育专家说，现在的学生要全面培养学科交叉能力，我无比赞同这句话，毕竟学科交叉既能开阔我们的专业视野，了解到很多其他方面的学识，又能提升我们的综合素质和学术能力，这是毋庸置疑的。
-另一方面，我认为这个学科交叉是需要说明限度和范围的，而不是学科课表的 “自由组合”。以工科类专业举例，很多人会想，工科嘛，那不得来一整套大学物理，一直学到量子力学，加一点 “金课”，再加五花八门的大学物理实验；末了，再添一点理论力学、甚至大学化学，entitled “学科交叉素养的培养”。
-这个本意是好的，但：每当我看到有些工科同学（惭愧地说，包括笔者）拿着学长学姐留下的 “报告模板”，花一大把时间在大物实验报告上，然后上交后再忘得一干二净，从此再也不会接触到它；每当 ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/myBlog/2023/11/11/CSAPP-Notes-Scheduler-Arch/" title="CSAPP Notes: Scheduler &amp; Arch"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_p2.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes: Scheduler &amp; Arch"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2023/11/11/CSAPP-Notes-Scheduler-Arch/" title="CSAPP Notes: Scheduler &amp; Arch">CSAPP Notes: Scheduler &amp; Arch</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-11-11T01:18:11.000Z" title="发表于 2023-11-11 09:18:11">2023-11-11</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/review/">review</a></span></div><div class="content">Chapter 8. Scheduler in OS为操作系统的调度环境作出假设：
-
-Each job runs for the same amount of time
-All jobs arrive at the same time
-Once started, each job runs to completion
-All jobs only use the CPU 
-i.e., they perform no I/O
-
-
-The run-time of each job is known
-
-引入调度优劣衡量指标：周转时间，$T_{turnaround}=T_{completion}-T_{arrival}$；
-Strategy 1: FIFO（FCFS，First Come First Served）
-Implementation: queue；
-消除假设 1：若短时任务排在长时任务之后，则平均周转时间效果很差；
-
-Strategy 2 : SJF（Shortest Job First）
-内容：对于同时到达的任务，优先选择总时长小的任务。
-作用：（应对假设 1 的消除）缓解了短时任 ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/anime_bokumachi.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="《只有我不在的城市》番评"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评">《只有我不在的城市》番评</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-01T02:20:47.000Z" title="发表于 2023-10-01 10:20:47">2023-10-01</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/Chat/">Chat</a></span></div><div class="content">written by SJTU-XHW
-Reference:  维基百科词条、只有我不在的街道 (豆瓣)
-声明：本文仅代表个人主观观点，侵删。
-【重要】本文除去剧透警戒线下部分，其他内容不含具体故事情节。
-
-在我看过的一百多来部的番剧中，有的能真正扣住我心弦，这大抵是少数；现在看来大多却是 “食之无味，弃之可惜”。初中时期的我曾经浅浅尝试过一部，但是由于开头比较惊悚的画面，还有网友打上的 NTR 标签，让我一直敬而远之、束之高阁。这部番的名字是《只有我不在的城市》(僕だけがいない街) 。
-距离我第一次接触它已经过了好几年的时间，我也不是当年看番只看 HE 类型的观众了。于是我鼓起勇气，在这个国庆重温了这个多年前的老动画。
-本以为我每天在睡前看一小会很快就能结束，可是万万没想到，我最终却熬了大夜将其一口气补完了。没错，在我个人看来，这部番绝对算得上是能排上名的一个相当优秀的作品。下面我将从我自己的视角来讲述这个作品带给我的小小震撼。
-优秀的理由
-注：本节几乎没有剧透内容。
-
-这个作品是由同名漫画动画化而来，本人先观看了动画作品，而后再了解的漫画，所以这里的评价主要是围绕着动画的表现。
-在 ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/myBlog/2023/09/17/CSAPP-Notes-Basic/" title="CSAPP Notes Basic"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes Basic"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2023/09/17/CSAPP-Notes-Basic/" title="CSAPP Notes Basic">CSAPP Notes Basic</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-09-17T11:47:15.000Z" title="发表于 2023-09-17 19:47:15">2023-09-17</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/review/">review</a></span></div><div class="content">written by SJTU-XHW
-Reference:  CMU - 213, Computer Systems A Programmer’s Perspective 3rd Edition by Randal Bryant, David O’Hallaron
-本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！
-内容很长，写起来很慢 😳
-
-
-Chapter 0. Intro0.1 Ints are not Integers, Floats are not Reals
-$x^2\ge 0$：int（32-bit）may overflow；
-$a+(b+c)=(a+b)+c$：floats may discard some “unsignificant” digits；
-
-0.2 Learn Assembly but never write it0.3 Memory Matters: Unbounded1234567891011121314typedef struct &#123;    int a[2];    double d;&#125; struct_t;double fu ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/myBlog/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="MC-Forge开发笔记（一）"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/minecraft1.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="MC-Forge开发笔记（一）"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="MC-Forge开发笔记（一）">MC-Forge开发笔记（一）</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-09-05T13:04:06.000Z" title="发表于 2023-09-05 21:04:06">2023-09-05</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">written by SJTU-XHW
-Reference: Minecraft Forge Doc 1.16.x、Boson 1.16（导论部分）
-注意：以 MC 版本 1.16.5 为例（同一大版本 1.16.x 的操作方式变化不大）
-本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！
-
-
-Chapter 0. Forge 导论0.1 Forge 历史与定义
-Minecraft 其中发行版的一个大类是由 Java写的商业软件，这意味着：
-
-Minecraft 容易反编译和修改：由于 Java 半解释型语言的特性（但凡换成 C++ 就很可能不会有今天 Mod 丰富的生态了，毕竟 Mojang 当年一直不给官方 API）；
-代码本身是闭源的、被混淆的：这毕竟是一款商业软件。
-
-
-为了给 Minecraft 增添更多的游戏特性，大家千方百计地寻找添加代码的办法。最终 MCP（Mod Coder Pack）项目诞生了，它规避了没有官方 API 的问题，通过反编译、反混淆直接修改 Minecraft jar 包中的内容。其发展过程中，人们研究各类的名称的产生如下：
-
-notch 名：Mine ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/myBlog/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/myBlog/">1</a><span class="page-number current">2</span><a class="page-number" href="/myBlog/page/3/#content-inner">3</a><span class="space">&hellip;</span><a class="page-number" href="/myBlog/page/5/#content-inner">5</a><a class="extend next" rel="next" href="/myBlog/page/3/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/myBlog/img/favicon.ico" onerror="this.onerror=null;this.src='/myBlog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">SJTU-XHW</div><div class="author-info__description">A blog to document learning and life</div></div><div class="card-info-data site-data is-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">44</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">56</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.top/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! ‎|•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/07/20/Algorithms-in-AI/" title="Algorithms in AI"><img src="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Algorithms in AI"/></a><div class="content"><a class="title" href="/myBlog/2024/07/20/Algorithms-in-AI/" title="Algorithms in AI">Algorithms in AI</a><time datetime="2024-07-20T07:23:40.000Z" title="发表于 2024-07-20 15:23:40">2024-07-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/06/15/Convex-Optimizations/" title="Convex &amp; Optimizations"><img src="https://cdn.sjtuxhw.top/cover_imgs/convex.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Convex &amp; Optimizations"/></a><div class="content"><a class="title" href="/myBlog/2024/06/15/Convex-Optimizations/" title="Convex &amp; Optimizations">Convex &amp; Optimizations</a><time datetime="2024-06-15T07:18:39.000Z" title="发表于 2024-06-15 15:18:39">2024-06-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/06/12/Numeric-Analysis-for-Beginners/" title="Numeric Analysis for Beginners"><img src="https://cdn.sjtuxhw.top/cover_imgs/numeric-analysis.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Numeric Analysis for Beginners"/></a><div class="content"><a class="title" href="/myBlog/2024/06/12/Numeric-Analysis-for-Beginners/" title="Numeric Analysis for Beginners">Numeric Analysis for Beginners</a><time datetime="2024-06-12T05:11:56.000Z" title="发表于 2024-06-12 13:11:56">2024-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/06/01/Introduction-to-Rabbit-MQ/" title="Introduction to Rabbit MQ"><img src="https://cdn.sjtuxhw.top/cover_imgs/rabbit.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Introduction to Rabbit MQ"/></a><div class="content"><a class="title" href="/myBlog/2024/06/01/Introduction-to-Rabbit-MQ/" title="Introduction to Rabbit MQ">Introduction to Rabbit MQ</a><time datetime="2024-06-01T08:31:33.000Z" title="发表于 2024-06-01 16:31:33">2024-06-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/05/21/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%88%9D%E6%8E%A2/" title="微服务初探"><img src="https://cdn.sjtuxhw.top/cover_imgs/micro.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="微服务初探"/></a><div class="content"><a class="title" href="/myBlog/2024/05/21/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%88%9D%E6%8E%A2/" title="微服务初探">微服务初探</a><time datetime="2024-05-21T03:27:40.000Z" title="发表于 2024-05-21 11:27:40">2024-05-21</time></div></div></div></div><div class="card-widget" id="card-newest-comments"><div class="item-headline"><i class="fas fa-comment-dots"></i><span>最新评论</span></div><div class="aside-list"><span>正在加载中...</span></div></div><div class="card-widget card-categories"><div class="item-headline">
+  postUpdate: '2024-10-25 11:05:58'
+}</script><link rel="stylesheet" href="/myBlog/css/mouseConfig.css"><link rel="stylesheet" href="/myBlog/css/valineBg.css"><link rel="stylesheet" href="/myBlog/css/rightmenu.css"><link rel="stylesheet" href="/myBlog/css/custom_music.css"><link rel="stylesheet" href="/myBlog/css/addFonts.css"><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/myBlog/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/myBlog/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">44</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">56</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url(/img/bg.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/myBlog/"><img class="site-icon" src="/myBlog/img/head_icon.png" alt="Logo"><span class="site-name">SJTU-XHW's blog</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myBlog/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/myBlog/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/myBlog/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/myBlog/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/myBlog/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">SJTU-XHW's blog</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.top/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="post_cover left"><a href="/myBlog/2024/03/18/TypeScript%E7%AC%94%E8%AE%B0/" title="TypeScript笔记"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/typescript.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="TypeScript笔记"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/03/18/TypeScript%E7%AC%94%E8%AE%B0/" title="TypeScript笔记">TypeScript笔记</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-03-18T14:56:29.000Z" title="发表于 2024-03-18 22:56:29">2024-03-18</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">Written by SJTU-XHW Reference:  MDN Doc &amp;&amp; TypeScript Doc 本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！   Chapter 1. 与 JS 比较：类型声明 与 作用域TypeScript 是个静态类型语言，变量类型/对象成员/函数签名 在定义后就不能更改！  定义变量时，请使用规范的类型声明定义方式： 1234567/* Variable */var foo: number;var bar: string = &quot;Hello, TypeScript!&quot;;/* Function */function toString(num: number): string &#123;    return String(num);&#125;  天大的福音：只声明变量、不赋值就使用会报错！这下不用担心讨厌的 undefined 了； 12let x: number;console.log(x); // TypeError 而且开启了编译选项 strictNullChecks...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/myBlog/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/" title="React框架速通"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/react.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="React框架速通"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/02/27/React%E6%A1%86%E6%9E%B6%E9%80%9F%E9%80%9A/" title="React框架速通">React框架速通</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-02-27T07:30:41.000Z" title="发表于 2024-02-27 15:30:41">2024-02-27</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">Written by SJTU-XHW Reference:  MDN Doc &amp;&amp; React Doc 本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！   Chapter 0. 5 分钟速通 React 框架 如果你只有 5 分钟时间，则只需阅读这一章；否则请从 Chapter 1 开始。 建议有一定的原生 JavaScript 基础，至少包括：JS 基本类型、内置引用类型、函数表达式的各种操作，简单 DOM 操作，JavaScript 事件，JavaScript 异步（Promise）。  0.1 基本概念 React 应用程序是由 组件 组成的。  一个组件是 UI 的一部分，它拥有自己的逻辑和外观。组件可以小到一个按钮，也可以大到整个页面。   React 组件是返回标签的 JavaScript 函数。 12345function MyButton() &#123;    return (        &lt;button&gt;I&#x27;m a button&lt;/button&gt;    );&#125;; React...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/myBlog/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/" title="JavaScript入门笔记-(2)"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/javascript2.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="JavaScript入门笔记-(2)"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/02/25/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2/" title="JavaScript入门笔记-(2)">JavaScript入门笔记-(2)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-02-25T03:25:22.000Z" title="发表于 2024-02-25 11:25:22">2024-02-25</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">Written by SJTU-XHW Reference: 《Professional JavaScript for Web Developers》 3rd Edition 本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！   Chapter 7. 简单使用 DOM假设你学习了初级数据结构，那么把 HTML 页面想象成一个以元素为结点的一般树。JavaScript DOM 操作就是操作这个文档树，达到改变前端页面的目的。 在浏览器运行的 JavaScript 引擎中，全局运行环境中会自动设置一个变量 document（DOM 对象），操作它就是在动态操作 HTML 页面。 7.1 基本操作 假设你学习了 CSS 的基础用法。   document.querySelector(&lt;selectorStr&gt;)：JavaScript DOM 中的重要方法，document 对象的 按选择器查找 HTML 中的元素（CSS 中有效的所有选择器，除了伪类选择器都行）；  如果有多个符合选择器的对象，那么只会返回一个。想要返回全部，请使用...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/myBlog/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="JavaScript入门笔记"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/javascript.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="JavaScript入门笔记"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/02/20/JavaScript%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" title="JavaScript入门笔记">JavaScript入门笔记</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-02-20T13:17:09.000Z" title="发表于 2024-02-20 21:17:09">2024-02-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">Written by SJTU-XHW Reference: 《Professional JavaScript for Web Developers》 3rd Edition 本人学识有限，笔记难免有错，恳请读者能够批评指正，本人将不胜感激！   Chapter 0. JavaScript 起源0.1 历史 Web 流行早期（上世纪末），Internet 用户上网速度 28.8 KB/s，但网页的大小和复杂性却不断增加。为完成简单的表单验证而频繁地与服务器交换数据只会加重用户的负担。于是，为了开发一种客户端语言，仅用来处理表单的简单验证工作，Netscape 公司在其发布的应用 Netscape Navigator 2 上加入一种脚本语言 LiveScript，认为是 JavaScript 的前身之一；  1995 年 2 月，Netscape 与 Sun 合作，为了搭上媒体热炒 Java 的顺风车，临时把 LiveScript 改名为 JavaScript，这就是 JavaScript 1.0；  其后不久，微软在自家作品 IE 3 中加入 JScript（是...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/myBlog/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/" title="浅析 TTY Subsystem"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/tty.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="浅析 TTY Subsystem"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/01/15/%E6%B5%85%E6%9E%90-TTY-Subsystem/" title="浅析 TTY Subsystem">浅析 TTY Subsystem</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-01-14T23:12:02.000Z" title="发表于 2024-01-15 07:12:02">2024-01-15</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">written by SJTU-XHW References: 参考文献见文章末尾。 本人学识有限，解析难免有错，恳请读者能够批评指正，本人将不胜感激！   为什么讨论 TTY在 Linux 系统中，TTY 是一个相当有名的子系统。当你输入 ls -l /dev 的时候，你能看到许许多多以 tty 为前缀的字符设备，这就是对 TTY 子系统在文件上的抽象。 虽然我们无论是命令行还是 GUI 使用 Linux 的时候，TTY 似乎对我们无感，但是，当我因为一个小问题在互联网上查了很多关于 TTY 资料，却仍然很难找到一个完整的知识资料的时候，我发现这个 TTY 子系统的重要性被很多人忽视了。在整理了相关资料后，我愿意相信，搞清楚 Linux 的 TTY 子系统，属实是入门 Linux 系统的必由之路。 尤其是，如果你想要写一些更接近 Linux 底层的、I/O interactive 方面的应用程序，那么 TTY 的知识就显得更加重要。 前段时间，我在写 CSAPP 的 shell lab，工作量不大所以很快就完成了。但是文档里有句话让我不解，“这个 tiny shell...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/myBlog/2024/01/13/%E6%94%BE%E5%81%87%EF%BC%81%E5%90%90%E6%A7%BD%EF%BC%81/" title="放假！吐槽！"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/tease.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="放假！吐槽！"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2024/01/13/%E6%94%BE%E5%81%87%EF%BC%81%E5%90%90%E6%A7%BD%EF%BC%81/" title="放假！吐槽！">放假！吐槽！</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-01-13T06:33:01.000Z" title="发表于 2024-01-13 14:33:01">2024-01-13</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/Chat/">Chat</a></span></div><div class="content">Hooray !家人们，经历了大半个月的期末周，终于来到假期了！我又活过来了😭 上个学期的时间安排实在是不太充裕，我想我得调整下节奏了🤔 ツッコミ吐槽一下，在准备考试的时候，我和同学们为了分数反复写一些固定的题型，尤其是物理题。不是说我们不应该做物理题，而是这样的做法时间利用的效率真的不高。 之前看到过一篇文章说的感觉挺有道理的。我们常常听一些教育专家说，现在的学生要全面培养学科交叉能力，我无比赞同这句话，毕竟学科交叉既能开阔我们的专业视野，了解到很多其他方面的学识，又能提升我们的综合素质和学术能力，这是毋庸置疑的。 另一方面，我认为这个学科交叉是需要说明限度和范围的，而不是学科课表的 “自由组合”。以工科类专业举例，很多人会想，工科嘛，那不得来一整套大学物理，一直学到量子力学，加一点 “金课”，再加五花八门的大学物理实验；末了，再添一点理论力学、甚至大学化学，entitled “学科交叉素养的培养”。 这个本意是好的，但：每当我看到有些工科同学（惭愧地说，包括笔者）拿着学长学姐留下的...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/myBlog/2023/11/11/CSAPP-Notes-Scheduler-Arch/" title="CSAPP Notes: Scheduler &amp; Arch"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_p2.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes: Scheduler &amp; Arch"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2023/11/11/CSAPP-Notes-Scheduler-Arch/" title="CSAPP Notes: Scheduler &amp; Arch">CSAPP Notes: Scheduler &amp; Arch</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-11-11T01:18:11.000Z" title="发表于 2023-11-11 09:18:11">2023-11-11</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/review/">review</a></span></div><div class="content">Chapter 8. Scheduler in OS为操作系统的调度环境作出假设：  Each job runs for the same amount of time All jobs arrive at the same time Once started, each job runs to completion All jobs only use the CPU  i.e., they perform no I/O   The run-time of each job is known  引入调度优劣衡量指标：周转时间，$T_{turnaround}=T_{completion}-T_{arrival}$； Strategy 1: FIFO（FCFS，First Come First Served） Implementation: queue； 消除假设 1：若短时任务排在长时任务之后，则平均周转时间效果很差；  Strategy 2 : SJF（Shortest Job First） 内容：对于同时到达的任务，优先选择总时长小的任务。 作用：（应对假设 1...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/anime_bokumachi.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="《只有我不在的城市》番评"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2023/10/01/%E3%80%8A%E5%8F%AA%E6%9C%89%E6%88%91%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%9F%8E%E5%B8%82%E3%80%8B%E7%95%AA%E8%AF%84/" title="《只有我不在的城市》番评">《只有我不在的城市》番评</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-10-01T02:20:47.000Z" title="发表于 2023-10-01 10:20:47">2023-10-01</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/Chat/">Chat</a></span></div><div class="content">written by SJTU-XHW Reference:  维基百科词条、只有我不在的街道 (豆瓣) 声明：本文仅代表个人主观观点，侵删。 【重要】本文除去剧透警戒线下部分，其他内容不含具体故事情节。  在我看过的一百多来部的番剧中，有的能真正扣住我心弦，这大抵是少数；现在看来大多却是 “食之无味，弃之可惜”。初中时期的我曾经浅浅尝试过一部，但是由于开头比较惊悚的画面，还有网友打上的 NTR 标签，让我一直敬而远之、束之高阁。这部番的名字是《只有我不在的城市》(僕だけがいない街) 。 距离我第一次接触它已经过了好几年的时间，我也不是当年看番只看 HE...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/myBlog/2023/09/17/CSAPP-Notes-Basic/" title="CSAPP Notes Basic"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="CSAPP Notes Basic"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2023/09/17/CSAPP-Notes-Basic/" title="CSAPP Notes Basic">CSAPP Notes Basic</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-09-17T11:47:15.000Z" title="发表于 2023-09-17 19:47:15">2023-09-17</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/review/">review</a></span></div><div class="content">written by SJTU-XHW Reference:  CMU - 213, Computer Systems A Programmer’s Perspective 3rd Edition by Randal Bryant, David O’Hallaron 本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！ 内容很长，写起来很慢 😳   Chapter 0. Intro0.1 Ints are not Integers, Floats are not Reals $x^2\ge 0$：int（32-bit）may overflow； $a+(b+c)=(a+b)+c$：floats may discard some “unsignificant” digits；  0.2 Learn Assembly but never write it0.3 Memory Matters: Unbounded1234567891011121314typedef struct &#123;    int a[2];    double d;&#125;...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/myBlog/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="MC-Forge开发笔记（一）"><img class="post-bg" src="https://cdn.sjtuxhw.top/cover_imgs/minecraft1.png" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="MC-Forge开发笔记（一）"></a></div><div class="recent-post-info"><a class="article-title" href="/myBlog/2023/09/05/MC-Forge%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="MC-Forge开发笔记（一）">MC-Forge开发笔记（一）</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2023-09-05T13:04:06.000Z" title="发表于 2023-09-05 21:04:06">2023-09-05</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/myBlog/categories/technical/">technical</a></span></div><div class="content">written by SJTU-XHW Reference: Minecraft Forge Doc 1.16.x、Boson 1.16（导论部分） 注意：以 MC 版本 1.16.5 为例（同一大版本 1.16.x 的操作方式变化不大） 本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！   Chapter 0. Forge 导论0.1 Forge 历史与定义 Minecraft 其中发行版的一个大类是由 Java写的商业软件，这意味着：  Minecraft 容易反编译和修改：由于 Java 半解释型语言的特性（但凡换成 C++ 就很可能不会有今天 Mod 丰富的生态了，毕竟 Mojang 当年一直不给官方 API）； 代码本身是闭源的、被混淆的：这毕竟是一款商业软件。   为了给 Minecraft 增添更多的游戏特性，大家千方百计地寻找添加代码的办法。最终 MCP（Mod Coder Pack）项目诞生了，它规避了没有官方 API 的问题，通过反编译、反混淆直接修改 Minecraft jar 包中的内容。其发展过程中，人们研究各类的名称的产生如下：  notch...</div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/myBlog/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/myBlog/">1</a><span class="page-number current">2</span><a class="page-number" href="/myBlog/page/3/#content-inner">3</a><span class="space">&hellip;</span><a class="page-number" href="/myBlog/page/5/#content-inner">5</a><a class="extend next" rel="next" href="/myBlog/page/3/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/myBlog/img/favicon.ico" onerror="this.onerror=null;this.src='/myBlog/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">SJTU-XHW</div><div class="author-info-description">A blog to document learning and life</div><div class="site-data"><a href="/myBlog/archives/"><div class="headline">文章</div><div class="length-num">44</div></a><a href="/myBlog/tags/"><div class="headline">标签</div><div class="length-num">56</div></a><a href="/myBlog/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://sjtuxhw.top/myBlog/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! |•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/07/20/Algorithms-in-AI/" title="Algorithms in AI"><img src="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Algorithms in AI"/></a><div class="content"><a class="title" href="/myBlog/2024/07/20/Algorithms-in-AI/" title="Algorithms in AI">Algorithms in AI</a><time datetime="2024-07-20T07:23:40.000Z" title="发表于 2024-07-20 15:23:40">2024-07-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/06/15/Convex-Optimizations/" title="Convex &amp; Optimizations"><img src="https://cdn.sjtuxhw.top/cover_imgs/convex.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Convex &amp; Optimizations"/></a><div class="content"><a class="title" href="/myBlog/2024/06/15/Convex-Optimizations/" title="Convex &amp; Optimizations">Convex &amp; Optimizations</a><time datetime="2024-06-15T07:18:39.000Z" title="发表于 2024-06-15 15:18:39">2024-06-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/06/12/Numeric-Analysis-for-Beginners/" title="Numeric Analysis for Beginners"><img src="https://cdn.sjtuxhw.top/cover_imgs/numeric-analysis.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Numeric Analysis for Beginners"/></a><div class="content"><a class="title" href="/myBlog/2024/06/12/Numeric-Analysis-for-Beginners/" title="Numeric Analysis for Beginners">Numeric Analysis for Beginners</a><time datetime="2024-06-12T05:11:56.000Z" title="发表于 2024-06-12 13:11:56">2024-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/06/01/Introduction-to-Rabbit-MQ/" title="Introduction to Rabbit MQ"><img src="https://cdn.sjtuxhw.top/cover_imgs/rabbit.jpeg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="Introduction to Rabbit MQ"/></a><div class="content"><a class="title" href="/myBlog/2024/06/01/Introduction-to-Rabbit-MQ/" title="Introduction to Rabbit MQ">Introduction to Rabbit MQ</a><time datetime="2024-06-01T08:31:33.000Z" title="发表于 2024-06-01 16:31:33">2024-06-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/myBlog/2024/05/21/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%88%9D%E6%8E%A2/" title="微服务初探"><img src="https://cdn.sjtuxhw.top/cover_imgs/micro.jpg" onerror="this.onerror=null;this.src='/myBlog/img/404.png'" alt="微服务初探"/></a><div class="content"><a class="title" href="/myBlog/2024/05/21/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%88%9D%E6%8E%A2/" title="微服务初探">微服务初探</a><time datetime="2024-05-21T03:27:40.000Z" title="发表于 2024-05-21 11:27:40">2024-05-21</time></div></div></div></div><div class="card-widget" id="card-newest-comments"><div class="item-headline"><i class="fas fa-comment-dots"></i><span>最新评论</span></div><div class="aside-list"><span>加载中...</span></div></div><div class="card-widget card-categories"><div class="item-headline">
             <i class="fas fa-folder-open"></i>
             <span>分类</span>
             
-            </div>
-            <ul class="card-category-list" id="aside-cat-list">
+          </div>
+          <ul class="card-category-list" id="aside-cat-list">
             <li class="card-category-list-item "><a class="card-category-list-link" href="/myBlog/categories/Chat/"><span class="card-category-list-name">Chat</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/myBlog/categories/literary/"><span class="card-category-list-name">literary</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/myBlog/categories/review/"><span class="card-category-list-name">review</span><span class="card-category-list-count">11</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/myBlog/categories/technical/"><span class="card-category-list-name">technical</span><span class="card-category-list-count">24</span></a></li>
-            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/myBlog/tags/HarmonyOS/" style="font-size: 1.1em; color: #999">HarmonyOS</a> <a href="/myBlog/tags/Matlab/" style="font-size: 1.1em; color: #999">Matlab</a> <a href="/myBlog/tags/Programmimg/" style="font-size: 1.1em; color: #999">Programmimg</a> <a href="/myBlog/tags/CMake/" style="font-size: 1.1em; color: #999">CMake</a> <a href="/myBlog/tags/essay/" style="font-size: 1.23em; color: #999ea6">essay</a> <a href="/myBlog/tags/tease/" style="font-size: 1.1em; color: #999">tease</a> <a href="/myBlog/tags/git/" style="font-size: 1.1em; color: #999">git</a> <a href="/myBlog/tags/CSAPP/" style="font-size: 1.37em; color: #99a4b2">CSAPP</a> <a href="/myBlog/tags/GNU/" style="font-size: 1.43em; color: #99a6b9">GNU</a> <a href="/myBlog/tags/Database/" style="font-size: 1.1em; color: #999">Database</a> <a href="/myBlog/tags/JavaScript/" style="font-size: 1.3em; color: #99a1ac">JavaScript</a> <a href="/myBlog/tags/Appreciation/" style="font-size: 1.1em; color: #999">Appreciation</a> <a href="/myBlog/tags/Algorithm/" style="font-size: 1.1em; color: #999">Algorithm</a> <a href="/myBlog/tags/Forge/" style="font-size: 1.1em; color: #999">Forge</a> <a href="/myBlog/tags/Disassembly/" style="font-size: 1.1em; color: #999">Disassembly</a> <a href="/myBlog/tags/Linear-List/" style="font-size: 1.1em; color: #999">Linear-List</a> <a href="/myBlog/tags/Fiddler/" style="font-size: 1.1em; color: #999">Fiddler</a> <a href="/myBlog/tags/MySQL/" style="font-size: 1.1em; color: #999">MySQL</a> <a href="/myBlog/tags/Container/" style="font-size: 1.1em; color: #999">Container</a> <a href="/myBlog/tags/SQL/" style="font-size: 1.1em; color: #999">SQL</a> <a href="/myBlog/tags/MQ/" style="font-size: 1.1em; color: #999">MQ</a> <a href="/myBlog/tags/HDC/" style="font-size: 1.1em; color: #999">HDC</a> <a href="/myBlog/tags/Anime/" style="font-size: 1.1em; color: #999">Anime</a> <a href="/myBlog/tags/B-Tree/" style="font-size: 1.1em; color: #999">B+Tree</a> <a href="/myBlog/tags/Programming/" style="font-size: 1.5em; color: #99a9bf">Programming</a> <a href="/myBlog/tags/novel/" style="font-size: 1.1em; color: #999">novel</a> <a href="/myBlog/tags/Sort/" style="font-size: 1.1em; color: #999">Sort</a> <a href="/myBlog/tags/Graph/" style="font-size: 1.17em; color: #999c9f">Graph</a> <a href="/myBlog/tags/TypeScript/" style="font-size: 1.1em; color: #999">TypeScript</a> <a href="/myBlog/tags/Hash-Table/" style="font-size: 1.1em; color: #999">Hash-Table</a> <a href="/myBlog/tags/Flag/" style="font-size: 1.1em; color: #999">Flag</a> <a href="/myBlog/tags/Minecraft/" style="font-size: 1.1em; color: #999">Minecraft</a> <a href="/myBlog/tags/Tree/" style="font-size: 1.1em; color: #999">Tree</a> <a href="/myBlog/tags/ICS/" style="font-size: 1.37em; color: #99a4b2">ICS</a> <a href="/myBlog/tags/CDN/" style="font-size: 1.1em; color: #999">CDN</a> <a href="/myBlog/tags/holiday/" style="font-size: 1.1em; color: #999">holiday</a> <a href="/myBlog/tags/C/" style="font-size: 1.23em; color: #999ea6">C++</a> <a href="/myBlog/tags/Docker/" style="font-size: 1.1em; color: #999">Docker</a> <a href="/myBlog/tags/AI/" style="font-size: 1.1em; color: #999">AI</a> <a href="/myBlog/tags/Logic/" style="font-size: 1.1em; color: #999">Logic</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span><a class="card-more-btn" href="/myBlog/archives/" title="查看更多">
-    <i class="fas fa-angle-right"></i></a></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2024/07/"><span class="card-archive-list-date">七月 2024</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2024/06/"><span class="card-archive-list-date">六月 2024</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2024/05/"><span class="card-archive-list-date">五月 2024</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2024/04/"><span class="card-archive-list-date">四月 2024</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2024/03/"><span class="card-archive-list-date">三月 2024</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2024/02/"><span class="card-archive-list-date">二月 2024</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2024/01/"><span class="card-archive-list-date">一月 2024</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/myBlog/archives/2023/11/"><span class="card-archive-list-date">十一月 2023</span><span class="card-archive-list-count">1</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">44</div></div><div class="webinfo-item"><div class="item-name">已运行时间 :</div><div class="item-count" id="runtimeshow" data-publishDate="2023-03-23T16:00:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">393.6k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总访问量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2024-07-28T08:25:11.091Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/myBlog/js/utils.js"></script><script src="/myBlog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
-  init: (str) => {
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/myBlog/tags/B-Tree/" style="font-size: 1.1em; color: #999">B+Tree</a> <a href="/myBlog/tags/CSAPP/" style="font-size: 1.37em; color: #99a4b2">CSAPP</a> <a href="/myBlog/tags/Math/" style="font-size: 1.23em; color: #999ea6">Math</a> <a href="/myBlog/tags/poem/" style="font-size: 1.17em; color: #999c9f">poem</a> <a href="/myBlog/tags/AI/" style="font-size: 1.1em; color: #999">AI</a> <a href="/myBlog/tags/Forge/" style="font-size: 1.1em; color: #999">Forge</a> <a href="/myBlog/tags/Database/" style="font-size: 1.1em; color: #999">Database</a> <a href="/myBlog/tags/Hash-Table/" style="font-size: 1.1em; color: #999">Hash-Table</a> <a href="/myBlog/tags/Algorithm/" style="font-size: 1.1em; color: #999">Algorithm</a> <a href="/myBlog/tags/Fiddler/" style="font-size: 1.1em; color: #999">Fiddler</a> <a href="/myBlog/tags/Set-Theory/" style="font-size: 1.1em; color: #999">Set-Theory</a> <a href="/myBlog/tags/holiday/" style="font-size: 1.1em; color: #999">holiday</a> <a href="/myBlog/tags/Programming/" style="font-size: 1.5em; color: #99a9bf">Programming</a> <a href="/myBlog/tags/JavaScript/" style="font-size: 1.3em; color: #99a1ac">JavaScript</a> <a href="/myBlog/tags/SQL/" style="font-size: 1.1em; color: #999">SQL</a> <a href="/myBlog/tags/CMake/" style="font-size: 1.1em; color: #999">CMake</a> <a href="/myBlog/tags/Discrete-Math/" style="font-size: 1.17em; color: #999c9f">Discrete-Math</a> <a href="/myBlog/tags/Linux/" style="font-size: 1.1em; color: #999">Linux</a> <a href="/myBlog/tags/HarmonyOS/" style="font-size: 1.1em; color: #999">HarmonyOS</a> <a href="/myBlog/tags/Container/" style="font-size: 1.1em; color: #999">Container</a> <a href="/myBlog/tags/Flag/" style="font-size: 1.1em; color: #999">Flag</a> <a href="/myBlog/tags/GNU/" style="font-size: 1.43em; color: #99a6b9">GNU</a> <a href="/myBlog/tags/Qt/" style="font-size: 1.23em; color: #999ea6">Qt</a> <a href="/myBlog/tags/Spring/" style="font-size: 1.1em; color: #999">Spring</a> <a href="/myBlog/tags/novel/" style="font-size: 1.1em; color: #999">novel</a> <a href="/myBlog/tags/Crack/" style="font-size: 1.1em; color: #999">Crack</a> <a href="/myBlog/tags/CDN/" style="font-size: 1.1em; color: #999">CDN</a> <a href="/myBlog/tags/tease/" style="font-size: 1.1em; color: #999">tease</a> <a href="/myBlog/tags/MySQL/" style="font-size: 1.1em; color: #999">MySQL</a> <a href="/myBlog/tags/Disassembly/" style="font-size: 1.1em; color: #999">Disassembly</a> <a href="/myBlog/tags/Minecraft/" style="font-size: 1.1em; color: #999">Minecraft</a> <a href="/myBlog/tags/External-Search/" style="font-size: 1.1em; color: #999">External-Search</a> <a href="/myBlog/tags/TypeScript/" style="font-size: 1.1em; color: #999">TypeScript</a> <a href="/myBlog/tags/C/" style="font-size: 1.23em; color: #999ea6">C++</a> <a href="/myBlog/tags/Graph/" style="font-size: 1.17em; color: #999c9f">Graph</a> <a href="/myBlog/tags/Microservice/" style="font-size: 1.17em; color: #999c9f">Microservice</a> <a href="/myBlog/tags/Programmimg/" style="font-size: 1.1em; color: #999">Programmimg</a> <a href="/myBlog/tags/Data-Structure/" style="font-size: 1.3em; color: #99a1ac">Data-Structure</a> <a href="/myBlog/tags/Matlab/" style="font-size: 1.1em; color: #999">Matlab</a> <a href="/myBlog/tags/Anime/" style="font-size: 1.1em; color: #999">Anime</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>归档</span>
+      <a class="card-more-btn" href="/myBlog/archives/" title="查看更多"><i class="fas fa-angle-right"></i></a>
+    </div>
+    <ul class="card-archive-list">
+  
+      <li class="card-archive-list-item">
+        <a class="card-archive-list-link" href="/myBlog/archives/2024/07/">
+          <span class="card-archive-list-date">七月 2024</span>
+          <span class="card-archive-list-count">1</span>
+        </a>
+      </li>
+    
+      <li class="card-archive-list-item">
+        <a class="card-archive-list-link" href="/myBlog/archives/2024/06/">
+          <span class="card-archive-list-date">六月 2024</span>
+          <span class="card-archive-list-count">3</span>
+        </a>
+      </li>
+    
+      <li class="card-archive-list-item">
+        <a class="card-archive-list-link" href="/myBlog/archives/2024/05/">
+          <span class="card-archive-list-date">五月 2024</span>
+          <span class="card-archive-list-count">4</span>
+        </a>
+      </li>
+    
+      <li class="card-archive-list-item">
+        <a class="card-archive-list-link" href="/myBlog/archives/2024/04/">
+          <span class="card-archive-list-date">四月 2024</span>
+          <span class="card-archive-list-count">2</span>
+        </a>
+      </li>
+    
+      <li class="card-archive-list-item">
+        <a class="card-archive-list-link" href="/myBlog/archives/2024/03/">
+          <span class="card-archive-list-date">三月 2024</span>
+          <span class="card-archive-list-count">1</span>
+        </a>
+      </li>
+    
+      <li class="card-archive-list-item">
+        <a class="card-archive-list-link" href="/myBlog/archives/2024/02/">
+          <span class="card-archive-list-date">二月 2024</span>
+          <span class="card-archive-list-count">3</span>
+        </a>
+      </li>
+    
+      <li class="card-archive-list-item">
+        <a class="card-archive-list-link" href="/myBlog/archives/2024/01/">
+          <span class="card-archive-list-date">一月 2024</span>
+          <span class="card-archive-list-count">2</span>
+        </a>
+      </li>
+    
+      <li class="card-archive-list-item">
+        <a class="card-archive-list-link" href="/myBlog/archives/2023/11/">
+          <span class="card-archive-list-date">十一月 2023</span>
+          <span class="card-archive-list-count">1</span>
+        </a>
+      </li>
+    </ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">44</div></div><div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="runtimeshow" data-publishDate="2023-03-23T16:00:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">393.6k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2024-10-25T03:05:57.030Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/myBlog/js/utils.js"></script><script src="/myBlog/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
+  init: str => {
     window.typed = new Typed('#subtitle', Object.assign({
       strings: str,
       startDelay: 300,
@@ -317,18 +237,19 @@ notch 名：Mine ...</div></div></div><nav id="pagination"><div class="paginatio
       backSpeed: 50,
     }, null))
   },
-  run: (subtitleType) => {
+  run: subtitleType => {
     if (false) {
       if (typeof Typed === 'function') {
         subtitleType()
       } else {
-        getScript('https://cdn.jsdelivr.net/npm/typed.js/dist/typed.umd.min.js').then(subtitleType)
+        btf.getScript('https://cdn.jsdelivr.net/npm/typed.js/dist/typed.umd.min.js').then(subtitleType)
       }
     } else {
       subtitleType()
     }
   }
 }
+btf.addGlobalFn('pjaxSendOnce', () => { typed.destroy() }, 'typedDestroy')
 </script><script>function subtitleType () {
   if (false) {
     typedJSFn.init(["It is better to burn out than to fade away."])
@@ -336,29 +257,76 @@ notch 名：Mine ...</div></div></div><nav id="pagination"><div class="paginatio
     document.getElementById("subtitle").textContent = "It is better to burn out than to fade away."
   }
 }
-typedJSFn.run(subtitleType)</script></div><script>window.addEventListener('load', () => {
-  const changeContent = (content) => {
+typedJSFn.run(subtitleType)</script></div><script>window.newestComments = {
+  changeContent: content => {
     if (content === '') return content
 
     content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
     content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
     content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
-    content = content.replace(/<[^>]+>/g,"") // remove html tag
+    content = content.replace(/<code>.*?<\/code>/gi, '[代码]') // replace code      
+    content = content.replace(/<[^>]+>/g, "") // remove html tag
 
     if (content.length > 150) {
-      content = content.substring(0,150) + '...'
+      content = content.substring(0, 150) + '...'
     }
     return content
-  }
+  },
 
-  const getComment = () => {
+  generateHtml: (array, ele) => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class="aside-list-item">'
+
+        if (true && array[i].avatar) {
+          const imgAttr = 'src'
+          result += `<a href="${array[i].url}" class="thumbnail"><img ${imgAttr}="${array[i].avatar}" alt="${array[i].nick}"></a>`
+        }
+
+        result += `<div class="content">
+        <a class="comment" href="${array[i].url}" title="${array[i].content}">${array[i].content}</a>
+        <div class="name"><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '暂无评论'
+    }
+
+    ele.innerHTML = result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh(ele)
+  },
+
+  newestCommentInit: (name, getComment) => {
+    const $dom = document.querySelector('#card-newest-comments .aside-list')
+    if ($dom) {
+      const data = btf.saveToLocal.get(name)
+      if (data) {
+        newestComments.generateHtml(JSON.parse(data), $dom)
+      } else {
+        getComment($dom)
+      }
+    }
+  },
+
+  run: (name, getComment) => {
+    newestComments.newestCommentInit(name, getComment)
+    btf.addGlobalFn('pjaxComplete', () => newestComments.newestCommentInit(name, getComment), name)
+  }
+}</script><script>window.addEventListener('load', () => {
+  const keyName = 'twikoo-newest-comments'
+  const { changeContent, generateHtml, run } = window.newestComments
+
+  const getComment = ele => {
     const runTwikoo = () => {
       twikoo.getRecentComments({
         envId: 'https://twikoo.sjtuxhw.top',
         region: '',
         pageSize: 6,
         includeReply: true
-      }).then(function (res) {
+      }).then(res => {
         const twikooArray = res.map(e => {
           return {
             'content': changeContent(e.comment),
@@ -369,125 +337,83 @@ typedJSFn.run(subtitleType)</script></div><script>window.addEventListener('load'
           }
         })
 
-        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
-        generateHtml(twikooArray)
-      }).catch(function (err) {
-        const $dom = document.querySelector('#card-newest-comments .aside-list')
-        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+        btf.saveToLocal.set(keyName, JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray, ele)
+      }).catch(err => {
+        console.error(err)
+        ele.textContent= "无法获取评论，请确认相关配置是否正确"
       })
     }
 
     if (typeof twikoo === 'object') {
       runTwikoo()
     } else {
-      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
+      btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
     }
   }
 
-  const generateHtml = array => {
-    let result = ''
-
-    if (array.length) {
-      for (let i = 0; i < array.length; i++) {
-        result += '<div class=\'aside-list-item\'>'
-
-        if (true) {
-          const name = 'src'
-          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'></a>`
+  run(keyName, getComment)
+})</script><script src="/myBlog/js/jquery-3.7.0.min.js"></script><script src="/myBlog/js/rightmenu.js"></script><div class="aplayer no-destroy" data-id="6898044781" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false"></div><script src="/myBlog/js/mourn.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="/myBlog/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
         }
-        
-        result += `<div class='content'>
-        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
-        <div class='name'><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
-        </div></div>`
-      }
-    } else {
-      result += '没有评论'
-    }
-
-    let $dom = document.querySelector('#card-newest-comments .aside-list')
-    $dom.innerHTML= result
-    window.lazyLoadInstance && window.lazyLoadInstance.update()
-    window.pjax && window.pjax.refresh($dom)
-  }
-
-  const newestCommentInit = () => {
-    if (document.querySelector('#card-newest-comments .aside-list')) {
-      const data = saveToLocal.get('twikoo-newest-comments')
-      if (data) {
-        generateHtml(JSON.parse(data))
-      } else {
-        getComment()
       }
     }
   }
 
-  newestCommentInit()
-  document.addEventListener('pjax:complete', newestCommentInit)
-})</script><script src="/myBlog/js/jquery-3.7.0.min.js"></script><script src="/myBlog/js/rightmenu.js"></script><div class="aplayer no-destroy" data-id="6898044781" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false"></div><script src="/myBlog/js/mourn.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="/myBlog/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
-
-var pjax = new Pjax({
-  elements: 'a:not([target="_blank"])',
-  selectors: pjaxSelectors,
-  cacheBust: false,
-  analytics: false,
-  scrollRestoration: false
-})
-
-document.addEventListener('pjax:send', function () {
-
-  // removeEventListener
-  btf.removeGlobalFnEvent('pjax')
-  btf.removeGlobalFnEvent('themeChange')
-
-  document.getElementById('rightside').classList.remove('rightside-show')
-  
-  if (window.aplayers) {
-    for (let i = 0; i < window.aplayers.length; i++) {
-      if (!window.aplayers[i].options.fixed) {
-        window.aplayers[i].destroy()
-      }
-    }
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
   }
 
-  typeof typed === 'object' && typed.destroy()
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
 
-  //reset readmode
-  const $bodyClassList = document.body.classList
-  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
-
-  typeof disqusjs === 'object' && disqusjs.destroy()
-})
-
-document.addEventListener('pjax:complete', function () {
-  window.refreshFn()
-
-  document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
   })
 
-  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
-
-  typeof panguInit === 'function' && panguInit()
-
-  // google analytics
-  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
-
-  // baidu analytics
-  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
-
-  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
-
-  // prismjs
-  typeof Prism === 'object' && Prism.highlightAll()
-})
-
-document.addEventListener('pjax:error', e => {
-  if (e.request.status === 404) {
-    pjax.loadUrl('/myBlog/404.html')
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
   }
-})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/myBlog/404.html')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/myBlog/js/search/local-search.js"></script></div></div></body></html>

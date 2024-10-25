@@ -1,11 +1,24 @@
 @font-face {
+    font-family: "Lora";
+    src:
+      url("https://cdn.sjtuxhw.top/fonts/Lora-VariableFont_wght.ttf") format("truetype"),
+      url("https://cdn.sjtuxhw.top/fonts/Lora-Regular.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "Merriweather";
+    src: url("https://cdn.sjtuxhw.top/fonts/Merriweather-Regular.ttf") format("truetype");
+  }
+  
+  @font-face {
     font-family: "LXGW WenKai Lite";
-    src: url("https://cdn.sjtuxhw.top/fonts/LXGWWenKaiLite-Regular.woff2") format("woff2"),
-         url("https://cdn.sjtuxhw.top/fonts/LXGWWenKaiLite-Regular.ttf") format("truetype");
-}
-
-@font-face {
+    src:
+      url("https://cdn.sjtuxhw.top/fonts/LXGWWenKaiLite-Regular.woff2") format("woff2"),
+      url("https://cdn.sjtuxhw.top/fonts/LXGWWenKaiLite-Regular.ttf") format("truetype");
+  }
+  
+  @font-face {
     font-family: "MonoLisa";
     src: url("https://cdn.sjtuxhw.top/fonts/MonoLisa-Regular.otf") format("opentype");
-}
+  }
 
