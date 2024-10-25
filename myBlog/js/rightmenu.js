@@ -17,12 +17,12 @@ rmf.showRightMenu = function(isTrue, x=0, y=0){
 rmf.switchDarkMode = function(){
     const nowMode = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
     if (nowMode === 'light') {
-        activateDarkMode()
-        saveToLocal.set('theme', 'dark', 2)
+        btf.activateDarkMode()
+        btf.saveToLocal.set('theme', 'dark', 2)
         GLOBAL_CONFIG.Snackbar !== undefined && btf.snackbarShow(GLOBAL_CONFIG.Snackbar.day_to_night)
     } else {
-        activateLightMode()
-        saveToLocal.set('theme', 'light', 2)
+        btf.activateLightMode()
+        btf.saveToLocal.set('theme', 'light', 2)
         GLOBAL_CONFIG.Snackbar !== undefined && btf.snackbarShow(GLOBAL_CONFIG.Snackbar.night_to_day)
     }
     // handle some cases
@@ -51,8 +51,13 @@ rmf.switchReadMode = function(){
 
 //复制选中文字
 rmf.copySelect = function(){
-    document.execCommand('Copy',false,null);
-    //这里可以写点东西提示一下 已复制
+    /* !!! WARN !!! No i18n here */
+    try {
+        document.execCommand('Copy',false,null);
+    } catch (err) {
+        GLOBAL_CONFIG.Snackbar !== undefined && btf.snackbarShow("Copy Failed (#`皿´)");
+    }
+    GLOBAL_CONFIG.Snackbar !== undefined && btf.snackbarShow("Copied! ヾ(≧∇≦*)ゝ");
 }
 
 //回到顶部
