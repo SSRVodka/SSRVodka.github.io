@@ -1,0 +1,784 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Git学习笔记 | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Chapter 0. The history of version control systems Local Version Control Systems  downsides: It is easy to forget which directory you’re in and accidentally write to the wrong file or copy over files y">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git学习笔记">
+<meta property="og:url" content="https://blog.sjtuxhw.top/technical/git-learning/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="Chapter 0. The history of version control systems Local Version Control Systems  downsides: It is easy to forget which directory you’re in and accidentally write to the wrong file or copy over files y">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/git.jpg">
+<meta property="article:published_time" content="2023-04-27T16:54:24.000Z">
+<meta property="article:modified_time" content="2024-10-25T13:58:52.288Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="Programming">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/git.jpg"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.sjtuxhw.top/technical/git-learning/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        if (name && globalFn[key][name]) return
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功 ヾ(≧∇≦*)ゝ',
+    error: '复制失败 (#`皿´)',
+    noSupport: '浏览器不支持 ╮(╯_╰)╭'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"top-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Git学习笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-10-25 21:58:52'
+}</script><link rel="stylesheet" href="/css/mouseConfig.css"/><link rel="stylesheet" href="/css/rightmenu.css"/><link rel="stylesheet" href="/css/custom_music.css"/><link rel="stylesheet" href="/css/addFonts.css"/><link rel="stylesheet" href="/css/titleFonts.css"/><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">44</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">56</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.sjtuxhw.top/cover_imgs/git.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/head_icon.png" alt="Logo"><span class="site-name">SJTU-XHW's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Git学习笔记</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Git学习笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-04-27T16:54:24.000Z" title="发表于 2023-04-28 00:54:24">2023-04-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-25T13:58:52.288Z" title="更新于 2024-10-25 21:58:52">2024-10-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">6.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>22分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/technical/git-learning/#post-comment"><span id="twikoo-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="Chapter-0-The-history-of-version-control-systems"><a href="#Chapter-0-The-history-of-version-control-systems" class="headerlink" title="Chapter 0. The history of version control systems"></a>Chapter 0. The history of version control systems</h2><ul>
+<li><p>Local Version Control Systems</p>
+<blockquote>
+<p>downsides: It is easy to forget which directory you’re in and accidentally write to the wrong file or copy over files you don’t mean to.</p>
+</blockquote>
+</li>
+<li><p>Centralized Version Control Systems</p>
+<blockquote>
+<p>downsides: </p>
+<ol>
+<li><p>the single point of failure that the centralized server represents</p>
+</li>
+<li><p>if the hard disk the central database is on becomes corrupted, and  proper backups haven’t been kept, you lose absolutely everything (Local VCSs suffer from this same problem)</p>
+</li>
+</ol>
+</blockquote>
+</li>
+<li><p>Distributed Version Control Systems (such as Git, Mercurial, Bazaar or Darcs)</p>
+</li>
+</ul>
+<h2 id="Chapter-1-Basic-concepts"><a href="#Chapter-1-Basic-concepts" class="headerlink" title="Chapter 1. Basic concepts"></a>Chapter 1. Basic concepts</h2><h3 id="1-1-Some-concepts-of-the-Git"><a href="#1-1-Some-concepts-of-the-Git" class="headerlink" title="1.1 Some concepts of the Git"></a>1.1 Some concepts of the Git</h3><ul>
+<li><p>How do snapshots record differences?</p>
+<ul>
+<li><p>Other VCS: <strong>delta-based version control</strong> (store information as a list of file-based changes);</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/deltas.png" height="220"></p>
+</li>
+<li><p>Git: takes a picture of what all your files look like at that moment and stores a reference to that snapshot. (if files have not changed, Git doesn’t store the file again, just a <strong>link</strong> to the previous identical file it has already stored)</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/snapshots.png" height="220"></p>
+</li>
+</ul>
+</li>
+<li><p><strong>Local operation</strong></p>
+<blockquote>
+<p><strong>Nearly Every Operation Is Local ! </strong></p>
+<ol>
+<li>to browse the history of the project (in local database);</li>
+<li>see the changes introduced between the current version of a file and the file a month ago (do a local difference calculation);</li>
+<li>do a little work and <strong>commit offline or off VPN</strong> (upload when online);</li>
+</ol>
+</blockquote>
+</li>
+<li><p>Integrity (For using SHA-1 hash)</p>
+<blockquote>
+<p>Everything in Git is checksummed before it is stored.</p>
+<p><strong>- it’s impossible to change the contents of any file or directory without Git knowing about it.</strong></p>
+</blockquote>
+</li>
+<li><p><em>Add</em> but never <em>erase/modify</em> in repository</p>
+</li>
+</ul>
+<h3 id="1-2-Working-states-IMPORTANT"><a href="#1-2-Working-states-IMPORTANT" class="headerlink" title="1.2 Working states [IMPORTANT]"></a>1.2 <strong>Working states [IMPORTANT]</strong></h3><blockquote>
+<p>Git has three main states that your files can reside in: <strong>modified</strong>, <strong>staged</strong>, and <strong>committed</strong></p>
+<ul>
+<li>Modified means that you have changed the file but have not committed it to your database yet.</li>
+<li>Staged means that you have marked a modified file in its current version to go into your next commit snapshot.</li>
+<li>Committed means that the data is safely stored in your local database.</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/areas.png" height="300"></p>
+<p><strong>总结</strong></p>
+<p>工作区：放置从数据库中被取出的、在磁盘上供用户修改和使用的 文件；</p>
+<p>中转地（staging area）：储存在Git目录中，即将进入下一个commit的选中的部分文件；</p>
+<p>Git储存库（repository）：储存元数据、objects数据库的区域，通常 <code>clone</code> 操作也放置在这里；</p>
+<p><strong>正确使用Git的流程</strong></p>
+<ol>
+<li>在工作区编辑项目文件；（modified）</li>
+<li>选出某些需要的features/需要进入next commit中的文件，加入中转地；（staged）</li>
+<li>commit（执行此操作时提交中转地中的文件作为一个commit（或者说一个snapshot），永久存于Git储存库中）；（committed）</li>
+</ol>
+</blockquote>
+<h3 id="1-3-Git-command-line-settings-Linux"><a href="#1-3-Git-command-line-settings-Linux" class="headerlink" title="1.3 Git command line settings (Linux)"></a>1.3 Git command line settings (Linux)</h3><ol>
+<li><p>Git 程序配置文件位置：<code>/etc/gitconfig (系统全局设置)</code>、<code>~/.gitconfig 或 ~/.config/git/config (用户个性化设置，针对某个用户的全局设置，使用--global参数指定)</code>、<code>[current repository PATH]/.git/config (项目个性化设置，针对某个用户项目的局部设置，使用--local指定)</code></p>
+</li>
+<li><p>级别最接近用户级的，最有效（局部设置与全局设置冲突时，服从局部设置）</p>
+</li>
+<li><p>检查Git当前所有设置及其定义的位置：<code>git config --list --show-origin</code></p>
+</li>
+<li><p>检查Git当前所有设置：<code>git config --list</code></p>
+</li>
+<li><p><strong>一些建议</strong></p>
+<ul>
+<li><p>安装git后，立即设置 “用户全局设定” 的用户名、邮箱，因为这是git commit 所有项目的目标地址（关联github）<code>git config --global user.name &quot;xxx&quot; &amp;&amp; git config --global user.email xxx@xxx.com</code></p>
+</li>
+<li><p>设置Git默认打开的系统编辑器 <code>git config --global core.editor [PATH/NAME, e.g., vim]</code></p>
+</li>
+<li><p>设置默认的新的储存库（主分支）的名字 <code>git config --global init.defaultBranch main</code></p>
+<blockquote>
+<p>同样的，如果某个项目需要特殊指定，那么就在项目局部设置中执行设置操作</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Chapter-2-Git-basic-commands"><a href="#Chapter-2-Git-basic-commands" class="headerlink" title="Chapter 2. Git basic commands"></a>Chapter 2. Git basic commands</h2><h3 id="2-1-Manipulate-a-git-repository"><a href="#2-1-Manipulate-a-git-repository" class="headerlink" title="2.1 Manipulate a git repository"></a>2.1 Manipulate a git repository</h3><ol>
+<li><p>创建Git存储库</p>
+<blockquote>
+<ol>
+<li><p>You can take a local directory that is currently <strong>not under version control</strong>, and turn it into a Git repository, or</p>
+</li>
+<li><p>You can <em>clone</em> an existing Git repository from elsewhere.</p>
+</li>
+</ol>
+</blockquote>
+<ul>
+<li><p>从存在的非版本控制目录创建：命令行切换到该目录下，输入<code>git init</code></p>
+<blockquote>
+<p>当前目录下会产生一个子目录<code>.git/</code>，其中记录这个存储库的框架，不包含任何被追踪的项目；</p>
+<p>可以使用<code>git add [FILENAME]</code>将文件（建议放在这个目录下再进行）放入staging area（跳过追踪，下面详述），并使用<code>git commit -m [&quot;DESCRIPTION&quot;]</code>提交生成一个主分支下的commit节点</p>
+</blockquote>
+</li>
+<li><p>从存在的存储库中创建（一般是别人的，位于服务器上的，也可以是自己的），输入<code>git clone &lt;url&gt; [new dirName]</code></p>
+<blockquote>
+<p>以URL=<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/libgit2/libgit2">https://github.com/libgit2/libgit2</a> 为例，在当前目录下会生成一个子目录<code>.git/</code>和子目录<code>libgit2/</code>，后者包含原来存储库中所有内容，并且内容处于 工作区，并且属于你的master分支。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>更改Git存储库、更改项目状态</p>
+<blockquote>
+<p>Each file in your working directory can be in one of two states: <strong>tracked</strong> or <strong>untracked</strong>.</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/lifecycle.png"></p>
+<ul>
+<li><p>被追踪的文件一定是：上一个提交的snapshot中的文件，或者是在中转地的文件；</p>
+</li>
+<li><p>未被追踪的文件是：上次snapshot中不含此文件，或者也没有staged过的文件，又或者被手动移除追踪属性（<strong>在工作区下自行新建一个文件，但没有任何操作时，也是未被追踪的文件</strong>）；</p>
+<p><strong>这样做的好处是，不会误添加不相关的文件进入项目</strong></p>
+</li>
+<li><p>当刚clone完成一个存储库，其中所有文件都处于Unmodified阶段、工作区（working directory）；</p>
+</li>
+<li><p>一旦更改了Unmodified状态的文件，该文件立即变为Modified状态（for SHA-1）；</p>
+</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li><p>检查文件所属状态、所属分支（在存储库目录下）：<code>git status</code></p>
+<blockquote>
+<p>简短表述：<code>git status -s/--short</code></p>
+<p>Untracked: ??</p>
+<p>Modified: M</p>
+<p>Staged: A</p>
+<p>Modified &amp; stage &amp; modified later (未将更改再次写入staging area)：MM</p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li><p>追踪Untracked状态文件，并添加进staging area（别问为什么不能加到其他状态中去，因为如果不commit的话，就没有必要追踪了啊）：<code>git add [PATH / FILENAME]</code></p>
+<blockquote>
+<p>若参数是 PATH，那么会递归地将该路径下所有文件加入staging area</p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li><p>将Modified状态文件加入staging area（称为staging Modified files）：<code>git add [PATH / FILENAME]</code></p>
+<blockquote>
+<p><strong>注意：如果修改了staged文件，那么git仍会保留之前的staged的版本（提交时也会默认这个版本），除非将修改后的文件再次加入staging area</strong></p>
+<p>综合上面的和这个例子可知：</p>
+<ol>
+<li>git永远不会将用户不指定的文件加入到staging area中</li>
+<li>git不会将unmodified文件加入staging area，但在储存库的下一个commit中unmodified的文件仍然存在，只不过是个对上一次commit的内容的引用罢了。</li>
+</ol>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li><p>添加需要git忽略的文件（比如程序日志、编译的中间文件，没必要上传到存储库中）：<strong>写<code>.gitignore</code>文件</strong></p>
+<blockquote>
+<p>使用场景列举：比如使用<code>git add .</code>来添加当前目录下所有文件（包括untracked、unmodified、modified的文件）到staging area中，但又不希望某些文件/目录被添加</p>
+<p>建议：在创建存储库后就写这个文件，以防提交不应该被提交的文件</p>
+<p>针对范围：此目录及其子目录（递归生效）</p>
+<p><strong><code>.gitignore</code>文件的语法规则</strong></p>
+<ul>
+<li><p>注释<code>#</code></p>
+</li>
+<li><p>glob patterns: 一种类似正则表达式的语句</p>
+<p><code>*</code>: 0~N个字符，<code>?</code>: 1个字符，<code>/**/</code>用于匹配任意中间目录的结构</p>
+</li>
+<li><p>在每行的glob patterns前加<code>/</code>取消递归和递归查找生效</p>
+</li>
+<li><p>在每行的glob patterns后加<code>/</code>说明前面的是目录</p>
+</li>
+<li><p>否定忽略策略（和UNIX系统设置一样，优先级高于肯定）：在约束名前加上<code>!</code></p>
+</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># ignore all .a files</span><br><span class="line">*.a</span><br><span class="line"></span><br><span class="line"># but do track lib.a, even though you&#x27;re ignoring .a files above</span><br><span class="line">!lib.a</span><br><span class="line"></span><br><span class="line"># only ignore the TODO file in the current directory, not subdir/TODO</span><br><span class="line">/TODO</span><br><span class="line"></span><br><span class="line"># ignore all files in any directory named build</span><br><span class="line">build/</span><br><span class="line"></span><br><span class="line"># ignore doc/notes.txt, but not doc/server/arch.txt</span><br><span class="line">doc/*.txt</span><br><span class="line"></span><br><span class="line"># ignore all .pdf files in the doc/ directory and any of its subdirectories</span><br><span class="line">doc/**/*.pdf</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li><p>查看文件（无论是staged还是unstaged，但未commit）相较于上次提交的更改情况</p>
+<blockquote>
+<p>比较modified文件的不同：<code>git diff</code></p>
+<p>额外参数：<code>--staged</code>，指定比较staged文件</p>
+<p>图形化：<code>git difftool</code></p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li><p>提交staging area中的文件：<code>git commit</code></p>
+<blockquote>
+<p><strong>此举将打开默认编辑器来显示消息，并提示用户输入一些description，描述一下提交的是什么，这在团队开发中很必要</strong></p>
+<p><strong>强烈建议：加 <code>-m &quot;[DESCRIPTION]&quot;</code> 参数，提供有效的提交信息</strong></p>
+<p>最终输出信息中会出现<strong>本次提交的分支、SHA-1 hash code</strong>等信息</p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li><p>跳过Staging area并提交：<code>git commit -a -m &quot;...&quot;</code></p>
+<blockquote>
+<p><strong>此举git将自动提交所有被追踪的文件（包括unmodified、modified），注意这样做前考虑一下，别提交了不想要的文件</strong></p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li><p>将文件从追踪属性上移除（主要用于将文件从staging area中移出）</p>
+<ul>
+<li><p><code>手动将文件移出工作区(变为deleted状态) + git rm</code>：此举只会使<strong>下下次</strong>的提交没有这个文件（不再追踪），但是下次提交仍会有。如果想这次就<strong>彻底删除</strong>，使用强制参数：<code>git rm -f</code></p>
+<blockquote>
+<p>这样做是为了保证数据安全，防止误删将要提交的文件，并且不能恢复</p>
+<p>这个<code>git rm</code> 移除的是处于deleted状态的文件</p>
+</blockquote>
+</li>
+<li><p>如果只是想将文件移出(某个状态)，但保留在硬盘上（比如不小心忘写<code>.gitignore</code>文件，结果一大串日志/编译中间文件都放到了staging area）</p>
+<blockquote>
+<p><code>git rm --cached [FILENAME / PATH / glob-pattern(*需要使用转义字符)]</code></p>
+<p>不在staging area的：<code>git rm [...]</code></p>
+<p><strong>如果只想移出staging area，还想track这个文件，那么就撤销加入staging area的命令，详见 “Undoing things”</strong></p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>移动文件：<code>git mv [PATH / FILENAME] [NEW_PATH / NEW_FILENAME]</code></p>
+<blockquote>
+<p>Git 不会知道你移动了/重命名了某个追踪的文件，会导致追踪丢失（deleted状态），如何找寻丢失的文件以后说，这次讨论<strong>如何告诉Git移动/重命名文件，防止发生追踪丢失</strong></p>
+<p>等价于：手动移除追踪属性，改完，再追踪回去</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="2-2-Viewing-changing-history"><a href="#2-2-Viewing-changing-history" class="headerlink" title="2.2 Viewing changing history"></a>2.2 Viewing changing history</h3><ul>
+<li><p>查看提交日志（提交时间从前向后的顺序）：<code>git log</code></p>
+<ul>
+<li><p>额外参数：<code>-p/--patch [-&#123;number&#125;]</code>，表示展示每次提交的时候同时展示相对于上一次的修改的详细内容（指定展示commit的次数）</p>
+</li>
+<li><p><code>--stat</code>，表示展示每次提交相对于上一次修改的简略内容（只有修改的行号等，但也有基本信息，所以在很多commit的总览时非常有用）</p>
+</li>
+<li><p><code>--pretty=[oneline / short / full / fuller / format:&quot;formatStr&quot;]</code>，自定义提交日志展示的美化。</p>
+<ul>
+<li><p>oneline: 在看很多commit时候有用，每个commit信息浓缩在一行</p>
+</li>
+<li><p>short: 比oneline长一点的简短信息</p>
+</li>
+<li><p>full、fuller: 更全的信息</p>
+</li>
+<li><p>format=formatStr: 根据formatStr需求输出信息，也浓缩于一行，常用占位符如下：</p>
+<table>
+<tr>
+  <td>Specifier</td>
+  <td>Description of Output</td>
+</tr>
+<tr>
+  <td>`%H`</td>
+  <td>Commit hash</td>
+</tr>
+<tr>
+  <td>`%h`</td>
+  <td>Abbreviated commit hash</td>
+</tr>
+<tr>
+  <td>`%T`</td>
+  <td>Tree hash</td>
+</tr>
+<tr>
+  <td>`%t`</td>
+  <td>Abbreviated tree hash</td>
+</tr>
+<tr>
+  <td>`%P`</td>
+  <td>Parent hashes</td>
+</tr>
+<tr>
+  <td>`%p`</td>
+  <td>Abbreviated parent hashes</td>
+</tr>
+<tr>
+  <td>`%an`</td>
+  <td>Author name</td>
+</tr>
+<tr>
+  <td>`%ae`</td>
+  <td>Author email</td>
+</tr>
+<tr>
+  <td>`%ad`</td>
+  <td>Author date (format respects the —date=option)</td>
+</tr>
+<tr>
+  <td>`%ar`</td>
+  <td>Author date, relative (相对时间，如N天前)</td>
+</tr>
+<tr>
+  <td>`%cn`</td>
+  <td>Committer name</td>
+</tr>
+<tr>
+  <td>`%ce`</td>
+  <td>Committer email</td>
+</tr>
+<tr>
+  <td>`%cd`</td>
+  <td>Committer date</td>
+</tr>
+<tr>
+  <td>`%cr`</td>
+  <td>Committer date, relative</td>
+</tr>
+<tr>
+  <td>`%s`</td>
+  <td>Subject (commit message)</td>
+</tr>
+</table>
+
+<blockquote>
+<p>谁是author、committer？—-&gt; 最初自行创建这个存储库的人是author，后来加入这个项目开发的人是committer。</p>
+<p><strong>推荐使用的formatStr：”%h - %an, %ar : %s”</strong></p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p><code>--graph</code>: 显示commit的可视化DAG，可以结合<strong>浓缩在一行中的指令（pretty=oneline/format）</strong></p>
+</li>
+<li><p><code>--name-only/--name-status</code>: 仅显示提交的文件名/状态+文件名</p>
+</li>
+<li><p>查找限制参数</p>
+<ul>
+<li><code>--author/committer=&#39;...&#39;</code>: 指定作者/贡献者</li>
+<li><code>--grep=&#39;...&#39;</code>: 同UNIX grep</li>
+<li><code>--since/after/until/before=&quot;yy-mm-dd&quot;</code>: 按时间查找</li>
+<li><code>-- &lt;PATH&gt;</code>: 按文件/目录查找（中间有空格）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-3-Undoing-things"><a href="#2-3-Undoing-things" class="headerlink" title="2.3 Undoing things"></a>2.3 Undoing things</h3><p><strong><u>警告：这里的命令是git中可能丢失数据的命令。因为用户无法撤销某些“被撤销”的操作</u></strong></p>
+<ul>
+<li><p>补交commit：<code>git commit --amend</code></p>
+<blockquote>
+<p>此举将<strong>当前</strong>staging area中的所有文件提交到<strong>上一次的commit中</strong>（不创建新的commit）；</p>
+<p>如果当前staging area中没有文件，那么什么都不变，除非在此次提交中更新传入commit message，则会覆盖之前的commit message.</p>
+<p>建议：只有当你修改幅度非常小的时候才建议使用这个命令，否则为何不直接提交一个新的commit呢？</p>
+</blockquote>
+</li>
+<li><p>Unstaging a Staged File：<code>git reset HEAD FILENAME</code></p>
+<blockquote>
+<p>之后会进一步说明 reset 命令和 HEAD 的详细含义</p>
+</blockquote>
+</li>
+<li><p>Unmodifying a Modified File（discard the changes you’ve made）：<code>git checkout -- FILENAME</code></p>
+<blockquote>
+<p><strong>[Data loss Warning]</strong>: Git just replaced that file with the last staged or committed version. Don’t ever use this command unless you absolutely know that you don’t want those unsaved local changes.</p>
+<p>Where: modified files (working area)（由于保护机制，对staging area内的文件无效)</p>
+<p>tips. 1. <strong>这个命令很危险，是因为：即便是—amend覆盖，也能恢复数据（因为已提交），但这个命令未提交，大概率无法找回</strong>；2. 可以用其他命令来避免这个命令的使用，例如分支来保留特性，见后面描述。</p>
+</blockquote>
+</li>
+<li><p>Git 2.23.0更新：<code>git restore</code> (此命令比上面两个更好记)</p>
+<ul>
+<li>Unstaging a Staged File：<code>git restore --staged FILENAME</code></li>
+<li>Unmodifying a Modified File：<code>git restore FILENAME</code></li>
+</ul>
+<blockquote>
+<p>这两条命令与上面的效果相同，<strong>[Data loss Warning]</strong></p>
+</blockquote>
+</li>
+</ul>
+<h3 id="2-4-Working-with-Remotes"><a href="#2-4-Working-with-Remotes" class="headerlink" title="2.4 Working with Remotes"></a>2.4 Working with Remotes</h3><blockquote>
+<p>这里的“远程”也可以是<strong>自己的主机</strong>！只不过这个目录不是被追踪的git目录，所以和远程的存储库的操作类似。</p>
+<p>网络上的存放存储库的主机一般是 GitHub</p>
+</blockquote>
+<ol>
+<li><p>配置远程存储库</p>
+<ul>
+<li><p>显示当前配置的远程主机：<code>git remote [-v]</code>（—verbose 更详细的信息，含缩略名对应的地址）</p>
+<blockquote>
+<p>origin 缩略名表示<strong>上一次</strong>从远程主机clone的地址</p>
+</blockquote>
+</li>
+<li><p>添加存放存储库的远程主机：<code>git remote add &lt;shortname&gt; &lt;url&gt;</code></p>
+</li>
+</ul>
+</li>
+<li><p>从远程存储库获取项目</p>
+<ul>
+<li><p>从已记录的远程主机上获取项目：<code>git fetch &lt;shortname&gt;</code></p>
+<blockquote>
+<p>不会主动合并分支，具体分支的信息详见branching。</p>
+</blockquote>
+</li>
+<li><p>从已记录的的远程主机上获取项目并将其合并到当前分支：<code>git pull &lt;shortname&gt;</code></p>
+</li>
+<li><p>从远程主机上获取项目，并将<strong>自己的master引用置于获取到的项目的默认主分支上</strong>：<code>git clone &lt;sn/url&gt;</code></p>
+<blockquote>
+<p>以上命令涉及变基、分支和引用的更改，详见branching。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>向远程存储库提交、查看</p>
+<ul>
+<li>向remote提交（push，<strong>只有有权限才可以这么做，一般只有自己的GitHub才行，因为别人一般不会允许其他人更改的</strong>）：<code>git push &lt;remote&gt; &lt;branch&gt;</code></li>
+<li>查看远程存储库的情况：<code>git remote show &lt;remote&gt;</code></li>
+</ul>
+</li>
+<li><p>重命名、移动、删除 本地对应远程存储库的缩略名（记住：缩略名只是联系远程存储库和本地的某些存储库的纽带）</p>
+<ul>
+<li><code>git remote rename &lt;old&gt; &lt;new&gt;</code></li>
+<li><code>git remote rm &lt;shortname&gt;</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="2-5-Tagging（版本标签）"><a href="#2-5-Tagging（版本标签）" class="headerlink" title="2.5 Tagging（版本标签）"></a>2.5 Tagging（版本标签）</h3><ul>
+<li>查看当前设置标签：<code>git tag [-l/--list &quot;&#123;wildcards&#125;&quot;]</code></li>
+<li>创建标签<ul>
+<li>Lightweight型标签（固定不变，指向特定commit的标签）：<code>git tag tagName</code></li>
+<li>Annotated型标签（相当于是一次完整的commit，有tagging message等和commit一样多的信息）:<code>git tag -a tagName -m &quot;...&quot;</code></li>
+</ul>
+</li>
+<li>将tag向远程存储库提交：由于git不主动提交标签，需要显式指定<code>git push &lt;remote&gt; &lt;tagName&gt;</code>，或在普通push时，加上参数<code>--tags(全部标签)/--follow-tags(annotated型标签)</code></li>
+<li>删除标签：<code>git tag -d tagName</code></li>
+<li>删除远程存储库的标签：<code>git push &lt;remote&gt; :/refs/tags/tagName</code></li>
+<li>目前请勿轻易使用<code>git checkout tagName</code>来查询标签，因为会导致HEAD引用分离，进而在下一次提交时<strong>丢失</strong>commit！详细请参考branching章节。</li>
+</ul>
+<h3 id="2-6-Git-Aliases（别名设置）"><a href="#2-6-Git-Aliases（别名设置）" class="headerlink" title="2.6 Git Aliases（别名设置）"></a>2.6 Git Aliases（别名设置）</h3><blockquote>
+<p>类似于宏替换：<code>git config --global alias.ALIASNAME sourceName</code></p>
+<p>例如使用：</p>
+<p><code>git config --global alias.unstage &#39;restore --staged&#39;</code>，</p>
+<p><code>git config --global alias.last &#39;log -1 HEAD&#39;</code></p>
+<p>这样就能用<code>git unstage FILE</code>来代替<code>git restore --staged FILE</code></p>
+<p>用<code>git last</code>来代替<code>git log -1 HEAD</code></p>
+<p><strong>注意：外部命令需要用“！”，例如：<code>git config --global alias.visual &#39;!gitk&#39;</code></strong></p>
+</blockquote>
+<h2 id="Chapter-3-Git-Branching-“killer-feature”"><a href="#Chapter-3-Git-Branching-“killer-feature”" class="headerlink" title="Chapter 3. Git Branching: “killer feature”"></a>Chapter 3. Git Branching: “killer feature”</h2><h3 id="3-1-Branches-in-a-nutshell"><a href="#3-1-Branches-in-a-nutshell" class="headerlink" title="3.1 Branches in a nutshell"></a>3.1 Branches in a nutshell</h3><ol>
+<li><p>Look back on how Git stores its data（略，详见<a href="https://git-scm.com/book/en/v2" rel="external nofollow noreferrer" target="_blank">Git-book</a>）</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/commit-and-tree.png" height="300px"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/commits-and-parents.png" height="200"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/branch-and-history.png" height="300"></p>
+<ul>
+<li><p>A branch in Git is simply <strong>a lightweight movable pointer</strong> to one of these commits.</p>
+<blockquote>
+<p>branch对象在Git中，只是一个像C++的指针，只存放指向对象的hash code（40位SHA-1）</p>
+</blockquote>
+</li>
+<li><p><code>Master</code>: default branch moves forward automatically (every time you commit).</p>
+<blockquote>
+<p>master分支指针<strong>跟随当前commit移动的指针</strong>，没什么特别，只是git init一开始设置的而已。</p>
+<p><strong>master之所以可以跟随当前commit移动的指针，不是它特殊，是因为HEAD特殊！HEAD一开始指向mater！每次提交commit时默认移动HEAD指向的指针！一旦HEAD离开master，master就是普通分支指针，不会随当前commit移动</strong></p>
+</blockquote>
+</li>
+<li><p><code>HEAD</code>：this is a pointer to the local branch you’re currently on.</p>
+<blockquote>
+<p>HEAD指针<strong>严格定义为当前所处的分支位置，可以把HEAD理解为指向分支指针的指针</strong>，其他分支操作默认依赖此指针，所以最好在改写它之前考虑一下后果！</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>Creating a New Branch：<code>git branch newBranchName [position=HEAD]</code></p>
+<blockquote>
+<p>从数据底层考虑这一步在做什么（以 <code>git branch testing</code> 为例）：</p>
+<p><strong>补充：git log 查看参数<code>--decorate</code>可以显示在当时commit下的分支指针情况</strong></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/head-to-master.png" height="300px"></p>
+<p><strong>由图，执行创建分支操作后，只生成一个指向<code>HEAD</code>（当前commit）的指针testing，并不改变其他任何数据！</strong></p>
+</blockquote>
+</li>
+<li><p>Switching Branches：<code>git checkout branchName</code></p>
+<blockquote>
+<p>从数据底层考虑这一步在做什么（以 <code>git checkout testing</code> 为例）：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/head-to-testing.png" height="300"></p>
+<p>tips1. <strong>修改分支只是修改HEAD指向分支的指向！</strong></p>
+<p>一旦此时commit，那么master将停留在原处，只有testing和HEAD向前移动。</p>
+<p><strong>补充：<code>git log</code>默认不展示所有分支，如果想要展示所有分支，添加<code>--all</code>参数，所以可以这样设置参数来查看完整的分支信息：<code>git log --oneline --decorate --graph --all</code></strong></p>
+<p>tips2. <strong>修改分支可能会改变working directory中被追踪的文件，因为HEAD可能回到一个老的版本分支上！而HEAD严格定义为当前所处的分支位置，意味着working directory中所有追踪文件必须与HEAD指向的commit相同（不然你怎么编辑其他分支的文件？）</strong></p>
+<p>tips3. 这样可以完成分支分离(Divergent history)的操作（回到以前的版本，进行全新的提交即可）</p>
+<p>tips4. 可以同时创建、切换分支操作，但要记住在干什么：<code>git checkout -b newBranchName</code></p>
+<p>tips5. Git 2.23更新：可以使用<code>git switch [branchName / -c new / -(切换到上一次的分支指针)]</code></p>
+<p>tips6. 切换分支前，请确保working area、staging area中来自上一个分支未提交的更改及时清空，否则可能遇到冲突，git不会允许切换分支。（清空的方法可以是：amend补交等）</p>
+</blockquote>
+</li>
+<li><p>Merging Branches：<code>git merge targetBranch</code>（一般切换到master上再做操作，因为合并master，<strong>让master成为main主分支最新的版本是业界约定俗成的</strong>）</p>
+<blockquote>
+<p><strong>合并情况一：“Fast-forward”，即要master合并的分支是master的直达的子分支</strong></p>
+<p>这种情况下一定不会出现合并冲突，只需将master向前移动若干commit即可，例如下面的例子：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/basic-branching-4.png" height="180"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/basic-branching-5.png" height="200"></p>
+<p>上面的过程只需执行<code>git checkout master; git merge hotfix</code>即可，</p>
+<p>现在即可删除多余的hotfix分支了。</p>
+<p><strong>合并情况二：“Common Ancester”，即要合并的两个分支有共同祖先结点</strong></p>
+<p>这种情况下，Git需要使用“<strong>三项合并</strong>”（three-way merge，即共同祖先、要合并的两个结点），生成并得到一个新commit（结点），它有两个父结点，就是刚刚合并的两个（为了防止结点丢失），现在就可以删除多余的分支指针了。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/basic-merging-1.png" height="160"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/basic-merging-2.png" height="150"></p>
+<p>上面的过程只需执行<code>git checkout master; git merge iss53</code>即可</p>
+<p><strong>警告：情况二可能出现冲突（如果同一段代码不能协调合并），此时需要修改才能合并</strong></p>
+<p><strong>那么情况二什么时候不冲突呢？——&gt; 涉及<code>three-way merge</code>的原理：</strong></p>
+<p><strong>通过“原件”（共同祖先结点）推断该采用谁的版本：如果文件的同一行中，三者都相同，则不变；如果文件的同一行中，一个分支与祖先结点相同，另一个更改了，那么合并后会保留更改的内容！如果三者都不相同，则会发生冲突。</strong></p>
+</blockquote>
+</li>
+</ol>
+<ol>
+<li><p>Deleting Branches：<code>git branch -d branchName</code></p>
+</li>
+<li><p>Query Branches：<code>git branch [-v/--merged(已合并/存在于当前HEAD所处分支上的)/--no-merged(其他分支上的)/--all]</code></p>
+<blockquote>
+<p>“*” 表示HEAD指针所指向的分支.</p>
+</blockquote>
+</li>
+<li><p>Rename Branches：<code>git branch --move &lt;OLD_name&gt; &lt;NEW_name&gt;</code></p>
+<blockquote>
+<p>Remote: <code>git push --set-upstream &lt;remote&gt; &lt;NEW_name&gt;</code>（不删除原名，相当于复制一个不同名的分支，需要手动删除旧名）</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="3-2-Common-Branching-Workflows"><a href="#3-2-Common-Branching-Workflows" class="headerlink" title="3.2 Common Branching Workflows"></a>3.2 Common Branching Workflows</h3><ul>
+<li>小项目的长期的分支建议：维护<code>master(稳定版的代码)</code>、<code>develop(测试版的代码，一旦可以稳定使用，就将master合并到这里)</code>、<code>topic(开发中的代码，确保没有bug、通过测试集，短期存在)</code></li>
+<li>大项目如果具备多种稳定版本，可以设置多个长期稳定的分支，根据需求来；</li>
+<li>多目标项目的分支建议：可以多设几个分支，来回切换工作，找合适的进行合并，不合适的丢弃；</li>
+</ul>
+<h3 id="3-3-Remote-Branches"><a href="#3-3-Remote-Branches" class="headerlink" title="3.3 Remote Branches"></a>3.3 Remote Branches</h3><blockquote>
+<p>tips1. 参数<code>&lt;remote&gt;</code>可以是url，也可以是shortname</p>
+<p>tips2. <code>origin</code>作为shortname并不是特殊的，和master一样，只是创建时默认的名称而已</p>
+</blockquote>
+<ol>
+<li><p>Query Branches：<code>git remote show &lt;remote&gt;</code></p>
+<blockquote>
+<p>更加好的方法是查询 <code>Remote-tracking branches</code>，终端无法更改这个分支，由git自动维护，精确指向<strong>上次对远程存储库进行操作的分支位置</strong>；</p>
+<p>所谓 <code>Remote-tracking branches</code>的形式是：<code>&lt;remote&gt;/&lt;branchName&gt;</code>，表示在远程存储库中的<code>&lt;branchName&gt;</code>的位置；</p>
+<p>注意：除非手动同步，否则 <code>Remote-tracking branches</code>不会自动更新</p>
+</blockquote>
+</li>
+</ol>
+<ol>
+<li><p>Synchronize  <code>Remote-tracking branches</code>：<code>git fetch &lt;remote&gt;</code></p>
+<blockquote>
+<p>注意：如果远程存储库已经在原来的基础上提交了一些commit，则在本地同步后会产生分叉，例如下图</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/remote-branches-1.png" height="450"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/remote-branches-2.png" height="380"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/remote-branches-3.png" height="450"></p>
+<p>注意2：如果是从多个server上fetch，那么会有多种 <code>Remote-tracking branches</code>，位置视情况而定；</p>
+<p>注意3： <code>Remote-tracking branches</code>不能作为本地的HEAD的指向对象！如果不创建新的分支就将HEAD移动到这里，会出现“detached HEAD”的情况，可能造成commit的丢失！</p>
+</blockquote>
+</li>
+</ol>
+<ol>
+<li><p>Pushing Branches（向远程存储库commit分支）：<code>git push &lt;remote&gt; &lt;branch&gt;</code></p>
+<blockquote>
+<p>含义是：提取本地的branch分支上所有文件，复制到远程存储库上，并作为远程存储库的同名分支，同时，远程存储库的HEAD指针移动到当前的分支上；</p>
+<p><strong>知识补充：git的HEAD指针、分支信息存储于<code>.git/refs/heads</code>中，所以这条指令可以这么写：<code>git push &lt;remote&gt; &lt;[refs/heads/]localBranchName:[...]remoteBranchName</code></strong></p>
+<p><strong>补充2：如果基于 <code>Remote-tracking branches</code>创建了一个分支（不是用hash/HEAD创建），则这个分支会自动跟踪远程的对应分支，并且这个本地的分支可以修改，称为<code>Tracking branch</code>。其主要作用是：告诉<code>git pull</code>具体的合并位置在哪。</strong></p>
+<p><strong>补充3：不建议使用<code>git pull</code>，因为这是<code>git fetch</code>+<code>git merge</code>，后者更易于理解，不易出错</strong></p>
+</blockquote>
+</li>
+</ol>
+<ol>
+<li><p>Checking <code>tracking branches</code>：<code>git branch -vv</code></p>
+</li>
+<li><p>Setting a normal branch as a <code>tracking branch</code>：<code>git branch -u &lt;remote/branch&gt;</code>（针对当前分支）</p>
+</li>
+</ol>
+<ol>
+<li>Deleting Remote Branches：<code>git push &lt;remote&gt; --delete &lt;branch&gt;</code></li>
+</ol>
+<h3 id="3-4-Rebasing"><a href="#3-4-Rebasing" class="headerlink" title="3.4 Rebasing"></a>3.4 Rebasing</h3><blockquote>
+<p><strong>In Git, there are two main ways to integrate changes from one branch into another: the <code>merge</code> and the <code>rebase</code>.</strong></p>
+<p>Usage: <code>git rebase targetBranch</code></p>
+</blockquote>
+<ol>
+<li><p>In a nutshell: In the picture shown below, we take the patch of the change that was introduced in <code>C4</code> and reapply it on top of <code>C3</code>. In Git, this is called <em>rebasing</em>.</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/basic-rebase-1.png" height="140"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="./imgs/basic-rebase-3.png" height="130"></p>
+<blockquote>
+<p><code>git checkout experiment &amp;&amp; git rebase master</code></p>
+<p>算法原理：找到二者的公共祖先结点、找到祖先结点和这两个commit共三者的不同，将这些不同保存在临时文件中（<strong>这里的合并方式和merge是一样的</strong>），生成一个新的commit，作为targetBranch的子结点，同时将当前分支移动到新结点上，删除原分支。</p>
+</blockquote>
+</li>
+<li><p>rebase和merge的区别：仅仅是rebase的历史记录呈现线性形状，比merge清晰一点而已；</p>
+<blockquote>
+<p>通常应用rebase的场景：可能是正在为一个不是自己维护的项目提交代码，为了防止维护者阅读和合并的麻烦，在提交前使用rebase合并。</p>
+<p>rebase<strong>严禁使用</strong>的场景：在远程公共存储库使用此命令，修改他人正在编辑的分支（否则可能造成一些重复的commit的问题）；</p>
+<p>从可读性、项目思路上说，应该多多使用rebase；</p>
+<p>从存储库保留历史、无论多乱也不篡改历史的角度说，应该多多使用merge。</p>
+<p><strong>总结：建议每次提交某个小分支前使用rebase提供良好阅读体验；但对已经提交过的部分不应该使用rebase.</strong></p>
+</blockquote>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top/technical/git-learning/">https://blog.sjtuxhw.top/technical/git-learning/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Programming/">Programming</a><a class="post-meta__tags" href="/tags/git/">git</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/git.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/technical/java-basic/" title="Java 学习笔记（1）"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/java1.jpeg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Java 学习笔记（1）</div></div><div class="info-2"><div class="info-item-1">Attention: 本文建立在具有一定 C++基础知识的前提上 Reference: Introduction to Java Programming 10th Edition (Y. Daniel Liang) 郑重声明：本文原创，资料引用已在原文相应位置进行标注，感谢为我们无偿提供知识和技术指导的创作者们，转载请注明   Basic Concepts解释型语言和编译型语言的区别编译型语言（以C++为例）的编译运行过程 预编译（*.c/cpp &amp; *.h —&gt; *.i ）：对应gcc/g++命令：gcc -E [xxx] -o [output.i] 展开所有宏定义#define（字符替换）； 处理所有条件预编译命令（#ifdef、#ifndef、#endif等）； 处理#include，具体操作是将指向的文件直接插入到文件的这一行（严格遵循上一步的条件）； 删除所有注释； 添加行号、文件标识，以便调试/编译出错时及时指出； 保留#pragma指令，以供编译器使用；   编译（*.i —&gt; *.s ，即高级语言转汇编语言）：对应gcc/g++命令：gcc...</div></div></div></a><a class="pagination-related" href="/technical/gnu-tutor/" title="GNU-Tutor"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/GNU-Tutor.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">GNU-Tutor</div></div><div class="info-2"><div class="info-item-1">基础：C/C++的源文件编译过程 想要代码在操作系统上运行，需要进行以下编译步骤，从高级语言转机器语言，以下任务gcc/g++均能完成：  预编译（.c/cpp &amp; .h —&gt; .i ）：*对应gcc/g++命令：gcc -E [xxx] -o [output.i] 展开所有宏定义#define（字符替换）； 处理所有条件预编译命令（#ifdef、#ifndef、#endif等）； 处理#include，具体操作是将指向的文件直接插入到文件的这一行（严格遵循上一步的条件）； 删除所有注释； 添加行号、文件标识，以便调试/编译出错时及时指出； 保留#pragma指令，以供编译器使用；   编译（.i —&gt; .s ，即高级语言转汇编语言）：对应gcc/g++命令：gcc -S [xxx] -o...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/review/csapp-basic/" title="CSAPP Notes Basic"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-17</div><div class="info-item-2">CSAPP Notes Basic</div></div><div class="info-2"><div class="info-item-1">written by SJTU-XHW Reference:  CMU - 213, Computer Systems A Programmer’s Perspective 3rd Edition by Randal Bryant, David O’Hallaron 本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！ 内容很长，写起来很慢 😳   Chapter 0. Intro0.1 Ints are not Integers, Floats are not Reals $x^2\ge 0$：int（32-bit）may overflow； $a+(b+c)=(a+b)+c$：floats may discard some “unsignificant” digits；  0.2 Learn Assembly but never write it0.3 Memory Matters: Unbounded1234567891011121314typedef struct &#123;    int a[2];    double d;&#125;...</div></div></div></a><a class="pagination-related" href="/review/csapp-ecf-io/" title="CSAPP Notes: ECF &amp; I&#x2F;O"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp-ecf.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-16</div><div class="info-item-2">CSAPP Notes: ECF &amp; I&#x2F;O</div></div><div class="info-2"><div class="info-item-1">Chapter 13. Exceptional Control Flow 对应书中第 8 章。  异常控制流是现代计算机系统的一个相当重要的部分。 13.1 Control Flow 控制流：从机器打开到关闭的过程中，处理器只做一件事：读指令、执行指令，一个周期做一个指令。多核的机器则每个核心依次交替执行指令。这些指令序列被称为控制流。硬件正在执行的实际指令序列就被称为物理控制流。  改变内存中控制流的方法：分支 &amp; 跳转，过程调用 &amp; 返回（Branches &amp; Jumps &amp; Procedure call and return）；  都是对于程序状态变化的处理。    但以上的简单的改变控制流的方法对于处理复杂的系统级别的状态变化时，就显得非常拙劣。（例如 OS 协同软硬件的通信，如果还是以 if-else 的方法，那将会非常差劲）； 什么是 “系统级别的状态变化”？  数据从磁盘 / 网卡到达内存中； I/O 设备输入...</div></div></div></a><a class="pagination-related" href="/review/csapp-mm-cache/" title="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp-mh.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-10</div><div class="info-item-2">CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt</div></div><div class="info-2"><div class="info-item-1">Chapter 10. The Memory Hierarchy 本章将介绍系统的内存分层架构。  之前几章，我们对于内存的理解就是一个很大的字节数组，可以用地址作为下标进行访问。但事实上，真正的计算机的存储系统背后的设备层次结构设计远比这层抽象要复杂。 正是计算机的存储系统的层次结构对有限、离散资源的管理和抽象，才能让程序的内存看起来呈现出这种线性的数组结构。本章就来讨论计算机存储系统背后的层次结构。 10.1 Storage Technologies &amp; Trends在正式学习存储系统的层次结构前，有必要稍微弄清楚底层硬件的情况。 10.1.1 Random-Access Memory (RAM)当前大多数人所熟知的 “内存” 的一部分就是随机访问存储器（RAM），它具有以下的特征：  RAM 是个存储元件，I/O 吞吐速率快于绝大多数硬盘固件/磁盘（称为 “外存”）；  RAM 常常被打包放在 CPU 芯片中；  RAM 中每一个基本的存储单元被称为 单元胞（Cell），一个单元胞中存放 1 bit 数据；  很多个 RAM 芯片共同工作，组成了计算机的...</div></div></div></a><a class="pagination-related" href="/review/csapp-sched-arch/" title="CSAPP Notes: Scheduler &amp; Arch"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp_p2.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-11</div><div class="info-item-2">CSAPP Notes: Scheduler &amp; Arch</div></div><div class="info-2"><div class="info-item-1">Chapter 8. Scheduler in OS为操作系统的调度环境作出假设：  Each job runs for the same amount of time All jobs arrive at the same time Once started, each job runs to completion All jobs only use the CPU  i.e., they perform no I/O   The run-time of each job is known  引入调度优劣衡量指标：周转时间，$T_{turnaround}=T_{completion}-T_{arrival}$； Strategy 1: FIFO（FCFS，First Come First Served） Implementation: queue； 消除假设 1：若短时任务排在长时任务之后，则平均周转时间效果很差；  Strategy 2 : SJF（Shortest Job First） 内容：对于同时到达的任务，优先选择总时长小的任务。 作用：（应对假设 1...</div></div></div></a><a class="pagination-related" href="/technical/gnu-tutor/" title="GNU-Tutor"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/GNU-Tutor.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="info-item-2">GNU-Tutor</div></div><div class="info-2"><div class="info-item-1">基础：C/C++的源文件编译过程 想要代码在操作系统上运行，需要进行以下编译步骤，从高级语言转机器语言，以下任务gcc/g++均能完成：  预编译（.c/cpp &amp; .h —&gt; .i ）：*对应gcc/g++命令：gcc -E [xxx] -o [output.i] 展开所有宏定义#define（字符替换）； 处理所有条件预编译命令（#ifdef、#ifndef、#endif等）； 处理#include，具体操作是将指向的文件直接插入到文件的这一行（严格遵循上一步的条件）； 删除所有注释； 添加行号、文件标识，以便调试/编译出错时及时指出； 保留#pragma指令，以供编译器使用；   编译（.i —&gt; .s ，即高级语言转汇编语言）：对应gcc/g++命令：gcc -S [xxx] -o...</div></div></div></a><a class="pagination-related" href="/technical/spring-boot-basic/" title="Java Spring Boot 入门"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/spring-boot.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-06</div><div class="info-item-2">Java Spring Boot 入门</div></div><div class="info-2"><div class="info-item-1"> 前置条件：WEB 基础（Socket，HTTP 整套规范），SQL 和数据库基础，Java 语言基础、前端基础（至少了解一种前端框架，本文以 React 为例）；  Chapter 0. Basic Concepts0.1 Servlet, war &amp; jar在接触 Web 框架时，你肯定能碰到一个绕不开的词：Servlet。它是什么？ Servlet 本质上就是一种规范，在 Java 的实现中就是一个 Web 规范接口。 所以，为什么要有这个规范？让我们回到最初的起点。  假设你什么框架都不用，想要徒手写一个能提供服务的服务器，那需要做哪些工作？ 其实原理比较简单，遵循当今互联网的 HTTP 协议发报文就行：  先编写基于多线程的 TCP 服务（Web 3.0 准备改用 UDP 了）； 然后在一个 TCP 连接中读取 HTTP 请求，发送 HTTP 响应即可；  但是其中还要考虑一些与网络协议相关、与业务逻辑无关的其他情况：  识别正确和错误的 HTTP 请求； 识别正确和错误的 HTTP 头； 复用 TCP 连接； 复用线程； IO...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">SJTU-XHW</div><div class="author-info-description">A blog to document learning and life</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">44</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">56</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://blog.sjtuxhw.top/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! |•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Chapter-0-The-history-of-version-control-systems"><span class="toc-text">Chapter 0. The history of version control systems</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chapter-1-Basic-concepts"><span class="toc-text">Chapter 1. Basic concepts</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-Some-concepts-of-the-Git"><span class="toc-text">1.1 Some concepts of the Git</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-Working-states-IMPORTANT"><span class="toc-text">1.2 Working states [IMPORTANT]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-Git-command-line-settings-Linux"><span class="toc-text">1.3 Git command line settings (Linux)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chapter-2-Git-basic-commands"><span class="toc-text">Chapter 2. Git basic commands</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-Manipulate-a-git-repository"><span class="toc-text">2.1 Manipulate a git repository</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-Viewing-changing-history"><span class="toc-text">2.2 Viewing changing history</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-Undoing-things"><span class="toc-text">2.3 Undoing things</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-Working-with-Remotes"><span class="toc-text">2.4 Working with Remotes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-Tagging%EF%BC%88%E7%89%88%E6%9C%AC%E6%A0%87%E7%AD%BE%EF%BC%89"><span class="toc-text">2.5 Tagging（版本标签）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-Git-Aliases%EF%BC%88%E5%88%AB%E5%90%8D%E8%AE%BE%E7%BD%AE%EF%BC%89"><span class="toc-text">2.6 Git Aliases（别名设置）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chapter-3-Git-Branching-%E2%80%9Ckiller-feature%E2%80%9D"><span class="toc-text">Chapter 3. Git Branching: “killer feature”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Branches-in-a-nutshell"><span class="toc-text">3.1 Branches in a nutshell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Common-Branching-Workflows"><span class="toc-text">3.2 Common Branching Workflows</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Remote-Branches"><span class="toc-text">3.3 Remote Branches</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-Rebasing"><span class="toc-text">3.4 Rebasing</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/technical/algo-in-ai/" title="Algorithms in AI"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Algorithms in AI"/></a><div class="content"><a class="title" href="/technical/algo-in-ai/" title="Algorithms in AI">Algorithms in AI</a><time datetime="2024-07-20T07:23:40.000Z" title="发表于 2024-07-20 15:23:40">2024-07-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/review/convex-opt/" title="Convex &amp; Optimizations"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/convex.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Convex &amp; Optimizations"/></a><div class="content"><a class="title" href="/review/convex-opt/" title="Convex &amp; Optimizations">Convex &amp; Optimizations</a><time datetime="2024-06-15T07:18:39.000Z" title="发表于 2024-06-15 15:18:39">2024-06-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/review/numeric-analysis/" title="Numeric Analysis for Beginners"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/numeric-analysis.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Numeric Analysis for Beginners"/></a><div class="content"><a class="title" href="/review/numeric-analysis/" title="Numeric Analysis for Beginners">Numeric Analysis for Beginners</a><time datetime="2024-06-12T05:11:56.000Z" title="发表于 2024-06-12 13:11:56">2024-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/rabbit-mq/" title="Introduction to Rabbit MQ"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/rabbit.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Introduction to Rabbit MQ"/></a><div class="content"><a class="title" href="/technical/rabbit-mq/" title="Introduction to Rabbit MQ">Introduction to Rabbit MQ</a><time datetime="2024-06-01T08:31:33.000Z" title="发表于 2024-06-01 16:31:33">2024-06-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/micro-service-basic/" title="微服务初探"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/micro.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="微服务初探"/></a><div class="content"><a class="title" href="/technical/micro-service-basic/" title="微服务初探">微服务初探</a><time datetime="2024-05-21T03:27:40.000Z" title="发表于 2024-05-21 11:27:40">2024-05-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <a href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> &nbsp;|&nbsp;&nbsp;本网站由 <img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/upCloud_logo.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+
+    GLOBAL_CONFIG_SITE.isPost && getCount()
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script src="/js/rightmenu.js"></script><script src="/js/mourn.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
