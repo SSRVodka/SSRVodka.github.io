@@ -1,0 +1,654 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="这是一篇 2019 年的关于微内核 IPC 性能优化的文章。 摘要微内核有很多引人注目的 features，例如 安全性、容错性、模块化，以及可定制性，这些特性近期在学术界和工业界又再次掀起了一股研究热潮（including seL4, QNX and Google’s Fuchsia OS）。  Google’s Fuchsia’s kernel (called Zircon)  但是 IPC（">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call">
+<meta property="og:url" content="https://blog.sjtuxhw.top/technical/xpc-paper/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="这是一篇 2019 年的关于微内核 IPC 性能优化的文章。 摘要微内核有很多引人注目的 features，例如 安全性、容错性、模块化，以及可定制性，这些特性近期在学术界和工业界又再次掀起了一股研究热潮（including seL4, QNX and Google’s Fuchsia OS）。  Google’s Fuchsia’s kernel (called Zircon)  但是 IPC（">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/xpc-paper.jpg">
+<meta property="article:published_time" content="2024-09-28T13:46:00.000Z">
+<meta property="article:modified_time" content="2024-10-31T02:26:18.113Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="IPC">
+<meta property="article:tag" content="MicroKernel">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/xpc-paper.jpg"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.sjtuxhw.top/technical/xpc-paper/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        if (name && globalFn[key][name]) return
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功 ヾ(≧∇≦*)ゝ',
+    error: '复制失败 (#`皿´)',
+    noSupport: '浏览器不支持 ╮(╯_╰)╭'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#333","bgDark":"#1f1f1f","position":"top-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-10-31 10:26:18'
+}</script><link rel="stylesheet" href="/css/mouseConfig.css"/><link rel="stylesheet" href="/css/rightmenu.css"/><link rel="stylesheet" href="/css/custom_music.css"/><link rel="stylesheet" href="/css/addFonts.css"/><link rel="stylesheet" href="/css/titleFonts.css"/><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div id="main-loading-bg"><div class="truckWrapper"><div class="truckBody"><svg class="trucksvg" viewBox="0 0 198 93" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z" fill="currentColor" stroke="#282828" stroke-width="3"></path><path d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z" fill="#7D7C7C" stroke="#282828" stroke-width="3"></path><path d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z" fill="#282828" stroke="#282828" stroke-width="2"></path><rect x="187" y="63" width="5" height="7" rx="1" fill="#FFFCAB" stroke="#282828" stroke-width="2"></rect><rect x="193" y="81" width="4" height="11" rx="1" fill="#282828" stroke="#282828" stroke-width="2"></rect><rect x="6.5" y="1.5" width="121" height="90" rx="2.5" fill="#DFDFDF" stroke="#282828" stroke-width="3"></rect><rect x="1" y="84" width="6" height="4" rx="2" fill="#DFDFDF" stroke="#282828" stroke-width="2"></rect></svg></div><div class="truckTires"><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg></div><div class="road"></div><svg class="lampPost" fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 453.459 453.459" xml:space="preserve"><path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993 c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514 c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16 c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914 h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75 v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795 V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017 h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path></svg></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+      setTimeout(() => {
+        $loadingBox.style.display = 'none'
+      }, 800)
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()
+</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">48</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.sjtuxhw.top/cover_imgs/xpc-paper.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/head_icon.png" alt="Logo"><span class="site-name">SJTU-XHW's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-09-28T13:46:00.000Z" title="发表于 2024-09-28 21:46:00">2024-09-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-31T02:26:18.113Z" title="更新于 2024-10-31 10:26:18">2024-10-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>29分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/technical/xpc-paper/#post-comment"><span id="twikoo-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>这是一篇 2019 年的关于微内核 IPC 性能优化的文章。</p>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>微内核有很多引人注目的 features，例如 安全性、容错性、模块化，以及可定制性，这些特性近期在学术界和工业界又再次掀起了一股研究热潮（including seL4, QNX and Google’s Fuchsia OS）。</p>
+<blockquote>
+<p>Google’s Fuchsia’s kernel (called Zircon)</p>
+</blockquote>
+<p>但是 IPC（进程间通信）作为微内核的 阿喀琉斯之踵，仍然是导致微内核 OS 总体性能较低的主要因素之一。同时 IPC 在宏内核中也扮演者很重要的角色，例如 Android Linux，其中的移动端程序会经常和用户态服务通过 IPC 通信。所以优化 IPC 自然是一个很重要的课题。</p>
+<p>之前学界对 IPC 在软件层面的优化都绕不开 Kernel，因为 IPC 在这方面的主要开销就是 域切换（domain switch）和消息复制/重映射（message copying/remapping）；在硬件层面的优化方法主要是 给内存和能力打 tag，为了隔离而替换页表。但这类修改通常需要对现有的软件栈进行相当多的修改来适应新的 OS 原语。</p>
+<p>这篇文章主要是提出一种硬件协同的操作系统原语——也就是 XPC（Cross Process Call），提供一种高速安全的 IPC 的实现。</p>
+<p>XPC 的主要特征是：</p>
+<ul>
+<li>允许在 XPC caller 和 callee 间直接切换，中途不需要陷入 Kernel；</li>
+<li>允许消息在不同进程的调用链中传递，无需 copy；</li>
+</ul>
+<p>XPC 还有个优点是，这个原语本身是与传统的 “基于地址的隔离机制” 相兼容的，能比较轻松地整合到现有的微内核或者宏内核中。</p>
+<p>所以笔者就就介绍了基于 Rocket RISC-V 核心、搭载 RPGA 的板子上实现了 XPC 的原型，并且移植到两个主流的微内核系统 seL4 和 Ziron 上、一个宏内核的 Android Binder 上以便进行评估测试、GEM5 模拟器上来验证通用性。</p>
+<p>结果发现 XPC 能显著提升 IPC 调用的性能，Android Binder 上提升 54.2 倍，对于在微内核上跑的真实应用（sqlite/ HTTP Server）也有相当大的速度提升。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><h3 id="1-问题分析"><a href="#1-问题分析" class="headerlink" title="1. 问题分析"></a>1. 问题分析</h3><ul>
+<li><p>（微内核特征）微内核已经被详尽地研究多年了：</p>
+<ul>
+<li><p>最小化在特权级中执行的功能，把一些 paging、fs、设备驱动之类的组件放到用户态中，这样能实现 细粒度的隔离、更高的可扩展性、安全和容错性；</p>
+<p>这种基于微内核的操作系统已经被广泛应用到诸如移动基站、飞行器和交通工具中；</p>
+</li>
+</ul>
+</li>
+<li><p>（微内核问题）但当前设计基于微内核的 OS 仍然面临安全和性能之间权衡的问题：</p>
+<ul>
+<li>更细粒度的隔离会提升系统的安全性和容错性，但是会导致 IPC 次数增多；</li>
+</ul>
+</li>
+<li><p>（宏内核也面临同样的问题）对于宏内核的 OS 也存在 IPC 性能不佳的问题，针对这个问题，Android 向 Linux Kernel 中引入了 Binder 以及 Anonymous Shared Memory 来缓解这个问题，但这个开销仍然很大。</p>
+<blockquote>
+<p>像 Android 基于宏内核的 Linux 构建，会给移动应用程序提供一些用户态的服务，然后应用程序会频繁地调用这些服务，像是利用窗口管理器在屏幕上绘制组件，等等，开销比较大。</p>
+</blockquote>
+</li>
+</ul>
+<p>可以分析出来，IPC 的主要两个性能瓶颈在于 domain switch 以及 message copy：</p>
+<ul>
+<li><p>因为 caller 和 callee 分别位于用户态的两个进程，二者要发生调用的话就需要通过中断进入内核，然后切换内存地址空间，包括 Context saving/restoring、功能和权限的检查以及其他的 IPC 逻辑，一来一回的开销就不小。</p>
+</li>
+<li><p>此外，两个进程间因为存在虚拟内存的隔离机制，两者间传递消息就需要一些特殊手段，常见的方法是类似于 mmap 一样，分配一个共享内存，在这段共享内存中放置消息就能实现近乎 0 copy 的消息传递。</p>
+<blockquote>
+<p>但需要注意的是，如果 caller 和 callee 同时持有这块共享内存的话，可能会引起 <code>TOCTTOU</code>（Time Of Check To Time Of Use）攻击。</p>
+<p><a target="_blank" rel="noopener external nofollow noreferrer" href="https://en.wikipedia.org/wiki/Time-of-check_to_time-of-use">TOCTTOU Details</a>；</p>
+<p>这个问题可以通过重新映射页表的权限信息（所有权转移）来缓解，但更改页表又会涉及 Kernel 的操作，不仅无法避免用户态和内核态的切换，而且会间接造成 TLB 击穿；</p>
+</blockquote>
+</li>
+</ul>
+<p>总结下来就是，在之前众多软件解决方案中，进程切换陷入内核的开销无法避免，而且消息传递要么需要多次 copy，要么会导致 TLB 击穿；在之前的硬件解决方案中，14 年的论文提出 CODOMs（Code-centric Memory Domains）的系统架构，充分利用标记内存，而非更改页表的方式达到隔离效果，起到减少 domain switch 次数、提升消息传递效率的效果。</p>
+<p>但这样的一个新的硬件层面的解决方案可能需要现有的使用多套内存地址的 kernel 的实现进行比较大的变动。</p>
+<p>所以这篇文章就想提出一种新型的硬件协同的 OS 原语 XPC，实现更高效更安全的 IPC 调用，完成以下目标：</p>
+<ul>
+<li>（减小开销 1）让 IPC 在 caller 和 callee 间直接切换，不需要频繁陷入 kernel；</li>
+<li>（减小开销 2）以更安全的 0 copy 的方式在 caller 和 callee 间传递数据；</li>
+<li>（软件改动小）更轻松的集成到现有的 kernel 中，而无需很大的改动；</li>
+<li>（硬件改动小）最小的硬件改动；</li>
+</ul>
+<h3 id="2-构思方案"><a href="#2-构思方案" class="headerlink" title="2. 构思方案"></a>2. 构思方案</h3><p>本文要实现的原语主要分为 3 个部分：</p>
+<ul>
+<li><p>创建硬件层面可感知的抽象 <code>x-entry</code>，定义新能力 <code>xcall-cap</code>：<code>x-entry</code> 中包含一个 ID，<code>xcall-cap</code> 是一个用于访问控制的新能力；</p>
+<p>这个能力由 Kernel 管理（flexibility），并交由硬件来校验（efficiency）；</p>
+</li>
+<li><p>创建一组新指令，包括 <code>xcall</code>、<code>xret</code>，来让用户态的代码直接 switch 到另一个进程，而无需内核的参与；</p>
+</li>
+<li><p>创建一套新的内存地址空间映射机制，称为 <code>relay-seg</code>（relay memory segment，中继内存段），用来为 caller 和 callee 间做 0-copy 消息传递提供空间；</p>
+<p>这个映射关系将存放在一个新的寄存器中，用来标识存放消息所对应的虚拟内存和物理内存的基地址以及范围；</p>
+<ul>
+<li><strong>这套机制能够控制共享内存的所有权转移，不仅规避了 domain switch 及其引起的 TLB 击穿带来的性能问题，而且缓解了 TOCTTOU 风险。</strong></li>
+<li>与此同时，<code>relay-seg</code> 本身也可以通过调用链传递，称为 <code>handover</code>，也能进一步降低 copy 的次数，提升性能；</li>
+</ul>
+<blockquote>
+<p>三点好处：0-copy、page-free 的所有权转移、实现 handover；</p>
+</blockquote>
+</li>
+</ul>
+<p>此外，XPC 会选用同步的 IPC 实现方式。尽管异步的 IPC 有更高的吞吐量，但同步 IPC 可以达到更低的时延，并且在 POSIX API 下更容易实现它的语义。</p>
+<blockquote>
+<p>即便 Google 的 Zircon 用的是异步 IPC，但它也是用异步 IPC 模拟文件系统接口的同步语义。这就造成了每次 IPC 比较大的时延。</p>
+</blockquote>
+<p>不仅如此，XPC 克服了传统同步 IPC 的两个限制：</p>
+<ul>
+<li><p>相对低下的数据传输效率（<strong>XPC 用 <code>relay-seg</code> 解决</strong>）；</p>
+</li>
+<li><p>对多线程应用不友好的编程模型（XPC 提供 migrating thread model 模式的编程接口，1994 Bryan Ford）；</p>
+<blockquote>
+<p>参见 Notes on Thread Models in Mach 3.0</p>
+</blockquote>
+</li>
+</ul>
+<p>XPC 的移植情况：</p>
+<ul>
+<li>Rocket RISC-V core on FPGA board（for evaluation）；</li>
+<li>2 Micro-kernel Implementation（seL4 &amp; Zircon）；</li>
+<li>1 Monolithic kernel Implementation（Android Binder）；</li>
+</ul>
+<blockquote>
+<p>Measured: micro-benchmark &amp; real-world applications；</p>
+</blockquote>
+<h3 id="3-论文贡献"><a href="#3-论文贡献" class="headerlink" title="3. 论文贡献"></a>3. 论文贡献</h3><p>总的来说，这篇文章作出了如下的成果：</p>
+<ul>
+<li>详细分析了 IPC 的性能开销，并且对比了当今常见的几种优化方式；</li>
+<li>提出了一种新的 OS 原语，不借助 kernel trapping，沿着调用链的 0-copy 消息传递；</li>
+<li>Implementation……</li>
+<li>An evaluation on micro-benchmark &amp; real-world platform；</li>
+</ul>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><ul>
+<li><p>IPC 的性能仍然很重要：</p>
+<ul>
+<li>使用前沿 microkernel（seL4）分析性能，在运行 sqlite3 的 seL4 的 RISC-V 板子上测试 YCSB benchmark，发现在这个 workload 下有 18%-39% 的时间都在 IPC；</li>
+<li>在消息量很短的情况下，性能瓶颈位于 domain switch；随着 IPC 消息量增大，性能瓶颈趋向于 message transfer；</li>
+</ul>
+<p>这个性能测试激励笔者设计 XPC 时兼顾快速的 domain switch 和高效的消息传递两个因素；</p>
+</li>
+<li><p>拆开 IPC，详细分析其中各个步骤的性能瓶颈，同样使用 mirco-kernel seL4 &amp; RISC-V board with FPGA；</p>
+<ul>
+<li><p>fast path（聚焦）：自然是不存在其他中断和调度的情况，只有 trap（syscall）、IPC 逻辑、Process Switch、Restore、Message Transfer；</p>
+<ul>
+<li><p><strong>Trap &amp; Restore</strong>:</p>
+<ul>
+<li>过程：syscall -&gt; context switch -&gt; […] -&gt; restore callee’s context -&gt; callee user space（domain switch 的两大重要开销）；</li>
+</ul>
+<blockquote>
+<p>一般情况下，这个 domain switch 的开销不可避免（caller &amp; callee 互不信任）；</p>
+<p><strong><u>设想</u></strong>：但是某些情况下 caller 和 callee 可以自定义 calling conventions，让它们自己管理 context 就能在 isolation 和 performance 间找到最佳平衡；</p>
+</blockquote>
+</li>
+<li><p>IPC Logic: <strong><u>CHECKING</u></strong>！</p>
+<blockquote>
+<p>seL4 使用 capabilities 管理 kernel 资源，包括 IPC：</p>
+<p>kernel 找到 caller 的 capability &amp; 检查有效性</p>
+<p>-&gt; 然后检查以下条件，来确定是否发生调度：</p>
+<ul>
+<li>caller / callee 有不同优先级？</li>
+<li>caller / callee 不在一个核上？</li>
+<li>message 大小大于寄存器（32 bytes）但小于 IPC buffer size（120 bytes）；</li>
+</ul>
+<p>以上满足一项，就调度到其他进程（slow path）</p>
+</blockquote>
+<p><strong><u>设想</u></strong>：这些检测步骤可以由硬件完成，通过并行化来缓解时延问题。此外，这步启发我们将这个 checking 逻辑分为 control plane（软件 -&gt; flexibility）和 data plane（硬件 -&gt; efficiency），<strong>回想 <code>xcall-cap</code> 能力</strong>；</p>
+</li>
+<li><p>Process Switch:</p>
+<ul>
+<li>4 步过程：dequeue callee &amp; block caller -&gt; add <code>reply_cap</code> into callee thread -&gt; kernel 传送小于一个寄存器大小的消息 -&gt; switch to callee’s user space address；</li>
+<li>存在内存访问，cache miss / TLB miss 会影响本部分性能；</li>
+</ul>
+</li>
+<li><p>Message Transfer：</p>
+<ul>
+<li>一个寄存器大小以内的，上面 process switch 时传递（short path）；</li>
+<li>大于一个寄存器大小、小于 IPC buffer size 的，进入 slow path（interrupt &amp; schedule）来传输数据；</li>
+<li>大于 IPC buffer size 的，seL4 会使用位于用户态的 shared memory 来减少 copy；</li>
+</ul>
+<p>但是最后一种情况使用 shared memory 确实不安全：多线程的 caller 可以观察 callee 的操作，并且能通过修改共享内存信息，从而影响 callee 行为；并且在大部分实现中，数据还是要先 copy 到共享内存中去。所以大数据量下 message transfer 仍然是开销大头；</p>
+</li>
+</ul>
+</li>
+<li><p>slow path：会考虑到现实情况下，可能存在 OS 的其他中断以及进程调度；</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>基于上述分析，观察到两点：</p>
+<ol>
+<li>一个快速的 IPC 需要不经过 Kernel 的参与，但现在还没实现；</li>
+<li>在传输消息时，安全、快速的 0-copy 机制对于 IPC 性能是很重要的，尤其是大数据量的情况；</li>
+</ol>
+<p>根据这两点，笔者设计了 XPC 的总体框架：</p>
+<h2 id="设计"><a href="#设计" class="headerlink" title="设计"></a>设计</h2><h3 id="总体概览"><a href="#总体概览" class="headerlink" title="总体概览"></a>总体概览</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/xpc-engine.png" /></p>
+<p>XPC Engine 提供 <code>x-entry</code> &amp; <code>xcall-cap</code> 两个抽象。规则如下：</p>
+<ul>
+<li>一个进程可以创建多个 <code>x-entries</code>；所有的 entries 都会存放在 <code>x-entry-table</code> 中，并且每个 entry 有一个 ID（就是 table index）；</li>
+<li>table 本身存放在全局的 memory 中，有一个寄存器 <code>x-entry-table-reg</code> 存放表基地址，<code>x-entry-table-size</code> 控制表长；</li>
+<li>一个 caller 需要 <code>xcall-cap</code> 这个能力来 invoke 一个 <code>x-entry</code>。<code>xcall-cap</code> 描述了对每个 <code>x-entry</code> 能否 invoke 的能力；</li>
+<li><code>xcall #reg</code> 和 <code>xret</code> 控制进行 XPC 调用的两条指令，<code>#reg</code> 是 kernel 提供的具体 <code>x-entry</code> 的 index，对应 Kernel 管理的 <code>xcall-cap-reg</code> 内的能力（里面可以 check）；</li>
+</ul>
+<p>XPC 进行轻量的信息 copy 的 <code>relay-seg</code> 规则如下：</p>
+<ul>
+<li>relay memory segment 位于一段连续的物理内存上，不由页表管理，只有 <code>seg-reg</code> 寄存器承担 VM 翻译工作（里面存放虚拟内存和物理内存基地址，以及区域长度和权限信息，相当于全能版 PTE）；</li>
+<li>OS Kernel 会确保这片区域不会和分配的普通页表 overlap；</li>
+</ul>
+<blockquote>
+<p>这样修改区域权限的时候就能绕开页表，避免 TLB 击穿；</p>
+</blockquote>
+<h3 id="XPC-Engine"><a href="#XPC-Engine" class="headerlink" title="XPC Engine"></a>XPC Engine</h3><p>执行 <code>xcall #reg</code> 时，XPC Engine 完成以下任务：</p>
+<ol>
+<li><p>读取 <code>#reg</code> index，按 <code>xcall-cap-reg</code>（可以是 general purpose register）指向的存放 bitmap 的内存区域校验 caller 的能力（细节见下文）；</p>
+</li>
+<li><p>从 <code>x-entry-table</code> 读取对应的 <code>x-entry</code>，检查这个 entry 是否有效；</p>
+</li>
+<li><p>向 link stack 表（kernel space）中推入一条记录，保存返回时的必要信息。其中 link stack 在每个线程中都有；</p>
+<blockquote>
+<p>类似普通 <code>call / ret</code> 指令需要操作 <code>%rsp</code> 来在栈上保存 return address、类似 system call 会用 <code>%rcx / %r11</code> 保存 <code>rflags</code> 和 $I_{next}$，这里新的 <code>xcall / xret</code> 就需要一个返回时必要信息，这里称 linkage record；</p>
+</blockquote>
+</li>
+<li><p>CPU 切换 Page Table（CR3），flush TLB，设置 PC 为 callee 进程的 procedure 入口地址。最后还会把 caller 的 <code>xcall-cap-reg</code> 放到寄存器中（RISC-V 中用的是 <code>t0</code>），让 callee 知道关于 caller 的信息；</p>
+<blockquote>
+<p>这相当于 “精简版” 的 context switch。但这样会有问题吗？细节见下文；</p>
+</blockquote>
+</li>
+</ol>
+<p>虽然没有真正涉及到 kernel（domain switch），但如果出现 exception 还是会 report 给 kernel 来决定；</p>
+<p>执行 <code>xret</code> 时，XPC Engine 通过弹出 link stack 中的一条记录，检验 valid 并完成一次简单的 switch 来回到 caller 所在进程；</p>
+<p>那么 <code>xcall-cap</code> 是如何管理、<code>xcall #reg</code> 指令是如何校验 caller 的能力的呢？原来：</p>
+<ul>
+<li>每个线程就有一块内存空间，起始地址存放在 <code>xcall-cap-reg</code> 中，也是由 Kernel 管理；这块内存空间就是一片 bitmap，第 i bit 是 1 就表示该线程有能力 invoke ID 为 i（也就是在 <code>xcall-table</code> 中 index=i）的 <code>x-entry</code>；</li>
+</ul>
+<p>就和之前说的一样，这里由 Kernel 管理，由硬件校验；</p>
+<p>还有一点是 link stack，虽然说 <code>xcall</code> 完成了一次简单的 context switch，但毕竟只改了 Page Table、TLB、PC，还有进程很多其他信息像文件描述符表、CPU 寄存器等信息没有恢复，也没保存在 link stack 中。</p>
+<blockquote>
+<p>有些 per-thread 的 寄存器（例如 <code>xcall-cap-reg</code>）会在 <code>xcall</code> 的时候交给硬件修改；</p>
+</blockquote>
+<p>这是因为 XPC engine 想把这部分恢复工作交给 XPC 库/应用来放到 user space 来做。对不同架构，如果有些信息在 user space 恢复不了，还可以扩展这个表，让它满足其他架构的 switch 需求。这就是前面提到的 caller 调用 callee 中 “共同约定管理 context 能优化掉 Kernel 参与 switch 的过程”。</p>
+<p>这里还有一个严重的问题。在 <code>xcall</code> 从 caller 向 callee 切换的时候，可能在期间发生一次 page fault 中断进入 Kernel，因为 Kernel 对这个过程无感知，所以可能会用 caller 的 page table / VMA 等信息来处理 callee 的 page fault。解决方案借鉴了 migrating thread，将由 kernel 管理的线程状态划分为两类：</p>
+<ul>
+<li>scheduling states：关于内核调度的信息，包括 kernel stack、优先级、time slice；</li>
+<li>runtime states：内核用来服务这个线程的信息，例如地址空间（VM 分配）、capabilities 等等；</li>
+</ul>
+<p>这里可以让 <code>xcall-cap-reg</code> 作为一个 runtime states 让 kernel 区分；当 trap 到 kernel 时，让 kernel 通过 <code>xcall-cap-reg</code> 找到当前线程的 runtime-states，从而解决问题；</p>
+<p>笔者还提到 <code>xcall</code> 向 link stack（每个线程中，位于主存）写数据时有时延，可以采用非阻塞式地异步写，可以优化 16 cycles；</p>
+<p>笔者表示，除了写 link stack 会有较高的延迟，需要优化以外，第二步从 <code>x-entry-table</code> 中取 entry 也耗时所以单独给这个表做缓存。不过基于两个事实：</p>
+<ul>
+<li>IPC 的时间局部性很强；</li>
+<li>IPC 是可预测的；</li>
+</ul>
+<p>笔者提出使用软件层面的 cache，预测要进行的 IPC 并把需要的 entry 先 prefetch 一下，又能提升 12 cycles；</p>
+<h3 id="关于-Relay-Memory-Segment"><a href="#关于-Relay-Memory-Segment" class="headerlink" title="关于 Relay Memory Segment"></a>关于 Relay Memory Segment</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/seg-mask.png" /></p>
+<ul>
+<li><p><code>seg-reg</code> 的地位：我们知道，relay memory segment 已经脱离 page table 的管理，相当于用 <code>seg-reg</code> 做了一个独立、持久的 TLB；不过在地址翻译过程中，<code>seg-reg</code> 的优先级高于 TLB；</p>
+</li>
+<li><p><code>seg-mask</code> 寄存器规定的新功能：目前 <code>seg-reg</code> 指定了 relay memory segment 的全部范围，但实际上在某些场景下，我们只希望传递其中一片区域的信息，但 user space 的 app 是不能改 <code>seg-reg</code> 寄存器的，所以可以使用 <code>seg-mask</code> 来规定范围：</p>
+<p>这样在 <code>xcall</code> 填入 link stack 时，把原来的 <code>seg-reg</code> 和 <code>seg-mask</code> 信息保存下，再把 <code>seg-reg</code> 和  <code>seg-mask</code> 的交集更新到 <code>seg-reg</code> 中。这样后面的 calling chain 就只能看到这片内存；</p>
+</li>
+<li><p><code>seg-list</code> 支持服务端创建多个 relay memory segment 区域：每个进程管理一个 <code>seg-list</code>，其基地址使用 <code>seg-list-reg</code> 存放（<code>seg-list</code> 和 <code>seg-list-reg</code> 都由 OS Kernel 管理）；执行 <code>swapseg #reg</code> 即可切换到 <code>#reg</code> 索引的 entry 中（atomic），更新新的 <code>seg-reg</code>；</p>
+</li>
+</ul>
+<p>回顾一下之前遇到的问题，relay memory segment 如何更改区域的 ownership？</p>
+<p>实际上，OS Kernel 会确保<strong>每片 relay memory segment 只会被一个 CPU core 访问</strong>（也就是说同一时间只会有一个线程拥有访问这个区域的能力），并且所有权会随着 calling chain 传递，解决 ownership 转移、减小 TOCTTOU 风险的同时，避免直接修改页表导致 TLB 击穿。</p>
+<p>还有在 <code>xret</code> 时重要的安全逻辑：返回前检查 callee 本身的 <code>seg-reg</code> 和调用时的状态是一致的（<strong>通过检查 link stack 上的 <code>seg-reg &amp; seg-mask</code> 与当前 <code>seg-reg</code> 指定范围是否匹配</strong>），如果不一致，则说明有恶意的 callee 把不恢复原先的 <code>seg-reg</code>，而是 swap 到 <code>seg-list</code> 中。如果 check 失败，则会向 Kernel 抛出异常。</p>
+<blockquote>
+<p>总结一下每个表现在所处的位置：</p>
+<ul>
+<li><code>x-entry-table</code>：全局内存（Kernel space）；</li>
+<li><code>xcall-cap-bitmap</code>：per-thread memory，被 Kernel 管理，由 <code>xcall-cap-reg</code> 指向；</li>
+<li><code>link-stack</code>：per-thread memory，只被 Kernel 访问，由 <code>link-reg</code> 指向；</li>
+<li><code>relay-segment-list</code>：per-process memory，被 Kernel 管理，由 <code>seg-list-reg</code> 指向；</li>
+<li>relay memory segment: continuous physical memory，可被服务端创建多个，由 <code>seg-reg</code> / <code>seg-list-entry</code> 指向；</li>
+<li><code>seg-reg</code> 寄存器：同时有虚拟地址和物理地址，随着 calling chain 传递，每个线程自己可以通过修改 <code>seg-mask</code> 来改变传给 callee 的内存范围；</li>
+</ul>
+<p>前 4 个就是 Kernel 帮忙管理，后一个需要 Kernel 帮忙 check no overlap；</p>
+<p>中途在出现 context switch 时，会 save/restore <strong>per-thread</strong> objects；</p>
+<p>思考：各个寄存器放的是物理地址还是虚拟地址？</p>
+</blockquote>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="RocketChip-Microkernel"><a href="#RocketChip-Microkernel" class="headerlink" title="RocketChip (Microkernel)"></a>RocketChip (Microkernel)</h3><ul>
+<li>XPC Engine -&gt; a unit of a RocketChip core;</li>
+<li>新寄存器 -&gt; <code>CSRs</code>（Control &amp; Status Registers），通过 <code>csrr / csrw</code> 指令访问；</li>
+<li>新指令 <code>xcall / xret / swapseg</code> 会在 Execution Stage 向 XPC Engine 发送（不涉及内核）；</li>
+<li>新增 5 类 exceptions；</li>
+<li>默认实现不含  x-entry-table 的 cache，为了最小化硬件改动；如果改动，则使用 1 entry 作为缓存，使用软件管理，在 prefetch 时调用 <code>xcall -#reg</code>；</li>
+</ul>
+<p>权限转移（Capability）：XPC 这套架构提供一套 “赋予能力” 的功能，这个就是 <code>grant-cap</code>；这个功能也由 Kernel 管理。一个线程创建 <code>x-entry</code> 时就拥有对这个 <code>x-entry</code> 的 <code>xcall-cap</code> 以及赋予这个能力的 <code>grant-cap</code>，现在这个线程可以给指定线程赋予 <code>xcall-cap</code> 的能力；</p>
+<p>单次调用 C-Stack: XPC 支持一个 server 的 <code>x-entry</code> 同时被多个 clients invoke；XPC library 会提供一种 per-invocation XPC context，其中包括了一个 execution stack 和 local data，用来支持多个 clients 同时进行跨进程调用；</p>
+<p>每创建一个 <code>x-entry</code> 就能针对这个 entry 设定最大的 context 数，XPC library 会提前创建这些 context 并向 <code>x-entry</code> 绑定一个 “跳板”；当 clients invoke 这个 <code>x-entry</code> 后，XPC library 就按此跳板恢复 C-stack 以及 local data，并在 return 前释放资源；如果没有空闲的 context，则抛出错误或者等待空闲的 context 出现；</p>
+<blockquote>
+<p>也可能出现 Dos 攻击，假设一个恶意的 client 频繁 invoke 某个 <code>x-entry</code>，耗尽了这个 entry 的 context。</p>
+<p>对于这个问题，XPC 允许 server 指定策略限制 clients 访问 entry，又或者引入信用系统；</p>
+</blockquote>
+<p>调用链的异常终止与断开策略：假设 xcall 的调用链 A -&gt; B -&gt; C 中，B 因为某些原因被 Kernel kill 了；如果此时 C xret 了，则可能返回到错误的进程。为了解决这种情况，在调用链中途的进程被 kill 后需要引发一个 exception 让 Kernel 处理。</p>
+<p>解决方法是，在一个进程结束后，让 Kernel 扫描一遍 link stack，找到死去的进程并将 valid 位置为 0，这样在 C xret 时校验 valid 会发现问题并抛出 exception，Kernel 就可以将无效的 stack entry pop 出去，程序控制流能够返回 A 进程中；</p>
+<p>另一种减少 scan table 的方式是，在 B 死去后，直接将 top level page table 清零，这样在 C xret 时会触发 page fault，Kernel 会介入并回收 B 的资源（为什么？参见 “<code>seg-reg</code> handover” 的讨论）；</p>
+<h3 id="Android-Binder"><a href="#Android-Binder" class="headerlink" title="Android Binder"></a>Android Binder</h3><p>Android Binder: driver + framework (C++ middleware) + API (Android interface definition language)</p>
+<ul>
+<li><p>binder transaction -&gt; cross-process method invoke; </p>
+</li>
+<li><p>twofold-copy &amp; transaction buffer -&gt; transfer data;</p>
+<p>anonymous shared memory (ashmem) -&gt; bulk memory transfer;</p>
+</li>
+</ul>
+<p>其中，原先的 binder transaction 过程如下：</p>
+<ol>
+<li>client 准备 method code（代表 remote method），在调用时携带集中好的数据（Android 中的 parcels）；</li>
+<li>client binder 对象调用 <code>transact()</code>，通过 AB driver 复制 user space 中的 transaction buffer 到 kernel 中（<code>copy_from_user</code>），再切到 server side 从 kernel 中复制出来（<code>copy_to_user</code>）（两次复制，两次 domain switch，称 twofold copy）；</li>
+<li>Binder Framework 的 server side 收到请求并触发预先准备的 <code>onTransact()</code>；</li>
+<li>最终控制流回到 server，server 可以通过 AB driver 回复；</li>
+</ol>
+<p>XPC 对此的优化方式是：</p>
+<ul>
+<li>不修改 IPC interfaces（<code>transact/onTransact</code>）确保应用兼容性；</li>
+<li>extend binder driver 来定义管理 <code>xcall-cap</code> 和 <code>x-entry table</code> 的能力；</li>
+<li>当应用调用 binder interface 的 <code>addService</code> 注册服务时，修改后的 framework 会向 binder driver 触发 <code>ioctl</code> 指令来添加一个 <code>x-entry</code>；</li>
+<li>对于使用 <code>getService</code> 准备调用对应服务的 client 而言，framework 会 <code>set-xcap</code> 来保证 client 有权访问对应的 <code>x-entry</code>；</li>
+<li>上面都是准备工作。在 client 真正调用 remote method 的时候，<strong>使用 <code>xcall / xret</code> 指令，并且用 relay memory segment 实现 parcels 来完成 data transfer</strong>。期间注意 kernel 还是需要管理 per-thread XPC registers；</li>
+</ul>
+<p>这样期间的 domain switch 以及 memory copying 都被消除了；</p>
+<p>此外，Android 的 anonymous shared memory 子系统向 user space 提供一套基于文件共享内存的接口。虽然类似匿名内存，但是借助共享 file descriptor 来向其他进程共享映射方案的。进程既可以使用 mmap 也可以用 file I/O；</p>
+<p>和其他 share memory 来在进程间共享内存的方法一样，ashmem 需要多进行一次额外的 copy 来规避 TOCTTOU 风险，这会造成性能损失。于是 XPC 优化如下：</p>
+<ul>
+<li>ashmem 分配：更改 framework 在分配 ashmem 时用 driver 分配一段 relay memory segment；</li>
+<li>ashmem 映射：map 动作会将位于物理内存上的 relay memory segment 分配到虚拟内存上，设置 <code>seg-reg</code> 寄存器；</li>
+<li>ashmem 所有权转移：仅通过 framework 调用 xcall 是传递 <code>seg-reg</code> 来完成；</li>
+</ul>
+<p>不过一般情况下同一时间只有一个活跃的 relay memory segment。如果一个应用需要同时访问多个 relay memory segment，可以借助 page fault（隐式）或 使用 <code>swapseg</code>（显式）切换 relay memory segment；</p>
+<h3 id="seg-reg-handover"><a href="#seg-reg-handover" class="headerlink" title="seg-reg handover"></a><code>seg-reg</code> handover</h3><p>在 calling chain 传递 <code>seg-reg</code> 想法是好的，但实际上还会遇到一些问题：</p>
+<ul>
+<li>如果需要一部分一部分传递 relay memory segment 的内容，应该怎么办？</li>
+<li>我们在上面讨论 “调用链异常终止” 的情况时，只是采取措施不至于返回到错误的进程，但死去的进程的资源（例如它所创建的所有 relay segment memory，还不能被其他 relay memory 或页表使用）。应该在什么时机释放它们？</li>
+<li>传递过程中可能出现追加信息的情况（例如网络栈会追加头部包数据），如果这个时候超过 relay memory segment 大小怎么办？</li>
+</ul>
+<p>第一个问题很简单，就利用 <code>seg-mask</code> 像滑动窗口一样向 callee 传递其中一段内存即可；</p>
+<p>第二个问题，在触发异常进入 Kernel 后，Kernel 除了 pop invalid link stack entry 或者将 dead process 的首级页表清零以外，还可以扫描 <code>seg-list</code>，恢复 caller 原来的 relay segment，同时释放掉这个进程分配的其他 relay segments；</p>
+<p>第三个问题，需要 Message Size Negotiation；如果存在一个调用链 <code>A -&gt; B -&gt; [C | D]</code>（B 可能调用 C 也可能调用 D），那么：</p>
+<script type="math/tex; mode=display">
+S_{\text{all}}(A)=S(\text{msg})+S_{\text{all}}(B)=S(\text{msg})+S_{\text{self}}(B)+\max\{S_{\text{all}}(C)+S_{\text{all}}(D)\}</script><p>其中 $S_{\text{all}}(X)$ 表示 $X$ 需要的所有空间，$S_{\text{self}}(X)$ 表示 $X$ 在自己的 logic 中需要追加的内容所占空间；</p>
+<h2 id="测试评估"><a href="#测试评估" class="headerlink" title="测试评估"></a>测试评估</h2><p>优化对比：</p>
+<ul>
+<li>partial context</li>
+<li>tagged TLB</li>
+<li>Nonblock link stack（write）</li>
+<li>XPC Engine cache（1 entry prefetch）</li>
+</ul>
+<h3 id="Microbenchmark"><a href="#Microbenchmark" class="headerlink" title="Microbenchmark"></a>Microbenchmark</h3><ul>
+<li>One-way call</li>
+<li>Multi-core IPC：因为采用了 migrating thread model，跨核调用的性能并没有明显下降；</li>
+</ul>
+<h3 id="OS-Services"><a href="#OS-Services" class="headerlink" title="OS Services"></a>OS Services</h3><ul>
+<li>file system</li>
+<li>network</li>
+</ul>
+<h3 id="Android-Binder-1"><a href="#Android-Binder-1" class="headerlink" title="Android Binder"></a>Android Binder</h3><p>limitations: 仅支持同步 IPC（异步 IPC 像 death notification 还尚未实现），并且没有实现 split thread state 来应对 Kernel 的 trap，而是充分利用在 RISC-V 中的 “machine mode” 来捕获 xcall 和 xret 期间发生的异常。</p>
+<blockquote>
+<p>MACHINE MODE ？</p>
+<p>Machine Mode (M-mode) in RISC-V is the highest privilege level in the architecture, primarily used for low-level system control and management. Here are some key points about M-mode:</p>
+<ol>
+<li><strong>Privilege Level</strong>: M-mode has full access to all resources and can execute any instruction without restrictions. It is designed for the operating system kernel and hardware abstraction layers.</li>
+<li><strong>Bootstrapping</strong>: When a RISC-V system powers on or resets, it starts execution in M-mode. This allows it to initialize hardware components and set up lower privilege modes (User Mode and Supervisor Mode).</li>
+<li><strong>Control Registers</strong>: M-mode can configure and control various system registers and hardware features, such as interrupts, timers, and memory management.</li>
+<li><strong>Exception Handling</strong>: M-mode is responsible for handling exceptions and interrupts. When a higher privilege level (e.g., Supervisor Mode) generates an exception, control can be transferred to M-mode for processing.</li>
+<li><strong>Delegation</strong>: M-mode can delegate certain exceptions and interrupts to Supervisor Mode, allowing for a structured and layered approach to handling system events.</li>
+<li><strong>Memory Protection</strong>: M-mode can configure the memory protection settings for lower privilege levels, ensuring safe execution of applications.</li>
+</ol>
+<p>Overall, M-mode provides the foundational control necessary for managing the RISC-V system, enabling the efficient execution of higher-level software components.</p>
+</blockquote>
+<h2 id="硬件开销优化"><a href="#硬件开销优化" class="headerlink" title="硬件开销优化"></a>硬件开销优化</h2><p>资源 utilization 可以进一步优化，例如使用 Verilog 替代 RocketChip 中的 Chisel；</p>
+<h2 id="讨论"><a href="#讨论" class="headerlink" title="讨论"></a>讨论</h2><h3 id="安全性分析"><a href="#安全性分析" class="headerlink" title="安全性分析"></a>安全性分析</h3><p><strong>XPC 认证和识别</strong>：</p>
+<p>一个 caller 如果没有对应的 <code>xcall-cap</code>，则不能直接通过 <code>xcall ID</code> 来触发一次 XPC；这个 <code>xcall-cap</code> 一般是需要向注册服务的 server（具有对应的 <code>grant-cap</code> 能力）申请，类似 08 年的一篇文章介绍的 CuriOS 中 name server 一样；</p>
+<p>其次，一个 callee 可以通过 <code>xcall-cap-reg</code> 指向的 bitmap 来确定 caller 的身份，而这个寄存器在 <code>xcall</code> 时会被 XPC Engine 放在 general purpose register（RISC-V 中是 <code>t0</code>）中，无法被伪造。</p>
+<p><strong>针对 TOCTTOU 的防护</strong>：</p>
+<p>XPC 机制中，一个 relay segment 可以通过 <code>reg-seg</code> 在进程进程间传递，同一时刻最多只有一个线程拥有这片空间。并且 Kernel 会保证不会有与 page table 规定区域 overlap 的情况出现。</p>
+<p><strong>调用链故障隔离</strong>：</p>
+<p>在 XPC 调用链 <code>A -&gt; B -&gt; C</code> 上，任意一个进程 crash 后，总是能回到上级 caller 中继续执行。这主要是 XPC Engine 定义的机制：某进程死亡后 Kernel 会扫描一遍 link stack entry，invalid 掉无效的 process（或者进行 top level page table 清零的操作），在 <code>xret</code> 触发 exception 时再 pop 掉；同时扫描 <code>seg-list</code> 释放归属于无效进程的空间、恢复原先 caller 的 <code>seg-reg</code>、relay segment list 等等。</p>
+<blockquote>
+<p>注意：不能在进程刚结束就释放 relay segment lists，而是在调用链返回出错时才释放。因为我们需要死亡进程在调用时的 <code>seg-reg</code> 数据，以通过 xret 的检验。</p>
+</blockquote>
+<p>除此以外，XPC 还可以支持超时机制，但是实际使用时经常设置为 0 或者 $+\infty$，经常会出现没有用的情况。</p>
+<p><strong>DoS Attacks 防御</strong>：</p>
+<p>一种 DoS Attacks 的方式是，请求创建大量的 relay-segment，占用连续的物理内存空间，造成比较多的 external fragments；但 XPC Engine 会把 relay-seg 放在 process 的 private address space 上，因此这样本身既不会影响 Kernel 也不会影响其他进程；</p>
+<blockquote>
+<p>PRIVATE ADDRESS SPACE ？</p>
+<p>因为在创建 relay segment 的时候选取的是连续的物理地址，类似 Android Binder Ashmem 创建和映射的过程，会把这个物理地址映射到当前进程的私有地址空间，然后再更改 <code>seg-reg</code> / 推入 <code>seg-list</code>，因此说使用的是 process 的private address space；</p>
+</blockquote>
+<p>另一种 DoS Attacks 的方式是，频繁调用 callee，消耗 x-entry 对应的 pre-invocation C-Stack（context &amp; data）；这个通过 credit system 解决，callee 可以在接受调用前检查 caller 的信用分，如果过低就不分配 XPC context 给它；</p>
+<p><strong>Timing Attacks 防御</strong>：</p>
+<p>首先 XPC Engine cache 比较少，发生的可能性小；其次可以像 tagged-TLB 一样，通过 tag cache entry 实现 thread-private 的形式阻隔一个线程感知其他线程的 cache，进一步减小 timing attack 的可能。</p>
+<h3 id="进一步优化"><a href="#进一步优化" class="headerlink" title="进一步优化"></a>进一步优化</h3><ul>
+<li>scalable <code>xcall-cap</code>：将 bitmap 换成 radix tree，但是会增大内存开销，使得 IPC 性能下降；</li>
+<li>Relay Page Table：提高 relay segment 的空间利用率，可以把 segment 换成类似二层页表的结构，但是 ownership transfer 就比较难做，而且只支持以一页为粒度的内存控制；</li>
+</ul>
+<h2 id="其他相关工作"><a href="#其他相关工作" class="headerlink" title="其他相关工作"></a>其他相关工作</h2><p>We revisit previous IPC optimizations in this section.</p>
+<h3 id="Domain-Switch"><a href="#Domain-Switch" class="headerlink" title="Domain Switch"></a>Domain Switch</h3><ul>
+<li>protected procedure call (LRPC) / migrating thread（software，<strong>trap</strong>）</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/migrating-thread.png" /></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/ppc.png" /></p>
+<p>​    这种方法的好处是什么？</p>
+<p>​    <strong>Eliminates the scheduling latency and mitigates IPC logic overhead !</strong></p>
+<ul>
+<li><p>CODOMs、CHERI（hardware）：</p>
+<p>The switch can be done directly at unprivileged level without trapping to the kernel, which is a huge advantage against software optimizations. Meanwhile, multiple domains can share one address space (<strong>single address space</strong>), which can further reduce the overhead of TLB miss after domain switch. However, these systems usually require non-trivial changes to existing micro-kernels which are designed for address space based isolation mechanism.</p>
+<p>（不仅硬件上需要大改，软件上也不支持现有的基于内存地址空间隔离的 micro-kernels）；</p>
+</li>
+</ul>
+<h3 id="Message-Copying"><a href="#Message-Copying" class="headerlink" title="Message Copying"></a>Message Copying</h3><ul>
+<li><p>LRPC（software）：reduce twofold copy（caller -&gt; kernel -&gt; callee） to one（caller -&gt; shared memory）；</p>
+<p>TOCTTOU 发生机制：在 callee 检查完成 shared memory 中的 messsage 有效性和安全性之后准备执行时，caller 通过精巧的时间掌控（例如利用 trap）在期间更改了 shared memory 的内容为恶意数据或代码；</p>
+<p>但是如果再从 shared memory 中 copy 一次，那就丧失了节省一次 copy 的优势了；</p>
+</li>
+<li><p>remapping page ownership（software）: kernel involved &amp; TLB shootdown；</p>
+<p>而且 remapping page 粒度在 page 级别，很难在 calling chain 中 handover（对 shared memory 也是）；</p>
+</li>
+<li><p>temporary mapping（software）：kernel 找到 callee 中 unmapping area，把它和 caller 的 communication window（一种位于 caller address space 中，但只能被 Kernel 访问的空间）map 到一起；当 caller 向 Kernel 请求发送把消息 copy 到 communication window 并 send 之后，caller 本身是无法继续访问这块空间，杜绝了 TOCTTOU 的风险，但是：1 次 copy、remapping + TLB shootdown、kernel involved 仍然会带来不可忽略的开销；</p>
+</li>
+<li><p>CODOMs（hardware）：hybrid memory granting mechanism（permission list + capability registers），但是同样存在 ownership 的问题（哪个线程有这个寄存器的值就能访问）。不过由于使用 single address space，因此 tagged memory 来实现隔离，并且能降低 TLB shootdown 带来的开销；</p>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top/technical/xpc-paper/">https://blog.sjtuxhw.top/technical/xpc-paper/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/OS/">OS</a><a class="post-meta__tags" href="/tags/IPC/">IPC</a><a class="post-meta__tags" href="/tags/MicroKernel/">MicroKernel</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/xpc-paper.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/technical/xss/" title="XSS 是什么？"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/xss.jpeg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">XSS 是什么？</div></div><div class="info-2"><div class="info-item-1">最近一个同学和我讨论一个问题，说到了 XSS 跨站攻击，我恰好对这块不是很熟，于是整理一下相关的资料，希望在编写互联网应用的时候多加注意。 同时，笔者会讨论具体的防护措施，希望大家都不会受到此类攻击的困扰。注意，下文涉及的技术细节仅供学习之用。 OverviewCross Site Scripting (XSS) attacks 是一类代码注入攻击。攻击者利用了互联网应用的安全漏洞将恶意代码（通常是浏览器端脚本）插入正常可信的网站，甚至篡改网页内容。由于其他终端用户的浏览器认为脚本来自可信网站，因此直接执行，最终所有 cookies/session tokens 或其他敏感信息悉数被窃取，从而达到攻击其他终端用户（其他访问者）的目的。 而让这些攻击成为可能的 “安全漏洞”，或者说缺陷，在互联网应用中广泛存在，尤其是对前端接受用户输入的部分不做检查和编码的情况下。 MechanismsXSS 的攻击方式是怎样的？通常它有以下两个步骤：  数据通过不受信任的来源（最常见的是 Web 请求）进入 Web 应用程序； 可能存在恶意代码的数据包含在动态内容中发送给 Web...</div></div></div></a><a class="pagination-related" href="/technical/algo-in-ai/" title="Algorithms in AI"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Algorithms in AI</div></div><div class="info-2"><div class="info-item-1">Chapter 0. Intro0.1 The definition of Artificial Intelligence Think rationally -&gt; Think like people -&gt; Act like people -&gt; Act rationally.  The system maximumly achieving predefined goals. -&gt; Maximize the expected utility. (最大化预期效用)   Brains and AI  Why not reverse engineering the brains? -&gt; Not as modular as software.  But there are the lessons learned from the brain (interleave, 交织在一起):  Memory (data): Judge situations depending on the previous experiences...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/technical/hilog-paper/" title="OpenHarmony Hilog 架构趣读"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/hilog-paper.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-29</div><div class="info-item-2">OpenHarmony Hilog 架构趣读</div></div><div class="info-2"><div class="info-item-1">最近看到一篇讨论 OpenHarmony Hilog 日志子系统的设计的论文，遂进行了一番阅读。该论文发表在软件学报上。 摘要 分析当今主流日志系统的技术架构和优缺点； 基于 OpenHarmony 操作系统的异构设备互联特性，设计 HiLog 日志系统模型规范； 设计并实现第 1 个面向 OpenHarmony 的日志系统 HiLog, 并贡献到 OpenHarmony 主线； 对 HiLog 日志系统的关键指标进行测试和对比试验；  实现的 HiLog 具有以下特征：  基础性能：日志写入阶段吞吐量分别为 1 500 KB/s 和 700 KB/s，吞吐量相对 Android Log 提升 114%； 日志持久化：压缩率 3.5%，丢包率...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">SJTU-XHW</div><div class="author-info-description">A blog to document learning and life</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">48</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://blog.sjtuxhw.top/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! |•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90"><span class="toc-text">1. 问题分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%9E%84%E6%80%9D%E6%96%B9%E6%A1%88"><span class="toc-text">2. 构思方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%AE%BA%E6%96%87%E8%B4%A1%E7%8C%AE"><span class="toc-text">3. 论文贡献</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%9C%BA"><span class="toc-text">动机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1"><span class="toc-text">设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E6%A6%82%E8%A7%88"><span class="toc-text">总体概览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XPC-Engine"><span class="toc-text">XPC Engine</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E-Relay-Memory-Segment"><span class="toc-text">关于 Relay Memory Segment</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RocketChip-Microkernel"><span class="toc-text">RocketChip (Microkernel)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Android-Binder"><span class="toc-text">Android Binder</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#seg-reg-handover"><span class="toc-text">seg-reg handover</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E8%AF%84%E4%BC%B0"><span class="toc-text">测试评估</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Microbenchmark"><span class="toc-text">Microbenchmark</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OS-Services"><span class="toc-text">OS Services</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Android-Binder-1"><span class="toc-text">Android Binder</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E5%BC%80%E9%94%80%E4%BC%98%E5%8C%96"><span class="toc-text">硬件开销优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A8%E8%AE%BA"><span class="toc-text">讨论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90"><span class="toc-text">安全性分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E4%BC%98%E5%8C%96"><span class="toc-text">进一步优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="toc-text">其他相关工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Domain-Switch"><span class="toc-text">Domain Switch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Message-Copying"><span class="toc-text">Message Copying</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/technical/hilog-paper/" title="OpenHarmony Hilog 架构趣读"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/hilog-paper.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OpenHarmony Hilog 架构趣读"/></a><div class="content"><a class="title" href="/technical/hilog-paper/" title="OpenHarmony Hilog 架构趣读">OpenHarmony Hilog 架构趣读</a><time datetime="2024-10-29T05:14:04.000Z" title="发表于 2024-10-29 13:14:04">2024-10-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/review/makefile-again/" title="Makefile 快速上手 (again)"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/makefile-again.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Makefile 快速上手 (again)"/></a><div class="content"><a class="title" href="/review/makefile-again/" title="Makefile 快速上手 (again)">Makefile 快速上手 (again)</a><time datetime="2024-10-11T02:05:34.000Z" title="发表于 2024-10-11 10:05:34">2024-10-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/xss/" title="XSS 是什么？"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/xss.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="XSS 是什么？"/></a><div class="content"><a class="title" href="/technical/xss/" title="XSS 是什么？">XSS 是什么？</a><time datetime="2024-10-04T04:15:33.000Z" title="发表于 2024-10-04 12:15:33">2024-10-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/xpc-paper/" title="论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/xpc-paper.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call"/></a><div class="content"><a class="title" href="/technical/xpc-paper/" title="论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call">论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call</a><time datetime="2024-09-28T13:46:00.000Z" title="发表于 2024-09-28 21:46:00">2024-09-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/algo-in-ai/" title="Algorithms in AI"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Algorithms in AI"/></a><div class="content"><a class="title" href="/technical/algo-in-ai/" title="Algorithms in AI">Algorithms in AI</a><time datetime="2024-07-20T07:23:40.000Z" title="发表于 2024-07-20 15:23:40">2024-07-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>Built With love &amp; </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Powered By </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><div style="display:flex;flex-flow:row;justify-content:center;align-items:center;"> <a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <span class="footer-separator">|</span> <a style="display:flex;flex-flow:row;align-items:center;" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> 本网站由 <img style="margin:0 3px;" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/upCloud_logo_blue.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+
+    GLOBAL_CONFIG_SITE.isPost && getCount()
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script src="/js/rightmenu.js"></script><script src="/js/mourn.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

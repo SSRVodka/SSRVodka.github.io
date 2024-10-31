@@ -1,3 +1,7 @@
+https://blog.sjtuxhw.top/technical/hilog-paper/
+https://blog.sjtuxhw.top/technical/xss/
+https://blog.sjtuxhw.top/technical/xpc-paper/
+https://blog.sjtuxhw.top/review/makefile-again/
 https://blog.sjtuxhw.top/gallery/index.html
 https://blog.sjtuxhw.top/literary/novel-night-talk/
 https://blog.sjtuxhw.top/review/discrete-math/
@@ -64,8 +68,8 @@ https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-10th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-17th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-20th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-2nd.html
-https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-5th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-4th.html
+https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-5th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-8th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-9th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-3rd.html
@@ -112,12 +116,15 @@ https://blog.sjtuxhw.top/tags/Spring/
 https://blog.sjtuxhw.top/tags/JavaScript/
 https://blog.sjtuxhw.top/tags/Minecraft/
 https://blog.sjtuxhw.top/tags/Forge/
+https://blog.sjtuxhw.top/tags/make/
 https://blog.sjtuxhw.top/tags/Matlab/
+https://blog.sjtuxhw.top/tags/OS/
 https://blog.sjtuxhw.top/tags/React/
 https://blog.sjtuxhw.top/tags/SQL/
 https://blog.sjtuxhw.top/tags/Database/
 https://blog.sjtuxhw.top/tags/MySQL/
 https://blog.sjtuxhw.top/tags/TypeScript/
+https://blog.sjtuxhw.top/tags/Security/
 https://blog.sjtuxhw.top/tags/poem/
 https://blog.sjtuxhw.top/tags/essay/
 https://blog.sjtuxhw.top/tags/Anime/
@@ -142,6 +149,8 @@ https://blog.sjtuxhw.top/tags/Linux/
 https://blog.sjtuxhw.top/tags/Logic/
 https://blog.sjtuxhw.top/tags/Set-Theory/
 https://blog.sjtuxhw.top/tags/novel/
+https://blog.sjtuxhw.top/tags/IPC/
+https://blog.sjtuxhw.top/tags/MicroKernel/
 https://blog.sjtuxhw.top/categories/literary/
 https://blog.sjtuxhw.top/categories/technical/
 https://blog.sjtuxhw.top/categories/chat/

@@ -1,0 +1,542 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>OpenHarmony Hilog 架构趣读 | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="最近看到一篇讨论 OpenHarmony Hilog 日志子系统的设计的论文，遂进行了一番阅读。该论文发表在软件学报上。 摘要 分析当今主流日志系统的技术架构和优缺点； 基于 OpenHarmony 操作系统的异构设备互联特性，设计 HiLog 日志系统模型规范； 设计并实现第 1 个面向 OpenHarmony 的日志系统 HiLog, 并贡献到 OpenHarmony 主线； 对 HiLog">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenHarmony Hilog 架构趣读">
+<meta property="og:url" content="https://blog.sjtuxhw.top/technical/hilog-paper/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="最近看到一篇讨论 OpenHarmony Hilog 日志子系统的设计的论文，遂进行了一番阅读。该论文发表在软件学报上。 摘要 分析当今主流日志系统的技术架构和优缺点； 基于 OpenHarmony 操作系统的异构设备互联特性，设计 HiLog 日志系统模型规范； 设计并实现第 1 个面向 OpenHarmony 的日志系统 HiLog, 并贡献到 OpenHarmony 主线； 对 HiLog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/hilog-paper.jpg">
+<meta property="article:published_time" content="2024-10-29T05:14:04.000Z">
+<meta property="article:modified_time" content="2024-10-31T05:22:11.134Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="HarmonyOS">
+<meta property="article:tag" content="OS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/hilog-paper.jpg"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.sjtuxhw.top/technical/hilog-paper/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        if (name && globalFn[key][name]) return
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功 ヾ(≧∇≦*)ゝ',
+    error: '复制失败 (#`皿´)',
+    noSupport: '浏览器不支持 ╮(╯_╰)╭'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#333","bgDark":"#1f1f1f","position":"top-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'OpenHarmony Hilog 架构趣读',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-10-31 13:22:11'
+}</script><link rel="stylesheet" href="/css/mouseConfig.css"/><link rel="stylesheet" href="/css/rightmenu.css"/><link rel="stylesheet" href="/css/custom_music.css"/><link rel="stylesheet" href="/css/addFonts.css"/><link rel="stylesheet" href="/css/titleFonts.css"/><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div id="main-loading-bg"><div class="truckWrapper"><div class="truckBody"><svg class="trucksvg" viewBox="0 0 198 93" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z" fill="currentColor" stroke="#282828" stroke-width="3"></path><path d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z" fill="#7D7C7C" stroke="#282828" stroke-width="3"></path><path d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z" fill="#282828" stroke="#282828" stroke-width="2"></path><rect x="187" y="63" width="5" height="7" rx="1" fill="#FFFCAB" stroke="#282828" stroke-width="2"></rect><rect x="193" y="81" width="4" height="11" rx="1" fill="#282828" stroke="#282828" stroke-width="2"></rect><rect x="6.5" y="1.5" width="121" height="90" rx="2.5" fill="#DFDFDF" stroke="#282828" stroke-width="3"></rect><rect x="1" y="84" width="6" height="4" rx="2" fill="#DFDFDF" stroke="#282828" stroke-width="2"></rect></svg></div><div class="truckTires"><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg></div><div class="road"></div><svg class="lampPost" fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 453.459 453.459" xml:space="preserve"><path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993 c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514 c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16 c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914 h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75 v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795 V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017 h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path></svg></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+      setTimeout(() => {
+        $loadingBox.style.display = 'none'
+      }, 800)
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()
+</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">48</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.sjtuxhw.top/cover_imgs/hilog-paper.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/head_icon.png" alt="Logo"><span class="site-name">SJTU-XHW's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">OpenHarmony Hilog 架构趣读</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">OpenHarmony Hilog 架构趣读</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-10-29T05:14:04.000Z" title="发表于 2024-10-29 13:14:04">2024-10-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-31T05:22:11.134Z" title="更新于 2024-10-31 13:22:11">2024-10-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">5.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>15分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/technical/hilog-paper/#post-comment"><span id="twikoo-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>最近看到一篇讨论 OpenHarmony Hilog 日志子系统的设计的论文，遂进行了一番阅读。该论文发表在软件学报上。</p>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><ol>
+<li>分析当今主流日志系统的技术架构和优缺点；</li>
+<li>基于 <code>OpenHarmony</code> 操作系统的异构设备互联特性，设计 <code>HiLog</code> 日志系统模型规范；</li>
+<li>设计并实现第 1 个面向 <code>OpenHarmony</code> 的日志系统 <code>HiLog</code>, 并贡献到 <code>OpenHarmony</code> 主线；</li>
+<li>对 <code>HiLog</code> 日志系统的关键指标进行测试和对比试验；</li>
+</ol>
+<p>实现的 <code>HiLog</code> 具有以下特征：</p>
+<ul>
+<li>基础性能：日志写入阶段吞吐量分别为 1 500 KB/s 和 700 KB/s，吞吐量相对 Android Log 提升 114%；</li>
+<li>日志持久化：压缩率 3.5%，丢包率 0.6%；</li>
+<li>数据安全、流量控制等等新型实用能力；</li>
+</ul>
+<h2 id="背景概述"><a href="#背景概述" class="headerlink" title="背景概述"></a>背景概述</h2><p>地位：在计算机系统中，日志作为一种基于时间序列的数据，记录了在操作系统中发生的事件或其他软件运行的事件。</p>
+<p>作用：</p>
+<ul>
+<li>实用价值：系统开发和运维人员需要通过日志对程序中存在的问题进行定位和分析，提高工作效率；</li>
+<li>商业价值：日志记录了大量用户行为习惯信息，这些信息通过大数据分析可用于了解用户需求，作为改进产品或孵化新的商业项目的依据；</li>
+</ul>
+<p>目前产业界的日志系统：Android Log、FTrace、NanoLog、Log4j2 等等；</p>
+<p><code>OpenHarmony</code> 日志系统需要具备的功能：生成、过滤、记录和消息分析的能力。</p>
+<ul>
+<li>多进程日志读写：<code>OpenHarmony</code> 是支持多进程并发的操作系统，其日志系统需要具备从多进程收集日志的能力；</li>
+<li>实时日志读写：作为操作系统的高效调试辅助工具，日志系统需要具备<strong><u>事件发生-日志输出</u></strong>的实时响应能力；</li>
+<li>多内核适配：<code>OpenHarmony</code> 是多内核的操作系统，其日志系统需要具备多种内核适配能力；</li>
+</ul>
+<p>经过分析，目前产业界的日志系统均不适合 <code>OpenHarmony</code>：</p>
+<ul>
+<li><p><code>Log4j2</code> 单进程日志架构；</p>
+<ul>
+<li>借助 CAS 实现缓冲区加解锁，降低日志读写接口的延时；</li>
+<li>缓存行填充解决伪共享问题，隔离更新操作，进一步提升运行效率；</li>
+<li>CAS 方法的 CPU 开销较大（也就是适用于单进程的日志，不适用多进程并发的状况），且存在日志缓冲区修改的 ABA 问题 (ABA problem)；</li>
+</ul>
+</li>
+<li><p><code>NanoLog</code> 虽然日志写入效率很高（大量数据操作以二进制形式完成），但是：</p>
+<ul>
+<li>其读取需要复杂的后处理机制（反序列化、格式化、排序等）；</li>
+<li>采用空间换时间的策略，内存消耗大；</li>
+</ul>
+<p>因此，不能满足 OS 调试所需实时读日志需求；</p>
+</li>
+<li><p><code>FTrace</code> 日志系统仅适用于内核日志读写，使用就和 Linux 强耦合，不适用于多内核的 <code>OpenHarmony</code>；</p>
+<ul>
+<li>每个 CPU 上维护一个缓冲区，因此读写时延低（与前述日志系统“为每个操作系统维护唯一缓冲区”的设计理念不同）；</li>
+<li>Page 结构组织数据，单 Page 上记录一个时间戳，Page 内日志记录相对时间差，节约记录时间所需的存储空间；</li>
+</ul>
+</li>
+<li><p>Android Log（5.0 后）满足内核解耦、多进程、实时读写的需求，如下图：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/android-log.png" width="400px" /></p>
+<ul>
+<li>日志写：IPC 采用原生 Socket + <code>/proc/kmsg</code> 内核日志；</li>
+<li>日志缓存：<code>logd</code> 用户态 list buffer；</li>
+<li>日志读：<code>logcat</code> 使用 Socket 读；</li>
+</ul>
+<p>但是有 4 个关键问题：</p>
+<ul>
+<li><strong><u>吞吐量不足</u></strong>：负载超过吞吐量将会导致严重的日志丢包问题；</li>
+<li><strong><u>缺乏资源分配机制</u></strong>：没有对日志资源的使用进行合理分配或约束，写日志进程间可能出现资源竞争；</li>
+<li><strong><u>缺乏数据安全能力</u></strong>：未提供相应的敏感数据保护功能, 任何读权限日志用户均可阅读全部日志信息；</li>
+<li><strong><u>面向轻量设备的兼容性差</u></strong>：没有特别面向资源受限设备进行兼容设计。Android Log 在用户态维护独立缓冲区（list buffer），保存包括 Linux 内核日志在内的所有日志数据, 因此需要消耗大量的内存资源；</li>
+</ul>
+</li>
+<li><p>Fuchsia OS 中的日志系统：Socket 通信（类似 Android Log），不过使用链表作为缓冲区（有效利用碎片化的内存空间）。但是存在<u>内存拷贝次数多、用户态内存频繁分配释放</u>的问题；</p>
+</li>
+</ul>
+<p>上面的案例中，只有 Android Log 最接近要求。但它的问题也亟需优化。</p>
+<h2 id="HiLog-日志系统模型规范"><a href="#HiLog-日志系统模型规范" class="headerlink" title="HiLog 日志系统模型规范"></a>HiLog 日志系统模型规范</h2><p>基于以上分析，本文将要设计面向 OpenHarmony 操作系统的高性能日志系统 HiLog。首先，为了明确日志系统的研发目标与技术特点，文章为 HiLog 设计了相应的模型规范。</p>
+<p>虽然 HiLog 与 Android 日志系统有相同的基础架构，但提出了更多的场景要求，以及原则：</p>
+<ul>
+<li><p>性能原则：应当针对高吞吐量需求进行设计，从软件层面解决吞吐量瓶颈问题（以及引发的丢包问题）；</p>
+</li>
+<li><p>资源分配原则：从操作系统层面看，日志系统作为操作系统的信息记录者，不应抢占过多的系统资源。应当在设计时考虑资源分配问题；</p>
+<ul>
+<li>一方面在操作系统层面合理分配日志系统和其他程序占用的资源；</li>
+<li>另一方面是在日志系统层面合理分配各个程序占用的日志资源；</li>
+</ul>
+</li>
+<li><p>设备兼容性原则：OpenHarmony 操作系统即是一种面向全设备的操作系统，因此需要考虑资源受限的轻量化设备, 如蓝牙耳机、键盘、智能音箱、传感器等。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/oh-platform.png" width="600px" /></p>
+<p>需要注意：减小 CPU、内存、存储空间占用。</p>
+</li>
+<li><p>数据安全原则：常见的隐私保护方法有匿名化、同态加密、差分隐私等等，由于它们需要基于静态的、结构相同的数据集合计算数据之间的相关性，因此难以适用：</p>
+<ul>
+<li>基于时间序列意味着日志数据是随时间快速更新的, 每次更新都需要重新计算数据之间的关系, 计算开销是昂贵的；</li>
+<li>长文本缺乏字段概念, 日志语句的长短、句式各不相同 (结构不同), 难以基于规则分辨需要保护的内容；</li>
+</ul>
+<p>因此 HiLog 应当具备一定的日志数据安全能力, 但是同时需要保证轻量化。</p>
+</li>
+</ul>
+<h2 id="HiLog-系统设计实现"><a href="#HiLog-系统设计实现" class="headerlink" title="HiLog 系统设计实现"></a>HiLog 系统设计实现</h2><h3 id="1-日志类型"><a href="#1-日志类型" class="headerlink" title="1. 日志类型"></a>1. 日志类型</h3><p>OpenHarmony 操作系统由下至上分为内核层、系统层和应用层：</p>
+<ul>
+<li>内核层（对应内核开发者）：可由面向标准系统的 Linux 内核或面向轻量系统的 LiteOS 内核构成；</li>
+<li>系统层（对应系统开发者）：主要由 OpenHarmony 操作系统的各个子系统构成；</li>
+<li>应用层（对应应用开发者）：由运行在 OpenHarmony 上的系统应用以及第三方应用构成；</li>
+</ul>
+<p>不同开发者关心的信息是不同的. 因此为了方便开发者区分不同层级产生的日志, HiLog 将日志分为内核日志、系统日志和应用日志 3 类, 并实现日志的<strong><u>分类管理</u></strong>。</p>
+<h3 id="2-日志级别"><a href="#2-日志级别" class="headerlink" title="2. 日志级别"></a>2. 日志级别</h3><p>为了方便开发者和运维人员<strong><u>快速分辨系统状态的严重程度</u></strong>, 日志应当基于记录事件的重要程度划分级别。</p>
+<p>标准需要：</p>
+<ul>
+<li>日志的级别数目不应过多或过少, 防止检索困难或分类标准不明；</li>
+<li>每个日志级别应当有清晰的使用标准, 开发者在开发时不可混用；</li>
+<li>写入时, 每条日志都应当分配到一个日志级别；</li>
+<li>在输出时, 每个级别的日志都需要采用不同的字体或者颜色来区分；</li>
+</ul>
+<p>因此 HiLog 分为：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/hilog-level.png" width="350px" /></p>
+<h3 id="3-日志数据结构"><a href="#3-日志数据结构" class="headerlink" title="3. 日志数据结构"></a>3. 日志数据结构</h3><p>按位紧密存储（packed），节省空间可以减少 IPC 开销和存储开销, 提高日志系统的日志吞吐量。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/hilog-datatype.png" width="350px" /></p>
+<h3 id="4-日志功能"><a href="#4-日志功能" class="headerlink" title="4. 日志功能"></a>4. 日志功能</h3><ul>
+<li><p>日志写入：包括日志生成、日志排序、日志暂存。</p>
+<ul>
+<li>在开发时 HiLog 的使用者通过引入 libhilog 的头文件, 使用 libhilog 提供的写日志接口编写程序, 在程序运行时 libhilog 即可生成日志；</li>
+<li>libhilog 在生成日志过程中还提供数据保护、进程流控等辅助能力；</li>
+<li>在标准 HiLog 中, hilogd 收集来自各个 libhilog 的日志信息, 按时间进行排序, 并进入缓冲区暂存. 在轻量 HiLog 中, 日志缓冲区是 LiteOS 的 <code>kernel_log_buffer</code>, 相应的日志排序和暂存能力由 <code>kernel_log_buffer</code> 实现；</li>
+</ul>
+</li>
+<li><p>日志输出：包括日志打印、日志持久化。</p>
+<ul>
+<li>读取暂存的日志写入到标准输出 (<code>stdout</code>), 并且支持通过辅助信息等特征进行筛选；</li>
+<li>将暂存的日志写入文件, 并进一步地提供压缩功能；</li>
+</ul>
+<p>可以通过 hilogtool 命令行工具执行日志打印、持久化等输出工作；</p>
+</li>
+<li><p>日志系统控制：包括数据安全、进程流控、业务流控、缓冲区以及持久化的配置；</p>
+<ul>
+<li>例如, 当操作系统内存空间紧张, 可以缩小日志缓冲区空间, 为其他程序让出更多内存；又例如, 当操作系统 CPU 负载较高, 可以降低流量控制阈值, 减少 HiLog 日志处理消耗的 CPU 资源；</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-架构-amp-模块设计"><a href="#5-架构-amp-模块设计" class="headerlink" title="5. 架构 &amp; 模块设计"></a>5. 架构 &amp; 模块设计</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/hilog-arch.png" width="500px" /></p>
+<ul>
+<li>标准 Hilog（L2-L5）：维护守护进程 hilogd 实现高性能的日志缓冲区管理；</li>
+<li>轻量 Hilog（L1）：直接将日志写入内核的缓冲区中；</li>
+</ul>
+<p>其中：</p>
+<ul>
+<li><p><code>libhilog</code>：提供头文件 &amp; 动态链接库。一方面提供静态写日志接口, 另一方面负责运行时日志生成。附加：</p>
+<ul>
+<li>写日志接口的敏感数据标识, 实现数据安全；</li>
+<li>基于进程的日志流控机制, 实现对所有进程日志写入资源的合理分配；</li>
+</ul>
+<p>轻量 Hilog：添加敏感数据标识和流控后, 将日志直接写入内核缓冲区；</p>
+<p>标准 Hilog：直接发送至 <code>hilogd</code> 模块；</p>
+</li>
+<li><p><code>hilogtool</code>：提供读日志能力。一方面提供与操作系统 Shell 交互的能力, 另一方面负责执行读日志任务。</p>
+<ul>
+<li>开发者通过 Shell 命令控制日志打印或日志持久化任务；</li>
+<li>根据平台种类，从不同位置读取日志；</li>
+</ul>
+</li>
+<li><p><code>hilogd</code>：面向 L2–L5 平台设计的高性能日志缓冲区 (<code>hilog_buffer</code>) 及其管理模块；</p>
+<ul>
+<li>与系统的其他模块是解耦的（IPC 交互）；</li>
+<li>提供日志监听、排序和存储的功能, 其运行时具备系统守护进程的特性；</li>
+</ul>
+</li>
+</ul>
+<p>图中“内核缓冲区”含义不同：</p>
+<ul>
+<li>轻量 Hilog：指 LiteOS 内核的内核日志缓冲区, 负责暂存全量的日志信息；</li>
+<li>标准 Hilog：指 Linux 的内核日志缓冲区, hilogd 将会读取其中的日志信息到 <code>hilog_buffer</code>, 保证 <code>hilog_buffer</code> 中拥有系统的全量日志信息；</li>
+</ul>
+<h3 id="6-HiLog-日志系统-IPC"><a href="#6-HiLog-日志系统-IPC" class="headerlink" title="6. HiLog 日志系统 IPC"></a>6. HiLog 日志系统 IPC</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/hilog-ipc.png" width="550px" /></p>
+<ul>
+<li><p><code>socket_input</code> 服务端：采用 I/O Multiplxing，而不是多线程策略。因为下面的原因导致单独线程处理会浪费资源：</p>
+<ul>
+<li>日志的写入存在并发特征；</li>
+<li>每个进程在每个时间段产生的日志数量是不定的, 且每一条日志的长度 (字节数) 也是不等的, 因此日志的写入数据量存在时间分布不均匀特征；</li>
+</ul>
+</li>
+<li><p><code>socket_input</code> 客户端：采用非阻塞 IO 模型 (non-blocking input/output)，异步传输；由于服务端 I/O Multiplxing 不能保证及时处理，因此同步方式会使进程阻塞。</p>
+</li>
+<li><p><code>socket_output</code> 客户端/服务端均采用阻塞 IO (blocking input/output) 模型构建；</p>
+<ul>
+<li>读日志事件的数据量较大且需要确保数据到达的先后顺序；</li>
+<li>从需求分析不会同时存在太多读日志进程, 因此阻塞 IO 不会给系统带来过大的负担；</li>
+</ul>
+<p>因此：</p>
+<ul>
+<li><p><code>hilogtool</code>, 维护各自的 <code>socket_output</code> 客户端向 <code>hilogd</code> 发送读日志请求；</p>
+</li>
+<li><p><code>hilogd</code> 对于每一个客户端创建一个线程操作 <code>socket_output</code> 服务端；</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>而对于轻量 HiLog 而言，IPC 机制直接采用 <code>ioctl</code>；</p>
+<h3 id="6-HiLog-日志数据安全"><a href="#6-HiLog-日志数据安全" class="headerlink" title="6. HiLog 日志数据安全"></a>6. HiLog 日志数据安全</h3><p>为了平衡安全性和性能开销, 在设计 HiLog 的数据安全能力时<strong><u>重点考虑了变量的安全问题</u></strong>。仅基于静态的源码分析难以捕捉是否有敏感数据会被日志系统记录, 因此<strong><u>变量是敏感数据泄露的重要风险因素</u></strong>。</p>
+<p>开发者指定变量的敏感标识，HiLog 通过识别这些标识来提供数据安全能力。</p>
+<p>敏感数据标识分为 2 种, 分别是公开标识 <code>&#123;public&#125;</code> 和隐藏标识 <code>&#123;private&#125;</code>，例如 <code>&quot;%&#123;public&#125;s&quot;</code>，<code>&quot;%&#123;private&#125;s&quot;</code>；</p>
+<p>若修饰 <code>&#123;private&#125;</code>, 在开启数据安全能力的情况下, libhilog 会以字符串 <code>&quot;&lt;private&gt;&quot;</code> 替换原参数后, 再将对应日志发送到 <code>hilog_buffer</code>；</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/hilog-safety-rule.png" width="550px" /></p>
+<h3 id="7-HiLog-日志流量控制"><a href="#7-HiLog-日志流量控制" class="headerlink" title="7. HiLog 日志流量控制"></a>7. HiLog 日志流量控制</h3><p>作为实现系统资源合理分配的手段, HiLog 提供日志流量控制 (简称流控) 机制, 避<strong>免部分进程日志流量过大造成的系统负载过高和日志丢包问题</strong>。</p>
+<p>流量控制原理：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/hilog-flow-control.png" width="600px" /></p>
+<ul>
+<li>设置流量阈值 $q$，每个时间片段 Δt 内统计日志流量, 当某个时间片段内的日志流量超出阈值 q 时, 按照默认配额或者进程白名单设置的配额进行控制, 对超出配额的日志进行抛弃；</li>
+<li>这种控制方法会在 进程端（<code>libhilog</code>）和业务端（<code>hilogd</code>）同时开展，可以平衡 IPC 资源的使用并降低性能开销；</li>
+<li>除了从进程端进行流控，HiLog 可以跨进程针对同一业务流控。OH 使用 <code>Domain</code>（领域标识）将进程归类，具备相同 Domain 的进程被归纳为同一业务，然后在业务粒度上进行流控。</li>
+</ul>
+<p>注：轻量 HiLog 不存在 <code>hilogd</code>，不存在业务流控，只有进程流控。实际上本身轻量级设备无法运行大量进程，因此这么做本身没有问题。</p>
+<h3 id="8-HiLog-日志缓冲区管理"><a href="#8-HiLog-日志缓冲区管理" class="headerlink" title="8. HiLog 日志缓冲区管理"></a>8. HiLog 日志缓冲区管理</h3><p>对于标准 HiLog 而言，使用如图<strong><u>双循环链表</u></strong>作为缓冲区 <code>hilog_buffer</code> 的数据结构：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/hilog-buffer.png" width="400px" /></p>
+<ul>
+<li>高效利用碎片化的内存空间；</li>
+<li>有效降低日志的排序、插入、读取等操作时指针需要跳转的链表节点数目；</li>
+</ul>
+<p>其特性如下：</p>
+<ol>
+<li><p>时间戳有序（为了给开发和维护人员提供符合逻辑的信息）：<code>hilog_buffer</code> 中的数据按照日志数据的时间戳排序。这个特性需要编码时保证，因为 OH 是分时操作系统，随机的延时会导致日志产生时间顺序与到达缓冲区的时间顺序不一致，进而增大日志理解难度。因此提供两种排序方案：</p>
+<ul>
+<li>先排序：日志在写入日志缓冲区时进行排序；</li>
+<li>后排序：从缓冲区读取日志进行输出时排序；</li>
+</ul>
+<p>由于 HiLog 单生产者、多消费者模型，因此采用 “先排序” 的方案。</p>
+<blockquote>
+<p>原因如下：</p>
+<ul>
+<li>“先排序”方案执行一次排序即可解决顺序问题。并且由于缓冲区内日志有序, 排序是较为简单的, 只需将新到日志的时间戳依次与缓冲区日志的时间戳进行比较 (由新到旧) 然后插入即可；</li>
+<li>“后排序”需要每个消费者都进行排序, 由于缓冲区内日志无序, 消费者需要遍历一次链表才能排序一条日志, 效率较低；</li>
+</ul>
+</blockquote>
+</li>
+<li><p>读写指针：<code>hilog_buffer</code> 包含 3 类读写指针成员：</p>
+<ul>
+<li>写指针 $w$：指向当前最新日志结点；</li>
+<li>公共读指针 $r$：指向当前最旧的日志节点；</li>
+<li>读者指针 $r_i$：位于 $w$ 和 $r$ 间若干份，以供不同的日志读需求；</li>
+</ul>
+</li>
+<li><p>单生产者、多消费者模型：</p>
+<ul>
+<li>在 <code>hilogd</code> 中只运行一个生产者线程。插入日志时扫描日志应该处于的时间区间并移动 $w$ 插入（可能在 $w$ 当前指向结点前或后）；如果新插入的日志记录在 $r$ 的前面，则将 $r$ 移动到该结点。最终 $w$ 需要复位至时间最新的结点；</li>
+<li>每个消费者独占 $r_i$​ 指针，起始时将读指针 $r_i$ 指向公共读指针 $r$ 所指节点, 接下来操作 $r_i$ 依次读取后续节点；</li>
+</ul>
+</li>
+<li><p><code>hilog_buffer</code> 线程同步：仅处理生产者和消费者间的并发同步问题就行（读者间不存在同步问题）。</p>
+<ul>
+<li>对 “消费者跳转读指针” 和 “生产者调整链表结构” 这两类过程加锁即可；</li>
+</ul>
+<p>考虑两种锁：线程互斥锁（<code>mutex</code>）和 CAS（Compare And Swap）；</p>
+<blockquote>
+<p>mutex:  CPU 占用低、不存在 ABA Problem；缺点在于存在 domain switch 开销；</p>
+<p>CAS:  无需 domain switch；单需要轮询锁状态, CPU 消耗大, 并且存在 ABA 风险；</p>
+<p>综合考虑：</p>
+<ul>
+<li>资源消耗：在单生产者、多消费者的场景下，多个 client 轮询 CAS 可能对移动终端设备不友好；</li>
+<li>临界区执行时间较长：使用 mutex 带来的 domain switch 开销不显著。</li>
+</ul>
+</blockquote>
+</li>
+<li><p>缓冲区容量可定制：缓冲区容量上限可配置。当 hilog_buffer 容量已达上限时, 插入数据会导致时间戳最早的一部分数据被删除, 以存储最新的数据；总体过程：</p>
+<ol>
+<li>将公用读指针 $r$ 指向<strong>剩余数据（不包括将要被删除的结点）</strong>中最旧的节点；</li>
+<li>遍历检查读者列表中每个读者的读指针是否指向将被删除的节点，如果是，则移至 $r$；</li>
+<li>最终释放要被删除的结点；</li>
+</ol>
+</li>
+</ol>
+<h3 id="9-HiLog-日志系统持久化-amp-压缩"><a href="#9-HiLog-日志系统持久化-amp-压缩" class="headerlink" title="9. HiLog 日志系统持久化 &amp; 压缩"></a>9. HiLog 日志系统持久化 &amp; 压缩</h3><p>日志持久化：</p>
+<p>使用一般的日志轮替机制。指定日志文件的总数和每个日志文件的大小，日志系统的内存部分大小与一个日志文件大小匹配。</p>
+<p>当正在写入的文件超过规定阈值后创建新日志文件，当日志文件数量超过规定阈值时删除最旧的日志文件；</p>
+<p>日志压缩：</p>
+<p>提供两种不同的日志压缩方法, 一种是日志流压缩（从日志缓冲区读取日志, 接下来将日志作为比特流输入压缩算法接口。使用 zlib 流压缩算法库），另一种是日志文件压缩（主要面向小流量的写日志场景，先创建临时日志文件，后续压缩并删除）。</p>
+<blockquote>
+<p>当日志流量较小时, 如果采用流压缩方法, 压缩算法的输出数据量达到单文件大小阈值需要很长的时间, 期间一旦出现系统崩溃或断电问题, 就会导致内存中的日志数据丢失。</p>
+</blockquote>
+<h2 id="HiLog-日志系统实验分析"><a href="#HiLog-日志系统实验分析" class="headerlink" title="HiLog 日志系统实验分析"></a>HiLog 日志系统实验分析</h2><p>基本性能、流控性能、持久化性能、设备兼容性分析、数据安全能力分析。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完成了前述的几项基本要求、遵循了前述的设计原则；</p>
+<p>同时也反映出 <code>HiLog</code> 的一些问题与改进空间：</p>
+<ol>
+<li><p>业界对于日志系统的数据安全的研究较少, HiLog 的轻量化数据安全能力是对于日志数据安全问题的初步探索；</p>
+</li>
+<li><p>OpenHarmony 作为分布式操作系统, 原生支持分布式能力。</p>
+<p><strong><u>然而目前 HiLog 尚不具备从多设备统一收集日志并进行管理的能力</u></strong>. 这种缺陷对于分布式能力的开发和调试造成了一定的不便, 具备优化的空间；</p>
+<p>构造分布式日志系统有两个重要的问题需要解决, 其一是设备间高速、高稳定的连接问题, 其二是多设备的时钟同步问题。</p>
+<p>对于第 1 个问题, 可以等待 OpenHarmony 的软总线 (SoftBus) 技术成熟后，利用 SoftBus 作为稳定高速的日志传输的通道；</p>
+<p>对于第 2 个问题, 可以考虑基于精确时间协议 (precision time protocol, PTP) 实现无线局域网内的多设备时钟同步；</p>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top/technical/hilog-paper/">https://blog.sjtuxhw.top/technical/hilog-paper/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/HarmonyOS/">HarmonyOS</a><a class="post-meta__tags" href="/tags/OS/">OS</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/hilog-paper.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/review/makefile-again/" title="Makefile 快速上手 (again)"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/makefile-again.jpeg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Makefile 快速上手 (again)</div></div><div class="info-2"><div class="info-item-1">说来惭愧，之前笔者还认为 Makefile 这种工具已经过时，只需要学 CMake 就行。 但最近在写 boot loader 时遇到了一些问题：我既不是在编译可执行文件，也不是在编译库，这样 CMake 就显得比较无力了，因为总是用 add_custom_* 也不是办法，非常臃肿——毕竟不是在管理一个 C/C++ 应用的项目嘛。所以决定再整理一下 Makefile 的写法。 本文充当一个 Makefile cheat sheet 的作用，自己有点遗忘的时候回来查一查。  Define a Target在 Makefile 中定义一个可以构建的 target： 12345&lt;target&gt;: dependency1 dependency2 ... dependency3    command1    command2    ...    commandM 这样可以使用 make &lt;target&gt; 来执行它。 注意哦，make 会认为 &lt;target&gt; 是一个需要构建的目标文件名。最终按照 commands 生成的文件会被命名为...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/literary/2023-hdc/" title="2023 HDC 参会笔记与感悟"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/2023-HDC.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-07</div><div class="info-item-2">2023 HDC 参会笔记与感悟</div></div><div class="info-2"><div class="info-item-1">Author: SJTU-XHW Language: Simple Chinese License: CC BY 4.0 本人学识有限，内容难免有错，恳请读者能够批评指正，本人将不胜感激！ 注：在笔记的 这里 你可以体验有趣的 WebXR 的项目 Demo ~  8 月 4 日主会场：HarmonyOS 4 与 SDK 主题演讲一、 Harmony 4 UX 设计 系统输入法表情更新：上千个专属定制的 unicode 表情符号，精细化表情符号所代表的语义；  举例：一碗面条所对应的表情就有 4 种之多，提供 “宽面”、“窄面”，“拌面”、“汤面” 之选择；   结合 HarmonyOS 4 图像识别处理的技术，用户可以 定制 “以自己主角” 的壁纸、主题，体现个性化界面设计之美； 系统界面 UI 焕然一新，同时给用户和开发者提供更多不同的窗口组件；  二、 Security 细化权限控制粒度，最小化权限给予。将应用权限交由用户决定；  举例：用户不允许透露的信息（如通讯录），可以采取提交 “虚假信息”...</div></div></div></a><a class="pagination-related" href="/technical/xpc-paper/" title="论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/xpc-paper.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-28</div><div class="info-item-2">论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call</div></div><div class="info-2"><div class="info-item-1">这是一篇 2019 年的关于微内核 IPC 性能优化的文章。 摘要微内核有很多引人注目的 features，例如 安全性、容错性、模块化，以及可定制性，这些特性近期在学术界和工业界又再次掀起了一股研究热潮（including seL4, QNX and Google’s Fuchsia OS）。  Google’s Fuchsia’s kernel (called Zircon)  但是 IPC（进程间通信）作为微内核的 阿喀琉斯之踵，仍然是导致微内核 OS 总体性能较低的主要因素之一。同时 IPC 在宏内核中也扮演者很重要的角色，例如 Android Linux，其中的移动端程序会经常和用户态服务通过 IPC 通信。所以优化 IPC 自然是一个很重要的课题。 之前学界对 IPC 在软件层面的优化都绕不开 Kernel，因为 IPC 在这方面的主要开销就是 域切换（domain switch）和消息复制/重映射（message copying/remapping）；在硬件层面的优化方法主要是 给内存和能力打...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">SJTU-XHW</div><div class="author-info-description">A blog to document learning and life</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">48</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://blog.sjtuxhw.top/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! |•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%E6%A6%82%E8%BF%B0"><span class="toc-text">背景概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HiLog-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9E%8B%E8%A7%84%E8%8C%83"><span class="toc-text">HiLog 日志系统模型规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HiLog-%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E5%AE%9E%E7%8E%B0"><span class="toc-text">HiLog 系统设计实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%97%A5%E5%BF%97%E7%B1%BB%E5%9E%8B"><span class="toc-text">1. 日志类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB"><span class="toc-text">2. 日志级别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%97%A5%E5%BF%97%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-text">3. 日志数据结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%97%A5%E5%BF%97%E5%8A%9F%E8%83%BD"><span class="toc-text">4. 日志功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%9E%B6%E6%9E%84-amp-%E6%A8%A1%E5%9D%97%E8%AE%BE%E8%AE%A1"><span class="toc-text">5. 架构 &amp; 模块设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-HiLog-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F-IPC"><span class="toc-text">6. HiLog 日志系统 IPC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-HiLog-%E6%97%A5%E5%BF%97%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8"><span class="toc-text">6. HiLog 日志数据安全</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-HiLog-%E6%97%A5%E5%BF%97%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="toc-text">7. HiLog 日志流量控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-HiLog-%E6%97%A5%E5%BF%97%E7%BC%93%E5%86%B2%E5%8C%BA%E7%AE%A1%E7%90%86"><span class="toc-text">8. HiLog 日志缓冲区管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-HiLog-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E6%8C%81%E4%B9%85%E5%8C%96-amp-%E5%8E%8B%E7%BC%A9"><span class="toc-text">9. HiLog 日志系统持久化 &amp; 压缩</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HiLog-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%E5%AE%9E%E9%AA%8C%E5%88%86%E6%9E%90"><span class="toc-text">HiLog 日志系统实验分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/technical/hilog-paper/" title="OpenHarmony Hilog 架构趣读"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/hilog-paper.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OpenHarmony Hilog 架构趣读"/></a><div class="content"><a class="title" href="/technical/hilog-paper/" title="OpenHarmony Hilog 架构趣读">OpenHarmony Hilog 架构趣读</a><time datetime="2024-10-29T05:14:04.000Z" title="发表于 2024-10-29 13:14:04">2024-10-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/review/makefile-again/" title="Makefile 快速上手 (again)"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/makefile-again.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Makefile 快速上手 (again)"/></a><div class="content"><a class="title" href="/review/makefile-again/" title="Makefile 快速上手 (again)">Makefile 快速上手 (again)</a><time datetime="2024-10-11T02:05:34.000Z" title="发表于 2024-10-11 10:05:34">2024-10-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/xss/" title="XSS 是什么？"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/xss.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="XSS 是什么？"/></a><div class="content"><a class="title" href="/technical/xss/" title="XSS 是什么？">XSS 是什么？</a><time datetime="2024-10-04T04:15:33.000Z" title="发表于 2024-10-04 12:15:33">2024-10-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/xpc-paper/" title="论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/xpc-paper.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call"/></a><div class="content"><a class="title" href="/technical/xpc-paper/" title="论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call">论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call</a><time datetime="2024-09-28T13:46:00.000Z" title="发表于 2024-09-28 21:46:00">2024-09-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/algo-in-ai/" title="Algorithms in AI"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Algorithms in AI"/></a><div class="content"><a class="title" href="/technical/algo-in-ai/" title="Algorithms in AI">Algorithms in AI</a><time datetime="2024-07-20T07:23:40.000Z" title="发表于 2024-07-20 15:23:40">2024-07-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2024 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>Built With love &amp; </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Powered By </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><div style="display:flex;flex-flow:row;justify-content:center;align-items:center;"> <a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <span class="footer-separator">|</span> <a style="display:flex;flex-flow:row;align-items:center;" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> 本网站由 <img style="margin:0 3px;" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/upCloud_logo_blue.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo.sjtuxhw.top',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+
+    GLOBAL_CONFIG_SITE.isPost && getCount()
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(init,0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(init)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script src="/js/rightmenu.js"></script><script src="/js/mourn.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
