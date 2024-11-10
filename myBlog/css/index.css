@@ -1499,7 +1499,7 @@ a {
   transition: all 0.2s;
   overflow-wrap: break-word;
 }
-a:hover {
+a:hover:not(:has(img)) {
   scale: 1.02;
 }
 #site-title,
@@ -4440,7 +4440,7 @@ figure.highlight pre .javascript .function {
   font-weight: bold;
   border-bottom: 2px var(--theme-link-color) solid;
 }
-#article-container a:hover {
+#article-container a:hover:not(:has(> img)) {
   color: #fff;
   border-radius: 5px;
   padding: 3px 5px;

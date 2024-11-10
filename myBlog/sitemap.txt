@@ -1,3 +1,4 @@
+https://blog.sjtuxhw.top/technical/python-sci-starter/
 https://blog.sjtuxhw.top/technical/hilog-paper/
 https://blog.sjtuxhw.top/technical/xss/
 https://blog.sjtuxhw.top/technical/xpc-paper/
@@ -47,8 +48,8 @@ https://blog.sjtuxhw.top/technical/cmake-advanced/
 https://blog.sjtuxhw.top/chat/my-cdn-services/
 https://blog.sjtuxhw.top/technical/algo-in-ai/
 https://blog.sjtuxhw.top/literary/2023-hdc/
-https://blog.sjtuxhw.top/gallery/2023-April/index.html
 https://blog.sjtuxhw.top/gallery/2023-January/index.html
+https://blog.sjtuxhw.top/gallery/2023-April/index.html
 https://blog.sjtuxhw.top/gallery/2023-July/index.html
 https://blog.sjtuxhw.top/gallery/2022-March/index.html
 https://blog.sjtuxhw.top/gallery/2022-June/index.html
@@ -119,6 +120,7 @@ https://blog.sjtuxhw.top/tags/Forge/
 https://blog.sjtuxhw.top/tags/make/
 https://blog.sjtuxhw.top/tags/Matlab/
 https://blog.sjtuxhw.top/tags/OS/
+https://blog.sjtuxhw.top/tags/Python/
 https://blog.sjtuxhw.top/tags/React/
 https://blog.sjtuxhw.top/tags/SQL/
 https://blog.sjtuxhw.top/tags/Database/
