@@ -1,3 +1,4 @@
+https://blog.sjtuxhw.top/technical/redis-starter/
 https://blog.sjtuxhw.top/technical/python-sci-starter/
 https://blog.sjtuxhw.top/technical/hilog-paper/
 https://blog.sjtuxhw.top/technical/xss/
@@ -48,8 +49,8 @@ https://blog.sjtuxhw.top/technical/cmake-advanced/
 https://blog.sjtuxhw.top/chat/my-cdn-services/
 https://blog.sjtuxhw.top/technical/algo-in-ai/
 https://blog.sjtuxhw.top/literary/2023-hdc/
-https://blog.sjtuxhw.top/gallery/2023-January/index.html
 https://blog.sjtuxhw.top/gallery/2023-April/index.html
+https://blog.sjtuxhw.top/gallery/2023-January/index.html
 https://blog.sjtuxhw.top/gallery/2023-July/index.html
 https://blog.sjtuxhw.top/gallery/2022-March/index.html
 https://blog.sjtuxhw.top/gallery/2022-June/index.html
@@ -80,13 +81,13 @@ https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-18th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-19th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-1st.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-22th.html
-https://blog.sjtuxhw.top/categories/index.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-11th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-14th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-16th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-21th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-23th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-7th.html
+https://blog.sjtuxhw.top/categories/index.html
 https://blog.sjtuxhw.top/about/index.html
 https://blog.sjtuxhw.top/friend-links/index.html
 https://blog.sjtuxhw.top/tags/index.html
@@ -122,6 +123,7 @@ https://blog.sjtuxhw.top/tags/Matlab/
 https://blog.sjtuxhw.top/tags/OS/
 https://blog.sjtuxhw.top/tags/Python/
 https://blog.sjtuxhw.top/tags/React/
+https://blog.sjtuxhw.top/tags/Redis/
 https://blog.sjtuxhw.top/tags/SQL/
 https://blog.sjtuxhw.top/tags/Database/
 https://blog.sjtuxhw.top/tags/MySQL/
