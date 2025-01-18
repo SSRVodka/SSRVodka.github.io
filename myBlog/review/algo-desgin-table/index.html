@@ -1,0 +1,542 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>算法设计知识点自查表 | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="四则运算、$\mathbf{Z}_N$ 下四则运算+幂运算复杂度；  欧几里得 GCD 递归复杂度证明；  拓展欧几里得算法求乘法逆元；  利用同余性质推算大数能否被整除；  费马小定理完整证明；  非 Carmichael 合数的费马测试证明；  对称加密、非对称加密、证书；  大师定理；  比较排序的时间下界证明（$n!$ 如何确定两边界？）；  快选算法在 25%-75% 判据下的时间复杂">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法设计知识点自查表">
+<meta property="og:url" content="https://blog.sjtuxhw.top/review/algo-desgin-table/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="四则运算、$\mathbf{Z}_N$ 下四则运算+幂运算复杂度；  欧几里得 GCD 递归复杂度证明；  拓展欧几里得算法求乘法逆元；  利用同余性质推算大数能否被整除；  费马小定理完整证明；  非 Carmichael 合数的费马测试证明；  对称加密、非对称加密、证书；  大师定理；  比较排序的时间下界证明（$n!$ 如何确定两边界？）；  快选算法在 25%-75% 判据下的时间复杂">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/algo-design-table.jpg">
+<meta property="article:published_time" content="2024-12-31T14:47:03.000Z">
+<meta property="article:modified_time" content="2025-01-18T15:03:36.201Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="Programming">
+<meta property="article:tag" content="Algorithms">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/algo-design-table.jpg"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.sjtuxhw.top/review/algo-desgin-table/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功 ヾ(≧∇≦*)ゝ',
+    error: '复制失败 (#`皿´)',
+    noSupport: '浏览器不支持 ╮(╯_╰)╭'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#333","bgDark":"#1f1f1f","position":"top-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '算法设计知识点自查表',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="/css/mouseConfig.css"/><link rel="stylesheet" href="/css/rightmenu.css"/><link rel="stylesheet" href="/css/custom_music.css"/><link rel="stylesheet" href="/css/addFonts.css"/><link rel="stylesheet" href="/css/titleFonts.css"/><link rel="stylesheet" href="/css/talk.css"/><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div id="main-loading-bg"><div class="truckWrapper"><div class="truckBody"><svg class="trucksvg" viewBox="0 0 198 93" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z" fill="currentColor" stroke="#282828" stroke-width="3"></path><path d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z" fill="#7D7C7C" stroke="#282828" stroke-width="3"></path><path d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z" fill="#282828" stroke="#282828" stroke-width="2"></path><rect x="187" y="63" width="5" height="7" rx="1" fill="#FFFCAB" stroke="#282828" stroke-width="2"></rect><rect x="193" y="81" width="4" height="11" rx="1" fill="#282828" stroke="#282828" stroke-width="2"></rect><rect x="6.5" y="1.5" width="121" height="90" rx="2.5" fill="#DFDFDF" stroke="#282828" stroke-width="3"></rect><rect x="1" y="84" width="6" height="4" rx="2" fill="#DFDFDF" stroke="#282828" stroke-width="2"></rect></svg></div><div class="truckTires"><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg></div><div class="road"></div><svg class="lampPost" fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 453.459 453.459" xml:space="preserve"><path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993 c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514 c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16 c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914 h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75 v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795 V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017 h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path></svg></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+      setTimeout(() => {
+        $loadingBox.style.display = 'none'
+      }, 800)
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()
+</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.sjtuxhw.top/cover_imgs/algo-design-table.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/head_icon.png" alt="Logo"><span class="site-name">SJTU-XHW's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">算法设计知识点自查表</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">算法设计知识点自查表</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-31T14:47:03.000Z" title="发表于 2024-12-31 22:47:03">2024-12-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-18T15:03:36.201Z" title="更新于 2025-01-18 23:03:36">2025-01-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/review/">review</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/review/algo-desgin-table/#post-comment"><span class="waline-comment-count" data-path="/review/algo-desgin-table/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><ol>
+<li><p>四则运算、$\mathbf{Z}_N$ 下四则运算+幂运算复杂度；</p>
+</li>
+<li><p>欧几里得 GCD 递归复杂度证明；</p>
+</li>
+<li><p>拓展欧几里得算法求乘法逆元；</p>
+</li>
+<li><p>利用同余性质推算大数能否被整除；</p>
+</li>
+<li><p>费马小定理完整证明；</p>
+</li>
+<li><p>非 Carmichael 合数的费马测试证明；</p>
+</li>
+<li><p>对称加密、非对称加密、证书；</p>
+</li>
+<li><p>大师定理；</p>
+</li>
+<li><p>比较排序的时间下界证明（$n!$ 如何确定两边界？）；</p>
+</li>
+<li><p>快选算法在 25%-75% 判据下的时间复杂度；</p>
+</li>
+<li><p>矩阵算法、计数逆序（及拓展）时间复杂度推导、算法设计；</p>
+</li>
+<li><p>有向图中，有自环等价于存在回边的证明；</p>
+</li>
+<li><p>DAG 中，最大 post number 意味着源点、最小 post number 意味着汇点；</p>
+<blockquote>
+<p>证明 DAG 中，至少有一个源点和一个汇点；</p>
+</blockquote>
+</li>
+<li><p>普通有向图中，最大 post number 意味着位于源点强连通部件内。但最小 post number 没有特性；</p>
+</li>
+<li><p>记忆：任何有向图的嵌图都是 DAG；</p>
+</li>
+<li><p>$G$ 中的源点强连通部件是 $G^R$ 中的汇点强连通部件；</p>
+</li>
+<li><p>证明：</p>
+<ul>
+<li><p>DFS explore 子过程若从 $u$ 开始，必然以 $u$ 及其所有可达结点遍历结束后结束（反证）；</p>
+</li>
+<li><p>$G$ 的两个不同的强连通部件 $C_1,C_2$，如果有从 $C_1$ 到 $C_2$ 的边，则 $C_1$ 的最大 post number 大于 $C_2$ 的最大 post number（不是所有），证明时讨论遍历开始的位置；</p>
+</li>
+<li>同第 14 条；</li>
+</ul>
+</li>
+<li><p>线性时间查找有向图强连通部件算法；</p>
+</li>
+<li><p>问题：</p>
+<ul>
+<li>线性时间找到有向图中能到达其他所有顶点的点（如果不存在需要指出）；</li>
+<li>线性时间判断无向图是否为二部图：证明使用着色法；</li>
+<li>线性时间判断有向图是否存在奇数个顶点的环：<strong><u>每个强连通子图</u></strong>上 DFS 二染色。对回边（好理解）/ 前向边 / 交叉边（如果强连通部件中从 $u$ 到 $v$ 间有两条道路，并且这两条道路奇偶数不同，因为违反染色规则了所以不同。则必然存在一个奇数环和一个偶数环）违反规则的情况认为是含有奇数顶点的环；</li>
+<li>线性时间找 DAG 中从指定顶点 $u$ 到 $v$ 的路径数目：从 $u$ DFS 遍历时，遇到无论什么边，只要是指向 $v$ 的，都让计数加一；</li>
+<li>线性时间判断 DAG 中的 Hamilton 路径的存在性：修改线序化算法。每次检查是否有多于一个入度为 0 的结点，如果是就不存在。</li>
+</ul>
+</li>
+<li><p>lemma：BFS 过程中，<strong>对每个 $d\in\mathbf{N}$，都总存在一个时刻，使得</strong>：</p>
+<ul>
+<li>所有与 $s$ 间距小于等于 $d$ 的顶点都被<strong><u>正确地</u></strong>设置了距离；</li>
+<li>其他顶点的距离都还未被设置（$+\infty$）;</li>
+<li>队列中只含有与 $s$ 间距为 $d$ 的顶点；</li>
+</ul>
+</li>
+<li><p>分析 d-堆、二叉堆、数组作为 Dijkstra 算法的优先级队列时的时间复杂度情况；</p>
+</li>
+<li><p>Dijkstra 算法：</p>
+<ul>
+<li>所有结点初始化距离为 $\infty$，只有源点是 0；然后对所有结点构建优先级队列；</li>
+<li>在队列不空时循环出队：<ul>
+<li>出队 $u$ 时，更新相邻结点距离。如果更小就覆盖（此举会改变相邻点在优先级队列中的位置），并且维护最短路径列表 <code>pre[]</code>（如果需要）；</li>
+</ul>
+</li>
+</ul>
+<p>时间复杂度：$|V|$ 次删除、$|V|+|E|$ 次 <code>decreaseKey</code>；</p>
+</li>
+<li><p>证明 Dijkstra 算法正确性：归纳假设</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/dijkstra-proof.png" width="250px" /></p>
+<ul>
+<li><p>预设：对于一个图 $G$，设定源点 $s$，希望测量的目标点 $v$，假定算法运行时已经设定距离（完整更新一轮邻居后的结果）的结点的集合为 $S$。下面对 $S$ 的大小与算法正确性归纳；</p>
+</li>
+<li><p>奠基：$|S|=1$ 的情况显然算法正确（$s$ 的最短距为 0）；</p>
+</li>
+<li><p>假设：假设对于 $|S|\ge1$ 的情况算法都是正确的；</p>
+</li>
+<li><p>归纳：进行下一轮邻居更新时，设更新到的结点 $v$ 将被加入 $S$，设 $(u,v)$ 是最后一条边。则 $s$ 至 $u$ 的最短路径一定位于 $S$ 中（算法正确性保证），记为 $dist[u]$，我们只需要证明 $dist[u]+l(u,v)$ 比其他任何 $s$ 到 $v$ 间的路径都短就行。</p>
+<ul>
+<li><p>假设 $(x,y)$ 是新一轮迭代中第一条边（最有可能更短），并且 $y$ 到 $v$ 右边。我们记 $s$ 到 $x$ 的路径为 $p^\prime$，则：</p>
+<p>$l(p^\prime)+l(x,y)\ge dist[u]+l(x,y)\ge dist[y]\ge dist[v]$；</p>
+<blockquote>
+<p>注意到，如果存在负边权，$dist[y]\ge dist[v]$ 不再成立，因为可能 $l(y,v)$ 是个绝对值很大的负数。</p>
+<p>这个时候如果需要更新 $v$，发现 $v$ 已经被弹出去了，没法更新了，因此 Dijkstra 算法在负权下不再是正确的了。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Bellman-Ford 算法：</p>
+<ul>
+<li>从源点开始，<u>同时地更新一次</u>（不能把这轮更新的信息用来更新其他结点）每条边的两端点的距离信息；</li>
+<li>重复上述动作 $|V|-1$ 次；</li>
+</ul>
+<p>时间复杂度 $O(|V||E|)$；</p>
+</li>
+<li><p>证明为何 Bellman-Ford 算法只需要重复更新 $|V|-1$ 次：</p>
+<ul>
+<li>因为从源点 $s$ 到任意一点 $t$ 的最短路径 $s\rightarrow v_1\rightarrow v_2\rightarrow\cdots\rightarrow v_k\rightarrow t$ 最多包含了 $|V|-1$ 个顶点（这条用反证法）。</li>
+<li>更新了 $|V|-1$ 次后，即便再多的更新都是安全的（$\min$ 不会变大），并且不会缺漏（顶点不会移除）；</li>
+</ul>
+</li>
+<li><p>如何检测负环？让 Bellman-Ford 算法在运行 $|V|-1$ 次后再进行一次，如果还有顶点的距离在变化，则说明有负环。</p>
+</li>
+<li><p>可以含负权的 DAGs 的单元最短路径算法：先拓扑排序，再按线序顺序更新结点的距离信息；</p>
+<p>时间复杂度：$O(|V|)$；</p>
+</li>
+<li><p>问题：</p>
+<ul>
+<li><p>强连通图的某点 $v_0$ 通过的边全部是正权的。找任意两点间的最短路，要求必须经过 $v_0$；</p>
+<blockquote>
+<p>先求 $v_0$ 为源的到各点的最短距离，然后 $dist(u,v_0)+dist(v_0,v)$；</p>
+</blockquote>
+</li>
+<li><p>无向正权图中有一条边 $e_0$，求含 $e_0$ 的最短环的长度；</p>
+<blockquote>
+<p>设 $e_0=(u,v)$，在 $G-e_0$ 中执行 Dijkstra 算法找到 $u$ 到 $v$ 的最短距离，加上 $l(e_0)$ 即可；</p>
+</blockquote>
+</li>
+<li><p>有向正权图的最短环？</p>
+<blockquote>
+<p>环是由 $u$ 到 $v$ 和 $v$ 到 $u$ 的路径拼接而成。</p>
+<p>先求每两个点间的最短路径（数组数据结构 $O(|V|^3)$），在遍历查找 $dist(u,v)+dist(v,u)$ 最小值；</p>
+</blockquote>
+</li>
+<li><p>有向正权图中最简最长路径？</p>
+<blockquote>
+<p>NP Hard 问题；可以将 Hamilton 图问题规约到这个问题。</p>
+</blockquote>
+</li>
+<li><p>无向正权图的最短环？</p>
+<blockquote>
+<p>遍历所有边，每轮循环时删除当前边，并且选取一端运行 Dijkstra 算法。如果另一端是可达的（不是 $\infty$，记为 $c_i$），那么说明原图中存在一个长度为 $c_i+l(e)$ 的环。遍历找长度最小的那个。</p>
+</blockquote>
+</li>
+<li><p>无向等权图中指定两点间最短路径数量？</p>
+<blockquote>
+<p>BFS 使用两个队列。类似 copy collection，最终在队列 1 中找到与 $u$ 相邻的结点终止。然后统计队列中还有哪些与 $u$ 相邻的结点。其数量即为所求。</p>
+<p>这个方法的原理是利用 BFS 的性质（参见第 20 条 lemma）：在每轮结束后队列中放的是相同长度的结点（分开放能确保下一轮的结点不会混入当前队列中）。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>证明 $|V|-1=|E|$ 的<u>无向连通图</u>等价于树数据结构；</p>
+<ul>
+<li><p>必要性：归纳。对顶点归纳的话，就是 $k$ 个顶点推 $k+1$ 个；对边归纳的话，就是向 $n$ 个顶点中加边看连通部件数是否减为 1；</p>
+</li>
+<li><p>充分性：反证。假设不是树，则必然存在环，重复去环得到 $|E^\prime|\lt|E|$，由必要性可知 $|E^\prime|=|V|-1=|E|$，矛盾；</p>
+</li>
+</ul>
+</li>
+<li><p>证明一个无向图是一棵树 当且仅当 任意两结点间有一条唯一路径；</p>
+<ul>
+<li>充分性：反证。如果不是就有环，违反定义；</li>
+<li>必要性：先判断是连通图，再反证。假设存在环，则存在两个结点间路径不唯一，矛盾；</li>
+</ul>
+</li>
+<li><p>Kruskal：向顶点中加尽可能小的边，成环就舍去。直至加够 $|V|-1$ 条；</p>
+</li>
+<li><p>割定理：割集间的最短边一定在最小生成树中：分类讨论 + 反证法；</p>
+</li>
+<li><p>Prim：顶点割集 + 顶点的策略。正确性由割定理保证；</p>
+</li>
+<li><p>上色算法求 MST：破圈（染红没有红边的环）、闭圈（染蓝没有蓝边的割边集合中最短边）；</p>
+</li>
+<li><p>证明贪婪算法作为近似算法求解 set cover 问题的近似比为 $\ln n$（设 $n_t$ 是 $t$ 轮选取后剩下的顶点数）；</p>
+</li>
+<li><p>01 背包和完全背包问题的状态转移方程、边界条件（出口）、时空复杂度；</p>
+</li>
+<li><p>多重背包问题（不含二进制优化）算法设计以及时间复杂度分析；</p>
+</li>
+<li><p>硬币找零问题最优解算法；</p>
+</li>
+<li><p>子序列系列问题：</p>
+<ul>
+<li>最长递增子序列：构造 DAG 再动归边；</li>
+<li>最长公共子序列、最长公共子串；</li>
+<li>分治法和动态规划分别求解 最大连续子序列（即子串）和（为什么讨论以 $a_i$ 结尾的子串？子串更适合这种方法！）；</li>
+</ul>
+</li>
+<li><p>三分问题的状态转移方程；</p>
+</li>
+<li><p>Shortest Reliable Path Lite：经过不超过指定边数的最短路径问题；</p>
+<blockquote>
+<p>和 Shortest Reliable Path 的 NP-Complete 问题不一样；</p>
+<p>详情参见第 50 条；</p>
+</blockquote>
+</li>
+<li><p>矩阵乘法最优分配：化归为二叉树，动归二叉树代价；</p>
+</li>
+<li><p>动态规划尝试解决 TSP 问题算法；</p>
+</li>
+<li><p>线性时间找出树的 independent set 大小：分类讨论，孙子结点可以在、儿子结点只能替代；</p>
+</li>
+<li><p>棋子放置问题：模式、相容 与动态规划；</p>
+</li>
+<li><p>DP 难题：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/dp-nb.png" /></p>
+<p>假设 $M[i,j,p,q]$ 表示对子串 $s[i]\sim s[j]$ 分割，涉及分割点在数组中 $d[p]\sim d[q]$，分割后的最小代价；</p>
+<p>状态转移方程：$M[i,j,p,q]=j-i+1+\min\limits_{p\le k\le q}\{M[i,d[k],p,k]+M[d[k]+1,j,k+1,q]\}$；</p>
+<p>算法复杂度 $O(m^2n^2)$；</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/dp-nb2.png" /></p>
+<p>设在 $x\times y$ 的布料上制作前 $i$ 个产品的最大价值为 $P(i,x,y)$，则状态转移方程为：</p>
+<script type="math/tex; mode=display">
+\left\{\begin{aligned}
+P_h(i,x,y)&=\max\{P(i-1,x,y),c_i+P(i,x-a_i,y)+P(i,x,y-b_i)+P(i,x-a_i,y-b_i)\}\\
+P_v(i,x,y)&=\max\{P(i-1,x,y),c_i+P(i,x-b_i,y)+P(i,x,y-a_i)+P(u,x-b_i,y-a_i)\}\\
+P(i,x,y)&=\max\{P_h(i,x,y),P_v(i,x,y)\}
+\end{aligned}\right.</script><p>主要注意到布料是可以旋转使用的！因此分为旋转后再裁剪（$P_v$）和不旋转直接裁剪（$P_h$）两种手段。</p>
+</li>
+<li><p>规范型线性规划转对偶式；</p>
+</li>
+<li><p>单纯形算法时间复杂度推导 $O(n(m+n)C_{m+n}^n)$；</p>
+</li>
+<li><p>单纯形算法求解多元线性规划；</p>
+</li>
+<li><p>最大流问题变式：</p>
+<ul>
+<li>含有多个源点和汇点的最大流问题：定义新的源点和汇点；</li>
+<li>每个顶点有流量限制：将每个顶点拆成两个，这两个顶点间用一条有向边连接，容量就是限制。转换成普通最大流问题；</li>
+<li>每条边在容量的基础上添加限制，要求流量不得低于某个限制。或者某些节点间存在流量损耗：直接规约成一般线性规划问题；</li>
+</ul>
+</li>
+<li><p>瓶颈边（增大会导致总流增大）、临界边（减小会导致总流减小）：注意它们俩是不一样的！！</p>
+</li>
+<li><p>查找临界边：</p>
+<ul>
+<li><p>剩余图中只有反向边的；</p>
+</li>
+<li><p>但也不全是。可能某条在最大流中流满的边，其容量下降后，最大流中缺少的流量可以从其他边的流量得到补充。通过在剩余图中 DFS 能通过的这些反向边就不是临界边，排除它们即可。</p>
+</li>
+</ul>
+</li>
+<li><p>证明：二部图的最小顶点覆盖能够被规约为最大流问题。</p>
+</li>
+<li><p>边不相交问题（化归为最大流问题，需要证明）；</p>
+</li>
+<li><p>常见 NP-Complete 问题规约：</p>
+<ul>
+<li>稠密子图问题（a 个顶点中至少 b 条边）：$b=\dfrac{a(a-1)}{2}$，从最大团问题规约；</li>
+<li>稀疏子图问题（a 个顶点中至多 b 条边）：$b = 0$，从最大独立集问题规约；</li>
+<li>集合覆盖问题：从顶点覆盖规约（子问题，一个元素只会同时存在于两个集合中）；</li>
+<li>子图同构问题（G 能否只通过删除一些点、边，修改名称来得到 H）：从哈密顿回路规约（构造图 G 是一个 N 元环，N 为输入图的顶点数）；</li>
+<li>最大公共子图（同时删除 G 和 H 一些点和对应边，使二者相同，预算 b）：从最大独立集规约；</li>
+<li>哈密顿回路、哈密顿道路相互规约；</li>
+<li>最长初级路径（simple longest path）：从哈密顿路径规约；</li>
+<li>K-Coloring 问题：从 3-SAT 问题规约（构建 OR-gadget 和 Clause gadget）；</li>
+<li>可靠网络问题（shortest reliable path，给定顶点、距离矩阵(边权)、连接需求(重边数量)、预算，构建一个总代价不超过预算、两点间的不同路径数等于对应连接需求的图）：从 TSP 问题规约（预算 $b=n$，距离矩阵全为 1 或 2，表示有边和没有边，连接需求全为 2，表示在环上）；</li>
+</ul>
+</li>
+<li><p>近似算法解决 NP 问题：</p>
+<ul>
+<li>贪婪算法求解集合覆盖问题。近似比 $ln n$；</li>
+<li>极大匹配算法（贪婪选取尽可能多的 endpoints 的边，然后删除共享 endpoints 的边）求解顶点覆盖问题。近似比 2；</li>
+<li>贪婪算法求解 k-clustering 问题：先任取一个点作为第一个中心，然后每次取离当前点最远的，中垂线分割。近似比为 2；</li>
+<li>MST + skip 近似 metric-space-TSP 问题：近似大小不大于最小生成树长度两倍。而最优解不不小于最小生成树长度。因此近似比为 2；</li>
+<li>rescale value 近似背包问题：缩小 $\hat{v_i}=\dfrac{n}{\varepsilon v_{\max}}$，总价值 $\sum v_i\ge\sum\hat{v_i}=K^\star(1-\varepsilon)$，即近似比为用户指定的任意接近；</li>
+</ul>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top/review/algo-desgin-table/">https://blog.sjtuxhw.top/review/algo-desgin-table/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Programming/">Programming</a><a class="post-meta__tags" href="/tags/Algorithms/">Algorithms</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/algo-design-table.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/technical/java-adv-3/" title="Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/java-adv-3.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Java 进阶（三）：垃圾回收、并发、JDNI & SPI</div></div><div class="info-2"><div class="info-item-1">Chapter 7. Java Concurrent7.1 Usage读者回忆一下在计算机系统课程中学习的关于 thread 和 process 的知识，最好能够在心中对比一下在 C/C++ 中使用线程和进程。 我们本节的目的是在 Java 中使用线程。两种方法：  使用 Runnable Interface： 重写 public void run() 方法； 将这个类的实例作为 Thread  类型的构造参数。构造完成后启动 Thread#start() 即可；   继承于 Thread Class； 重写 public void run() 方法； 直接启动：Thread#start()；    注意，我们需要特别处理 InterruptedException：  Java 多线程程序中，我们应该总是考虑这种 exception。这意味着外部有人正在希望以一种优雅的方式结束当前线程（就是对当前线程对象 Thread#interrupt()），并且可能正在通过 Thread#join()...</div></div></div></a><a class="pagination-related" href="/technical/redis-starter/" title="Redis 入门：从实践到理论"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/redis.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Redis 入门：从实践到理论</div></div><div class="info-2"><div class="info-item-1">Chapter 1. 基本概念和 CLI 使用1.1 NoSQL用于存储非结构化数据，不保证 ACID 事务特性（仅有最终一致性 Weak Consistency Model）。 Redis（Remote Dictionary Server）就是一类基于内存的键值型 NoSQL，不保证数据一致性，但可以保证性能。  一种 KVStore System，可以方便的存放非结构化数据，这对于缓存各异性数据非常有帮助；  Handle 网络请求多线程。处理指令单线程，单个指令具有原子性；  低延迟，利用 I/O Multiplexing 在单线程中处理多个请求； 支持数据持久化； 支持主从集群（从备份，读写分离）和分片集群（数据拆分，存储上限提高）；  1.2 Redis Data StructureRedis Key 一般使用 String，Value 支持：  基本类型：String、Hash、List、Set、SortedSet； 特殊类型：GEO（地理位置信息格式）、BitMap（位图）、HyperLog；  1.3 Basic Redis CLI Commands1.3.1...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/review/csapp-basic/" title="CSAPP Notes Basic"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-17</div><div class="info-item-2">CSAPP Notes Basic</div></div><div class="info-2"><div class="info-item-1">written by SJTU-XHW Reference:  CMU - 213, Computer Systems A Programmer’s Perspective 3rd Edition by Randal Bryant, David O’Hallaron 本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！ 内容很长，写起来很慢 😳   Chapter 0. Intro0.1 Ints are not Integers, Floats are not Reals $x^2\ge 0$：int（32-bit）may overflow； $a+(b+c)=(a+b)+c$：floats may discard some “unsignificant” digits；  0.2 Learn Assembly but never write it0.3 Memory Matters: Unbounded1234567891011121314typedef struct &#123;    int a[2];    double d;&#125;...</div></div></div></a><a class="pagination-related" href="/review/csapp-ecf-io/" title="CSAPP Notes: ECF &amp; I&#x2F;O"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp-ecf.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-16</div><div class="info-item-2">CSAPP Notes: ECF &amp; I&#x2F;O</div></div><div class="info-2"><div class="info-item-1">Chapter 13. Exceptional Control Flow 对应书中第 8 章。  异常控制流是现代计算机系统的一个相当重要的部分。 13.1 Control Flow 控制流：从机器打开到关闭的过程中，处理器只做一件事：读指令、执行指令，一个周期做一个指令。多核的机器则每个核心依次交替执行指令。这些指令序列被称为控制流。硬件正在执行的实际指令序列就被称为物理控制流。  改变内存中控制流的方法：分支 &amp; 跳转，过程调用 &amp; 返回（Branches &amp; Jumps &amp; Procedure call and return）；  都是对于程序状态变化的处理。    但以上的简单的改变控制流的方法对于处理复杂的系统级别的状态变化时，就显得非常拙劣。（例如 OS 协同软硬件的通信，如果还是以 if-else 的方法，那将会非常差劲）； 什么是 “系统级别的状态变化”？  数据从磁盘 / 网卡到达内存中； I/O 设备输入...</div></div></div></a><a class="pagination-related" href="/review/csapp-mm-cache/" title="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp-mh.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-10</div><div class="info-item-2">CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt</div></div><div class="info-2"><div class="info-item-1">Chapter 10. The Memory Hierarchy 本章将介绍系统的内存分层架构。  之前几章，我们对于内存的理解就是一个很大的字节数组，可以用地址作为下标进行访问。但事实上，真正的计算机的存储系统背后的设备层次结构设计远比这层抽象要复杂。 正是计算机的存储系统的层次结构对有限、离散资源的管理和抽象，才能让程序的内存看起来呈现出这种线性的数组结构。本章就来讨论计算机存储系统背后的层次结构。 10.1 Storage Technologies &amp; Trends在正式学习存储系统的层次结构前，有必要稍微弄清楚底层硬件的情况。 10.1.1 Random-Access Memory (RAM)当前大多数人所熟知的 “内存” 的一部分就是随机访问存储器（RAM），它具有以下的特征：  RAM 是个存储元件，I/O 吞吐速率快于绝大多数硬盘固件/磁盘（称为 “外存”）；  RAM 常常被打包放在 CPU 芯片中；  RAM 中每一个基本的存储单元被称为 单元胞（Cell），一个单元胞中存放 1 bit 数据；  很多个 RAM 芯片共同工作，组成了计算机的...</div></div></div></a><a class="pagination-related" href="/review/csapp-sched-arch/" title="CSAPP Notes: Scheduler &amp; Arch"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp_p2.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-11</div><div class="info-item-2">CSAPP Notes: Scheduler &amp; Arch</div></div><div class="info-2"><div class="info-item-1">Chapter 8. Scheduler in OS为操作系统的调度环境作出假设：  Each job runs for the same amount of time All jobs arrive at the same time Once started, each job runs to completion All jobs only use the CPU  i.e., they perform no I/O   The run-time of each job is known  引入调度优劣衡量指标：周转时间，$T_{turnaround}=T_{completion}-T_{arrival}$； Strategy 1: FIFO（FCFS，First Come First Served） Implementation: queue； 消除假设 1：若短时任务排在长时任务之后，则平均周转时间效果很差；  Strategy 2 : SJF（Shortest Job First） 内容：对于同时到达的任务，优先选择总时长小的任务。 作用：（应对假设 1...</div></div></div></a><a class="pagination-related" href="/technical/gnu-tutor/" title="GNU-Tutor"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/GNU-Tutor.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="info-item-2">GNU-Tutor</div></div><div class="info-2"><div class="info-item-1">基础：C/C++的源文件编译过程 想要代码在操作系统上运行，需要进行以下编译步骤，从高级语言转机器语言，以下任务gcc/g++均能完成：  预编译（.c/cpp &amp; .h —&gt; .i ）：*对应gcc/g++命令：gcc -E [xxx] -o [output.i] 展开所有宏定义#define（字符替换）； 处理所有条件预编译命令（#ifdef、#ifndef、#endif等）； 处理#include，具体操作是将指向的文件直接插入到文件的这一行（严格遵循上一步的条件）； 删除所有注释； 添加行号、文件标识，以便调试/编译出错时及时指出； 保留#pragma指令，以供编译器使用；   编译（.i —&gt; .s ，即高级语言转汇编语言）：对应gcc/g++命令：gcc -S [xxx] -o...</div></div></div></a><a class="pagination-related" href="/technical/git-learning/" title="Git学习笔记"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/git.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="info-item-2">Git学习笔记</div></div><div class="info-2"><div class="info-item-1">Chapter 0. The history of version control systems Local Version Control Systems  downsides: It is easy to forget which directory you’re in and accidentally write to the wrong file or copy over files you don’t mean to.   Centralized Version Control Systems  downsides:   the single point of failure that the centralized server represents  if the hard disk the central database is on becomes corrupted, and  proper backups haven’t been kept, you lose absolutely everything (Local VCSs suffer from...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">SJTU-XHW</div><div class="author-info-description">A blog to document learning and life</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://blog.sjtuxhw.top/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! |•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/technical/java-adv-3/" title="Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/java-adv-3.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI"/></a><div class="content"><a class="title" href="/technical/java-adv-3/" title="Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI">Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI</a><time datetime="2025-01-06T05:44:06.000Z" title="发表于 2025-01-06 13:44:06">2025-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/review/algo-desgin-table/" title="算法设计知识点自查表"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/algo-design-table.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="算法设计知识点自查表"/></a><div class="content"><a class="title" href="/review/algo-desgin-table/" title="算法设计知识点自查表">算法设计知识点自查表</a><time datetime="2024-12-31T14:47:03.000Z" title="发表于 2024-12-31 22:47:03">2024-12-31</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/redis-starter/" title="Redis 入门：从实践到理论"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/redis.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis 入门：从实践到理论"/></a><div class="content"><a class="title" href="/technical/redis-starter/" title="Redis 入门：从实践到理论">Redis 入门：从实践到理论</a><time datetime="2024-11-12T13:05:37.000Z" title="发表于 2024-11-12 21:05:37">2024-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/python-sci-starter/" title="Python 科学计算入门"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/python_sci.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Python 科学计算入门"/></a><div class="content"><a class="title" href="/technical/python-sci-starter/" title="Python 科学计算入门">Python 科学计算入门</a><time datetime="2024-11-03T11:08:13.000Z" title="发表于 2024-11-03 19:08:13">2024-11-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/hilog-paper/" title="OpenHarmony Hilog 架构趣读"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/hilog-paper.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OpenHarmony Hilog 架构趣读"/></a><div class="content"><a class="title" href="/technical/hilog-paper/" title="OpenHarmony Hilog 架构趣读">OpenHarmony Hilog 架构趣读</a><time datetime="2024-10-29T05:14:04.000Z" title="发表于 2024-10-29 13:14:04">2024-10-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2025 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>Built With love &amp; </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Powered By </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><div style="display:flex;flex-flow:row;justify-content:center;align-items:center;"> <a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <span class="footer-separator">|</span> <a style="display:flex;flex-flow:row;align-items:center;" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> 本网站由 <img style="margin:0 3px;" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/upCloud_logo_blue.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"emoji":["https://unpkg.com/@waline/emojis@1.2.0/tw-emoji","https://unpkg.com/@waline/emojis@1.2.0/tieba"],"locale":{"reactionTitle":"你认为这篇文章怎么样？","placeholder":"给大佬递笔 XP\n[ Akismet AI Filter 🤖 ON ]"},"reaction":["https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsup.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsdown.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_antic.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_cool.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_sleepy.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_emm.gif"]}
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://waline.sjtuxhw.top/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script src="/js/rightmenu.js"></script><script src="/js/mourn.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

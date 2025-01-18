@@ -1,0 +1,896 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Chapter 7. Java Concurrent7.1 Usage读者回忆一下在计算机系统课程中学习的关于 thread 和 process 的知识，最好能够在心中对比一下在 C&#x2F;C++ 中使用线程和进程。 我们本节的目的是在 Java 中使用线程。两种方法：  使用 Runnable Interface： 重写 public void run() 方法； 将这个类的实例作为 Thread">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI">
+<meta property="og:url" content="https://blog.sjtuxhw.top/technical/java-adv-3/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="Chapter 7. Java Concurrent7.1 Usage读者回忆一下在计算机系统课程中学习的关于 thread 和 process 的知识，最好能够在心中对比一下在 C&#x2F;C++ 中使用线程和进程。 我们本节的目的是在 Java 中使用线程。两种方法：  使用 Runnable Interface： 重写 public void run() 方法； 将这个类的实例作为 Thread">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/java-adv-3.jpg">
+<meta property="article:published_time" content="2025-01-06T05:44:06.000Z">
+<meta property="article:modified_time" content="2025-01-18T15:03:54.801Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="Programming">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="GC">
+<meta property="article:tag" content="Concurrent">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/java-adv-3.jpg"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.sjtuxhw.top/technical/java-adv-3/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功 ヾ(≧∇≦*)ゝ',
+    error: '复制失败 (#`皿´)',
+    noSupport: '浏览器不支持 ╮(╯_╰)╭'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#333","bgDark":"#1f1f1f","position":"top-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Java 进阶（三）：垃圾回收、并发、JDNI & SPI',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="/css/mouseConfig.css"/><link rel="stylesheet" href="/css/rightmenu.css"/><link rel="stylesheet" href="/css/custom_music.css"/><link rel="stylesheet" href="/css/addFonts.css"/><link rel="stylesheet" href="/css/titleFonts.css"/><link rel="stylesheet" href="/css/talk.css"/><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div id="main-loading-bg"><div class="truckWrapper"><div class="truckBody"><svg class="trucksvg" viewBox="0 0 198 93" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z" fill="currentColor" stroke="#282828" stroke-width="3"></path><path d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z" fill="#7D7C7C" stroke="#282828" stroke-width="3"></path><path d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z" fill="#282828" stroke="#282828" stroke-width="2"></path><rect x="187" y="63" width="5" height="7" rx="1" fill="#FFFCAB" stroke="#282828" stroke-width="2"></rect><rect x="193" y="81" width="4" height="11" rx="1" fill="#282828" stroke="#282828" stroke-width="2"></rect><rect x="6.5" y="1.5" width="121" height="90" rx="2.5" fill="#DFDFDF" stroke="#282828" stroke-width="3"></rect><rect x="1" y="84" width="6" height="4" rx="2" fill="#DFDFDF" stroke="#282828" stroke-width="2"></rect></svg></div><div class="truckTires"><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg></div><div class="road"></div><svg class="lampPost" fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 453.459 453.459" xml:space="preserve"><path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993 c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514 c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16 c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914 h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75 v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795 V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017 h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path></svg></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+      setTimeout(() => {
+        $loadingBox.style.display = 'none'
+      }, 800)
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()
+</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.sjtuxhw.top/cover_imgs/java-adv-3.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/head_icon.png" alt="Logo"><span class="site-name">SJTU-XHW's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-01-06T05:44:06.000Z" title="发表于 2025-01-06 13:44:06">2025-01-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-18T15:03:54.801Z" title="更新于 2025-01-18 23:03:54">2025-01-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">15.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>50分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/technical/java-adv-3/#post-comment"><span class="waline-comment-count" data-path="/technical/java-adv-3/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Chapter-7-Java-Concurrent"><a href="#Chapter-7-Java-Concurrent" class="headerlink" title="Chapter 7. Java Concurrent"></a>Chapter 7. Java Concurrent</h1><h2 id="7-1-Usage"><a href="#7-1-Usage" class="headerlink" title="7.1 Usage"></a>7.1 Usage</h2><p>读者回忆一下在计算机系统课程中学习的关于 thread 和 process 的知识，最好能够在心中对比一下在 C/C++ 中使用线程和进程。</p>
+<p>我们本节的目的是在 Java 中使用线程。两种方法：</p>
+<ul>
+<li>使用 <code>Runnable</code> Interface：<ol>
+<li>重写 <code>public void run()</code> 方法；</li>
+<li>将这个类的实例作为 <code>Thread</code>  类型的构造参数。构造完成后启动 <code>Thread#start()</code> 即可；</li>
+</ol>
+</li>
+<li>继承于 <code>Thread</code> Class；<ol>
+<li>重写 <code>public void run()</code> 方法；</li>
+<li>直接启动：<code>Thread#start()</code>；</li>
+</ol>
+</li>
+</ul>
+<p>注意，我们需要特别处理 <code>InterruptedException</code>：</p>
+<ul>
+<li><p>Java 多线程程序中，我们应该总是考虑这种 exception。这意味着外部有人正在希望以一种优雅的方式结束当前线程（就是对当前线程对象 <code>Thread#interrupt()</code>），并且可能正在通过 <code>Thread#join()</code> 等待；</p>
+</li>
+<li><p>不应该在捕获这个异常的时候直接抛出另外一种异常（混淆原因），或者直接忽略（外部线程可能正在等待结束！）；</p>
+</li>
+<li><p>根据方法自身的含义，一般有两种解决方案：</p>
+<ol>
+<li>继续向上传播这个异常（当你的方法本身就是一个耗时操作 / 网络操作或者其他情况）；</li>
+<li>捕获这个异常、设置当前线程被 interrupted 的 flag（方便 log 溯源）：<code>Thread.currentThread.interrupt()</code>，并且准备结束；</li>
+</ol>
+<p>然后处理当前类中需要回收 / 处理的资源。无论是哪一种方法，都需要遵循当前方法的语义：“调用它出现 <code>InterruptException</code> 这种情况是否合理？”</p>
+</li>
+</ul>
+<h2 id="7-2-Synchronized-Methods"><a href="#7-2-Synchronized-Methods" class="headerlink" title="7.2 Synchronized Methods"></a>7.2 Synchronized Methods</h2><p>Java 线程中的设定和 C/C++ 是类似的，它也会共享线程间的资源，不过 Java 没有指针，只是通过引用共享的。因此会遇到和 C/C++ 一样的问题。</p>
+<p>就以共享静态变量为例，多线程同时操作共享静态变量会导致未定义的行为（race condition）。</p>
+<p>在 C/C++ 中，一般会通过设立临界区（信号量 semaphore）或互斥锁（mutex）来锁定共享变量，确保同一时间只有一个/指定数量的线程可以访问。</p>
+<p>在 Java 中，提供了一种修饰方法的关键字 <code>synchronized</code>，其作用是：</p>
+<ol>
+<li><p>被该关键字修饰的方法，其所在的类型的任意一个对象，只能被一个线程调用被这个关键字修饰的方法。</p>
+<p>也就是说，相当于在这个方法的类上设一个互斥锁（被称为 intrinsic lock 固有锁，或者 monitor lock），把这个类中所有被 <code>synchroized</code> 修饰的方法锁住；</p>
+</li>
+<li><p>当一个线程退出了一个对象的 synchronized 方法，则会与这个对象其他的 synchronized 方法建立一个 happens-before relationship，以确保对象被使用的状态能被所有线程知道；</p>
+</li>
+</ol>
+<p>如果 <code>synchronized</code> 修饰在静态方法上，那么锁住的就是与 intrinsic lock 关联的 class 实例，而不是它的实例的实例。也就是对这个类中静态域的访问会被控制，需要与实例方法的 <code>synchronized</code> 区分开。</p>
+<p>Java 甚至支持到 statement 细粒度的 <code>synchronized</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addName</span><span class="params">(String name)</span> &#123;</span><br><span class="line">    <span class="comment">// 这里保护实例属性的并发访问（this）</span></span><br><span class="line">    <span class="comment">// 如果需要保护静态成员，则需要将关键字定义在静态方法上</span></span><br><span class="line">    <span class="comment">// 或者括号内使用 Class 元类型的实例</span></span><br><span class="line">    <span class="keyword">synchronized</span>(<span class="built_in">this</span>) &#123;</span><br><span class="line">        lastName = name;</span><br><span class="line">        nameCount++; </span><br><span class="line">    &#125; </span><br><span class="line">    nameList.add(name); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="7-3-Reentrant-Synchronization"><a href="#7-3-Reentrant-Synchronization" class="headerlink" title="7.3 Reentrant Synchronization"></a>7.3 Reentrant Synchronization</h2><p>Java 中提供了一类可重入锁，可以让获得锁的同一个线程多次访问临界资源：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 注意，如果需要保护类的静态成员，则应该将锁也定义为静态成员</span></span><br><span class="line"><span class="type">Lock</span> <span class="variable">lock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ReentrantLock</span>();</span><br><span class="line"></span><br><span class="line">lock.lock();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">//更新对象状态</span></span><br><span class="line">    <span class="comment">//捕获异常，并在必须时恢复不变性条件</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">   e.printStackTrace();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">   lock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="7-4-Atomic-Access-amp-Keyword-volatile"><a href="#7-4-Atomic-Access-amp-Keyword-volatile" class="headerlink" title="7.4 Atomic Access &amp; Keyword volatile"></a>7.4 Atomic Access &amp; Keyword <code>volatile</code></h2><p>Java 中原生的单步原子访问操作包含：</p>
+<ul>
+<li><p>针对引用变量的读写、大多数基本类型的读 <strong><u>或</u></strong> 写（除了 <code>long</code> / <code>double</code>）；</p>
+</li>
+<li><p>被 <code>volatile</code> 关键字修饰的所有变量的读 <strong><u>或</u></strong> 写（包括 <code>long</code> 和 <code>double</code>）；</p>
+<blockquote>
+<p><code>volatile</code> 的本质是，程序在访问一个被它修饰的变量后，会<strong><u>直接进入 main memory 读取，而不会使用寄存器 / 线程本地缓存</u></strong>；相当于告诉 JVM 这个变量可能会在当前线程的控制流以外的地方被更改。</p>
+<p>它会确保当一个线程修改了一个变量时，其他线程能够立即看到这个修改。</p>
+<p>底层是通过<u>禁止指令重排序和 memory barrier（如 x86-64 的 <code>fence</code> 族指令）</u> 等机制来实现的。</p>
+</blockquote>
+</li>
+</ul>
+<p>Java 的原子访问操作可以：</p>
+<ul>
+<li>保证多线程操作一个数据时值不会错误的改变（写操作字节码指令会一次性执行完），降低 memory inconsistency 的风险；</li>
+<li>保证各个线程总是能读到关于这个值最新情况（读操作字节码指令会读到最新的情况并且一次性执行完）；</li>
+</ul>
+<p>那么，<strong><u>为什么 Java 既然有内置 <code>Atomic</code> Classes、锁、synchronous 关键字等等同步机制，为什么还需要 volatile 关键字</u></strong>？</p>
+<p>问出这个问题就说明你将 “多线程原子操作”（也称 “同步”）和这里的 “单步原子访问操作” 的概念混淆了。</p>
+<ul>
+<li>单步原子操作是指，Java 中的一条基本字节码指令（例如读一次内存、写一次内存）会不会被 CPU（其他线程）从中间打断、打乱；</li>
+<li>多线程原子操作通常讨论的是一条/一系列 Java 代码的执行（例如从获取内存中的共享变量值到自增写回的这个流程）会不会被 CPU（其他线程）从中间打断；</li>
+</ul>
+<p>我们发现，满足单步原子访问操作是满足多线程原子操作的<u>必要不充分条件</u>。因此底层在实现多线程同步机制时，一定已经实现了单步原子访问的操作（及时刷到内存中）。</p>
+<p>单步的原子操作是<strong><u>由语言本身以及硬件指令的特征决定</u></strong>。在 Java 中，为了保证灵活性还向上提供了 <code>volatile</code> 关键字，相当于告诉 JVM 和 CPU，被它修饰的变量一是不能放在寄存器中/缓存下来，二是它需要满足单步原子操作（不能乱序执行）。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/volatile.png" width="350px" /></p>
+<p>而多线程原子操作则需要开发者按照程序语义，利用同步机制手动指定代码片段的临界区，即同一时刻的访问控制。</p>
+<p>总结一下，你只需要记住这些：</p>
+<ul>
+<li><code>volatile</code> 保证 Java 多线程对某个变量的读、写是及时的（不使用寄存器、不使用线程缓存、禁止指令乱序），一定能被下一条指令 / 其他线程感知到；</li>
+<li>其他的同步操作，保证 Java 代码片段执行期间的临界特性（不会有另一个线程同时执行相同代码）；</li>
+<li>为共享变量加锁（或者其他同步机制）之后，就不再需要 <code>volatile</code> 关键字了（后者是前者的必要不充分条件）；</li>
+</ul>
+<p>因此，只有在<u>没有多线程同步的需求</u>（<code>volatile</code> 不保证同一线程对变量的一系列操作是原子的），但是又要保证对某一个变量的读和写是准确、及时的时候，可以使用 <code>volatile</code> 关键字，例如状态标志、简单的布尔变量等，这样不需要加锁，规避了死锁以及性能问题。</p>
+<blockquote>
+<p>注意：C/C++ 中的 <code>volatile</code> 关键字的含义与 Java 有些差异。</p>
+<p>它只是告诉 Compiler 不要优化被修饰的变量，并且把它放在内存中，每次读写都直接对内存操作。常用在嵌入式 / 绕过编译器进行内存映射等场景中。</p>
+<p>这里没有单步原子操作的说法，因为 C/C++ 编译结束后直接就是机器码。</p>
+</blockquote>
+<h2 id="7-5-Dead-Lock-Starvation-Live-Lock"><a href="#7-5-Dead-Lock-Starvation-Live-Lock" class="headerlink" title="7.5 Dead Lock, Starvation, Live Lock"></a>7.5 Dead Lock, Starvation, Live Lock</h2><p>无论是死锁还是活锁，都是指多个线程之间因互相请求访问资源而导致程序无法继续执行的情况。</p>
+<p>它们的不同点是：</p>
+<p>对于死锁，它发生的情况是多个线程或进程在互相等待对方释放资源时，自己又不会主动释放自己占有的资源，导致程序永远无法继续的情况。</p>
+<blockquote>
+<p>例如，假设一个程序的两个线程 A 和 B，A 先获得了一个资源 X 并给它上锁，B 获得了另一个资源 Y 也给它上了锁。但是接下来 B 需要资源 X 才能继续、A 又需要 Y 才能继续。所以二者相互等待对方释放资源锁，造成了死锁；</p>
+</blockquote>
+<p>对于活锁，线程并不会阻塞在原地，而是反复地在释放资源和获取资源间横跳，这主要是因为程序有处理资源访问冲突的机制，但是两个存在活锁的线程相互处理访问冲突的时候又造成了访问冲突，也无法继续下去。</p>
+<blockquote>
+<p>例如一个程序的线程 A 和 B，假设 A 先获得了一个资源 X 并给它上锁，B 获得了另一个资源 Y 也给它上了锁。A 想要获取资源 Y 的时候发现 B 占用了，于是 A 主动释放了资源 X 给 B，自己去获取资源 Y；但是此时 B 也主动释放了 Y 资源，去获取 X 资源，双方只是调换了资源持有的顺序，仍然无法继续执行。</p>
+</blockquote>
+<p>线程饥饿是指，因为共享资源调度策略的问题，造成某些线程一直无法获得执行的机会而近乎停止执行，而另一些线程则一直占用共享资源不释放。</p>
+<h2 id="7-6-Condition-Variable-in-Java-Guarded-Blocks"><a href="#7-6-Condition-Variable-in-Java-Guarded-Blocks" class="headerlink" title="7.6 Condition Variable in Java: Guarded Blocks"></a>7.6 Condition Variable in Java: Guarded Blocks</h2><p>在 Java 中，和 C/C++ 的 condition variable 对应的、在 blocks 前通过某些方式检查（例如轮询）一些条件再决定执行的，线程动作同步的术语被称为 guarded block。</p>
+<p>Java 中被 <code>synchrounous</code> 修饰的方法可用 <code>Object#wait()</code> 和 <code>Object#notify*() / notifyAll()</code> 来实现与 condition variable 相似的效果。</p>
+<ul>
+<li><code>Object#wait()</code>：此时会设置等待的信息、放锁并且挂起当前线程（不是 spin lock）；</li>
+<li><code>Object#notify / notifyAll()</code>：另一个线程可以通过访问当前对象的这两个方法来唤醒等待在 intrinsic lock 上的线程，把锁交给它们；</li>
+</ul>
+<p>我们可以利用 guarded blocks 模仿 condition variable 的做法实现生产者消费者模式。</p>
+<h2 id="7-7-Immutable-Objects"><a href="#7-7-Immutable-Objects" class="headerlink" title="7.7 Immutable Objects"></a>7.7 Immutable Objects</h2><p>在很多实际情况下，不可变数据类型的好处：</p>
+<ul>
+<li><p>复制构造时，不是引用传递，因此是深拷贝。这样使用起来和基本类型一样方便，但是又不用担心改错源数据（非引用链接）；</p>
+</li>
+<li><p>确保数据在多线程情况下无需同步，线程安全！</p>
+</li>
+</ul>
+<p>我们在 Java Bean &amp; Record 一节已经讨论过。不可变类的定义：一个类满足如下三个条件：</p>
+<ul>
+<li>类型中的每个数据域都是 <u>私有的、常量的</u>（<code>private</code>，<code>final</code>）；</li>
+<li>每个数据域都只能通过 <code>getter</code> 方法获取，不能有任何 <code>setter</code> 方法，并且没有“返回值是指向可变数据域的引用”的 <code>getter</code> 方法；</li>
+<li>必须存在公有构造函数，并且构造函数内初始化各个数据域（常量只能这么做）；</li>
+<li>Object 基类继承函数 <code>equals</code> 返回 <code>true</code> 当且仅当类中的每个数据域都相等；</li>
+<li>Object 基类继承函数 <code>hashCode</code> 在类中的每个数据域都相等时，一定返回一样的值；</li>
+<li>Object 基类继承函数 <code>toString</code> 最好包含 类名 和 每个数据域的名称和值； </li>
+</ul>
+<p><strong>因此如果有一个类数据域都私有、没有修改器方法，但有一个方法：返回内部一个可变数据域的引用（例如数组），则这个类也是可变类</strong>；</p>
+<h2 id="7-8-High-Level-Concurrency-Objects"><a href="#7-8-High-Level-Concurrency-Objects" class="headerlink" title="7.8 High Level Concurrency Objects"></a>7.8 High Level Concurrency Objects</h2><p>Java 中包装了一些高级并发对象：</p>
+<h3 id="7-8-1-Lock-Objects"><a href="#7-8-1-Lock-Objects" class="headerlink" title="7.8.1 Lock Objects"></a>7.8.1 Lock Objects</h3><p>Lock Objects：对常见的并发场景提供了简单的保护；</p>
+<blockquote>
+<p>例如 <code>ReentrantLock</code>（可重入锁），</p>
+<p>可以使用 <code>tryLock()</code> 获取锁、<code>unlock()</code> 释放锁。</p>
+<p>和 Intrinsic Lock 机制很相似（包括持有规则、通过关联的 Condition 对象 notify/wait）相比更好的一点是 “允许 try”，也就是获取锁不成功的话还可以回到获取锁前的执行状态。</p>
+</blockquote>
+<h3 id="7-8-2-Executors"><a href="#7-8-2-Executors" class="headerlink" title="7.8.2 Executors"></a>7.8.2 Executors</h3><blockquote>
+<p>创建一个新的线程可以通过继承 Thread 类或者实现 Runnable 接口来实现，这两种方式创建的线程在运行结束后会被虚拟机销毁，进行垃圾回收，如果线程数量过多，频繁的创建和销毁线程会浪费资源，降低效率。而线程池的引入就很好解决了上述问题，线程池可以更好的创建、维护、管理线程的生命周期，做到复用，提高资源的使用效率，也避免了开发人员滥用 new 关键字创建线程的不规范行为。</p>
+<p>在实际生产中，一般企业内部会规定编码规范。例如 Aliyun 指出，线程资源必须通过线程池提供，不允许在应用中显式的创建线程。如果不使用线程池，有可能造成系统创建大量同类线程而导致消耗完内存或者“过度切换”的问题。</p>
+</blockquote>
+<p>Executors：为启动、管理线程提供了更高级的 API，可以使用线程池机制为大规模并发应用提供支持；</p>
+<p>将线程创建、管理的工作从应用业务逻辑中剥离。Java 中的 Executor 就是来包装这个的接口。</p>
+<p>其中，有一些框架 / 库可以实现 Executor 接口。例如：</p>
+<ul>
+<li>Thread Pools：线程池，最常见的对于 Executor 的 implementation；</li>
+<li>Fork/Join：一个利用多处理器资源的 Executor 实现框架。</li>
+</ul>
+<p><code>Executor</code> 接口只有一个：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="title function_">execute</span><span class="params">(java.lang.Runnable runnable)</span>;</span><br></pre></td></tr></table></figure>
+<p>不需要自行创建 <code>Thread</code>，而是将 Runnable 类放到 Executor 中，让它帮你启动和管理。</p>
+<p>类似地，还有 <code>ExecutorService</code> 接口，提供了比 <code>Executor</code> 更灵活的线程提交方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ExecutorService</span> <span class="keyword">extends</span> <span class="title class_">java</span>.util.concurrent.Executor, java.lang.AutoCloseable;</span><br></pre></td></tr></table></figure>
+<p>类似 <code>Executor</code>，不过它不仅仅允许你提交 <code>Runnable</code> 对象，还允许使用 <code>Callable</code>，并使用 <code>Future&lt;T&gt;</code> 来异步获取返回值，可以通过返回的 <code>Future</code> 对象了解、管理 Runnable/Callable 的执行状态：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Future&lt;?&gt; submit(Runnable runnable);</span><br><span class="line">Future&lt;T&gt; <span class="title function_">submit</span><span class="params">(Runnable runnable, T t)</span>;</span><br><span class="line">Future&lt;T&gt; <span class="title function_">submit</span><span class="params">(Callable&lt;T&gt; callable)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 同时启动多个 callable 对象</span></span><br><span class="line">List&lt;Future&lt;T&gt;&gt; <span class="title function_">invokeAll</span><span class="params">(Collection&lt;? extends Callable&lt;T&gt;&gt; collection)</span> <span class="keyword">throws</span> InterruptedException;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 等待终止</span></span><br><span class="line"><span class="type">boolean</span> <span class="title function_">awaitTermination</span><span class="params">(<span class="type">long</span> l, TimeUnit timeUnit)</span> <span class="keyword">throws</span> InterruptedException;</span><br></pre></td></tr></table></figure>
+<p>在 <code>ExecutorService</code> 基础上继续包装 <code>ScheduledExecutorService</code>，允许对线程启动提供调度 delay 的时间：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ScheduledFuture&lt;V&gt; <span class="title function_">schedule</span><span class="params">(Callable&lt;V&gt; callable, <span class="type">long</span> l, TimeUnit timeUnit)</span>;</span><br><span class="line">ScheduledFuture&lt;?&gt; schedule(Runnable runnable, <span class="type">long</span> l, TimeUnit timeUnit);</span><br></pre></td></tr></table></figure>
+<h4 id="A-Implementation-ThreadPoolExecutor"><a href="#A-Implementation-ThreadPoolExecutor" class="headerlink" title="A. Implementation: ThreadPoolExecutor"></a>A. Implementation: <code>ThreadPoolExecutor</code></h4><p>Thread Pool 线程池，是 <code>Executor</code> 的一种实现，用的最多的是 <code>ThreadPoolExecutor</code> 类型。</p>
+<ul>
+<li><p><code>ThreadPoolExecutor</code> 类型继承：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/concurrent-executor-hier.png" width="350px" /></p>
+</li>
+<li><p><code>ThreadPoolExecutor</code> 状态维护：运行状态 (<code>runState</code>) 和线程数量 (<code>workerCount</code>) 放在同一个 Atomic Integer 中，高 3 位保存 <code>runState</code>，低 29 位保存 <code>workerCount</code>，二者同时取出避免数据不一致或者频繁占用锁资源。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="type">AtomicInteger</span> <span class="variable">ctl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>(ctlOf(RUNNING, <span class="number">0</span>));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>runState</code>：共有 5 种：</p>
+<p>| 运行状态   | 状态描述                                                     |<br>| ————— | —————————————————————————————— |<br>| RUNNING    | 运行状态。能接收新提交的任务，也能处理阻塞队列中的任务       |<br>| SHUTDOWN   | 准备关闭状态。不接受新提交的任务，但能处理阻塞队列中的任务   |<br>| STOP       | 停止状态。所有正在执行的任务会被终止，不接受新提交任务、队列中存在的任务 |<br>| TIDYING    | 空闲状态。所有任务都已经结束，并且当前有效线程数（<code>workerCount</code>）为 0 |<br>| TERMINATED | 终止状态。在空闲状态下才能终止，标识不再使用                 |</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/concurrent-tpe-runstate.png" width="550px" /></p>
+</li>
+<li><p><code>execute</code> Control Flow：</p>
+<ol>
+<li>首先检测线程池运行状态，如果不是 <code>RUNNING</code>，则直接拒绝；</li>
+<li>如果 <code>workerCount &lt; corePoolSize</code>，则创建并启动一个线程来执行新提交的任务；</li>
+<li>如果 <code>workerCount &gt;= corePoolSize</code>，且线程池内的阻塞队列未满，则将任务添加到该阻塞队列中；</li>
+<li>如果 <code>workerCount &gt;= corePoolSize &amp;&amp; workerCount &lt; maximumPoolSize</code>，且线程池内的阻塞队列已满，则创建并启动一个线程来执行新提交的任务；</li>
+<li>如果 <code>workerCount &gt;= maximumPoolSize</code>，并且线程池内的阻塞队列已满，则根据拒绝策略来处理该任务，默认的处理方式是直接抛异常。</li>
+</ol>
+</li>
+<li><p>拒绝策略（饱和策略）：</p>
+<ul>
+<li><strong><code>AbortPolicy</code></strong>：默认策略，抛出异常 <code>RejectedExecutionException</code>，拒绝执行；</li>
+<li><strong><code>CallerRunsPolicy</code></strong>：调用执行自己的线程运行任务，也就是直接在调用 <code>execute</code> 方法的线程中运行 (run) 被拒绝的任务，如果执行程序已关闭，则会丢弃该任务。因此这种策略会降低对于新任务提交速度，影响程序的整体性能。如果您的应用程序可以承受此延迟并且要求任何一个任务请求都要被执行的话，你可以选择这个策略；</li>
+<li><strong><code>DiscardPolicy</code></strong>：不处理新任务，直接丢弃掉；</li>
+<li><strong><code>DiscardOldestPolicy</code></strong>：此策略将丢弃最早的未处理的任务请求。</li>
+</ul>
+</li>
+</ul>
+<p>使用 <code>ThreadPoolExecutor</code> 一般配合 fixed thread pool 的策略。好处是可以让应用 degraded gracefully。</p>
+<p>不过 <code>Executor</code> 本身也提供了一些快速创建的工厂方法，帮助在一些场景下简化代码逻辑：</p>
+<ul>
+<li><p>使用 <code>newFixedThreadPool</code> 创建固定的线程数的线程池（同时最多只有指定的线程数正在执行）；</p>
+</li>
+<li><p>使用 <code>newSingleThreadExecutor</code> 单个线程实例的 executor，一次执行一个线程；</p>
+</li>
+<li><p>使用 <code>newCachedThreadPool</code> 创建可动态调整线程数的线程池，可以应对多个短期 tasks；</p>
+<blockquote>
+<p>创建一个可缓存的线程池，调用 <code>execute</code> 将重用以前构造的线程（如果线程可用）。如果没有可用的线程，则创建一个新线程并添加到池中。终止并从缓存中移除那些已有 60 秒钟未被使用的线程；</p>
+</blockquote>
+</li>
+<li><p><code>newScheduledThreadPool</code> 创建一个支持定时及周期性的任务执行的线程池，多数情况下可用来替代 Timer 类；</p>
+</li>
+</ul>
+<blockquote>
+<p>[!WARNING]</p>
+<p>但是在实际生产实践中，我们不建议使用 <code>Executors</code> 来创建线程池。建议使用 <code>ThreadPoolExecutor</code> 构造函数的方式，因为后者的处理方式让开发者更加明确线程池的运行规则，规避资源耗尽的风险。</p>
+<p>再强调一次。项目中创建多线程时，使用上面的方法线程池创建方式，无论是单一、可变、定长都有一定问题，原因是：</p>
+<ul>
+<li><code>FixedThreadPool</code> 和 <code>SingleThreadExecutor</code> 底层使用有界阻塞队列 <code>LinkedBlockingQueue</code>；</li>
+<li><code>CachedThreadPool</code>：底层使用的是同步队列 <code>SynchronousQueue</code>；</li>
+<li><code>ScheduledThreadPool</code> 和 <code>SingleThreadScheduledExecutor</code>：使用的无界的延迟阻塞队列<code>DelayedWorkQueue</code>；</li>
+</ul>
+<p>这些队列的最大长度为都是 <code>Integer.MAX_VALUE</code>，可能会堆积大量请求导致 OOM（为什么<strong><u>网络请求场景下，队列越长越有可能 OOM</u></strong>，请参见 “计算机系统工程 - 拥塞控制”）。</p>
+</blockquote>
+<p>所以实际生产环境中开发者会根据需求手动定制 <code>ThreadPoolExecutor</code> 的 7 个参数，来自定义线程池。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 线程池的核心线程数</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">corePoolSize</span> <span class="operator">=</span> <span class="number">30</span>;</span><br><span class="line"><span class="comment">// 能容纳的最大线程数</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">maximumPoolSize</span> <span class="operator">=</span> <span class="number">200</span>;</span><br><span class="line"><span class="comment">// 空闲线程存活时间</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">long</span> <span class="variable">keepAliveTime</span> <span class="operator">=</span> <span class="number">0L</span>;</span><br><span class="line"><span class="comment">// 空闲线程存活时间 单位</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">TimeUnit</span> <span class="variable">unit</span> <span class="operator">=</span> TimeUnit.MILLISECONDS;</span><br><span class="line"><span class="comment">// 创建线程的工厂类,自定义线程名称</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">threadName</span> <span class="operator">=</span> <span class="string">&quot;thread-local-pool-%d&quot;</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">ThreadFactory</span> <span class="variable">namedThreadFactory</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ThreadFactoryBuilder</span>().setNameFormat(threadName).build();</span><br><span class="line"><span class="comment">// 存放提交但未执行任务的队列</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> BlockingQueue&lt;Runnable&gt; threadFactory = <span class="keyword">new</span> <span class="title class_">LinkedBlockingQueue</span>&lt;&gt;(<span class="number">1024</span>);</span><br><span class="line"><span class="comment">// 等待队列满后的拒绝策略</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">RejectedExecutionHandler</span> <span class="variable">handler</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ThreadPoolExecutor</span>.AbortPolicy();</span><br><span class="line"><span class="comment">// 定义线程池</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">ExecutorService</span> <span class="variable">pool</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ThreadPoolExecutor</span>(corePoolSize, maximumPoolSize, keepAliveTime, unit, threadFactory, namedThreadFactory, handler);</span><br></pre></td></tr></table></figure>
+<h4 id="B-Implementation-ForkJoinTask"><a href="#B-Implementation-ForkJoinTask" class="headerlink" title="B. Implementation: ForkJoinTask"></a>B. Implementation: <code>ForkJoinTask</code></h4><p>而 Fork/Join 框架是针对 <code>ExecutorService</code> 接口的实现。它可以充分利用多处理器的优势，为那些可以拆成小块递归的任务设计，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if (my portion of the work is small enough) </span><br><span class="line">    do the work directly </span><br><span class="line">else </span><br><span class="line">    split my work into two pieces </span><br><span class="line">    invoke the two pieces and wait for the results </span><br></pre></td></tr></table></figure>
+<p>在 <code>ForkJoinTask</code> 子类（<code>RecursiveTask</code> 有返回值、<code>RecursiveAction</code> 无返回值）中定义这些任务。</p>
+<h3 id="7-8-3-Other-Utilities"><a href="#7-8-3-Other-Utilities" class="headerlink" title="7.8.3 Other Utilities"></a>7.8.3 Other Utilities</h3><h4 id="Concurrent-Collections"><a href="#Concurrent-Collections" class="headerlink" title="Concurrent Collections"></a>Concurrent Collections</h4><p>Concurrent Collections：更容易地管理大规模数据，减少 <code>synchronization</code> 次数；</p>
+<h4 id="Atomic-Variables"><a href="#Atomic-Variables" class="headerlink" title="Atomic Variables"></a>Atomic Variables</h4><p>Atomic Variables：针对变量粒度的同步机制，可以在一定程度上避免 data inconsistency；</p>
+<p>All classes have get and set methods that work like reads and writes on volatile variables</p>
+<h4 id="Virtual-Threads"><a href="#Virtual-Threads" class="headerlink" title="Virtual Threads"></a>Virtual Threads</h4><p>Java 中是一类轻量级线程解决方案。让线程创建、调度、管理的开销最小化。</p>
+<p>Virtual Threads 是 Java Thread 的实例，这与任何 OS thread 是相互独立的。</p>
+<p>当 virtual threads 内部调用了阻塞的 I/O 操作后，会立即被 JVM 挂起；</p>
+<p>virtual threads 有一个有限的 call stack，并且只能执行一个 HTTP client 请求 / JDBC 查询。这对一些异步的耗时任务比较合适，但是不适合 CPU intensive tasks；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Thread</span> <span class="variable">virtualThread</span> <span class="operator">=</span> Thread.ofVirtual().start(() -&gt; &#123;</span><br><span class="line">    <span class="comment">// Code to be executed by the virtual thread</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>所以 Virtual Threads 不是说会比普通线程更快，而是说比普通线程更具可扩展性（provide scale），这在高并发、每次请求处理耗时的服务器网络应用中能提升吞吐量。</p>
+<p><code>ThreadLocalRandom</code>：为多线程提供高效的伪随机数生成方案；</p>
+<h1 id="Chapter-8-Java-Garbage-Collection"><a href="#Chapter-8-Java-Garbage-Collection" class="headerlink" title="Chapter 8. Java Garbage Collection"></a>Chapter 8. Java Garbage Collection</h1><p>本章，我们将先从 “为什么需要垃圾回收”、“垃圾回收的思路是什么”（8.1）出发，先介绍现存的主流语言（Python/JavaScript 等）甚至操作系统（Android）究竟采用了哪些垃圾回收方式（8.2 ~ 8.7），然后再来看看 Java 语言自己是怎么做垃圾回收的（8.8 ~ 8.9）。</p>
+<h2 id="8-1-Problem-Definition"><a href="#8-1-Problem-Definition" class="headerlink" title="8.1 Problem Definition"></a>8.1 Problem Definition</h2><h3 id="8-1-1-Why-amp-How"><a href="#8-1-1-Why-amp-How" class="headerlink" title="8.1.1 Why &amp; How"></a>8.1.1 Why &amp; How</h3><p>通常情况下，无论是什么语言，在运行时想要分配空间，要么放在栈上、要么放在堆上。</p>
+<p>栈上分配的变量全权由编译器管理（如果你写过编译器，请回想一下令人讨厌的 global frame size），这也是绝大多数语言的（解释型语言则是解释器）共性；</p>
+<p>但是部分语言的有一部分空间是分配在堆上的。例如 tiger 语言中，我们初始化数组/结构体，它调用的 runtime function 底层由 C++ 实现，最终就是分配在堆上的。</p>
+<p>如果这类使用堆空间的语言，在运行时不及时释放堆空间，可能会导致堆溢出的问题。由于像 tiger 这样的语言不涉及底层的结构（包括 Python、Java 等等），没有指针的概念，自然也没办法自己释放，或者这种语言的定位就是不需要开发者来释放（所谓 “内存安全”），那么还需要借助<strong><u>运行时机制</u></strong>来管理堆空间。</p>
+<p>垃圾回收的基本原理就是，当一个被分配的地址没办法被当前的任何指针/变量访问到（not reachable），那么就需要运行时工具帮助释放这片空间，使得它能够被重新分配和使用。</p>
+<blockquote>
+<p>更准确一点，其实应该进行 liveness analysis（就像前面设计编译器时做的），但是运行时显然不方便做这种静态分析（运行时难以看出）。因此人们通常使用可达性（reachability）来代替 liveness 进行分析，只不过 reachability 可能没有 liveness 那么及时 / 精确（还可能出现一些问题，后面讨论）。</p>
+<p>也就是说，如果存活，一定可达（这是由各个语言的编译器保证的）。</p>
+</blockquote>
+<p>于是，垃圾回收的过程就是，从当前已知存活的变量开始（例如当前栈帧上、寄存器中正在使用的变量），递归地去搜索可达的内存区域，再把分配过、但不可达的内存释放即可。</p>
+<blockquote>
+<p>我们通常使用有向图去描述 “两个存活变量间的可达关系”：结点表示程序当前栈上/寄存器中正在使用的变量 和 堆上分配的记录，边表示地址指针；</p>
+</blockquote>
+<p>所以，<strong>几乎所有自动 GC 都遵循一个理念：按照某个策略<u>预定的时间</u>（定时策略），释放<u>不再继续使用的</u>（标记策略）<u>引用类型变量</u>所占用的空间</strong>；</p>
+<blockquote>
+<p>为什么加上了 “定时”：运行时是动态的，总不能只回收一次，或者一直回收；</p>
+</blockquote>
+<h3 id="8-1-2-GC-Metrics"><a href="#8-1-2-GC-Metrics" class="headerlink" title="8.1.2 GC Metrics"></a>8.1.2 GC Metrics</h3><p>另外还有一点需要注意的是，GC 通常会伴随一段时间的 STW（stop-the-world，时停），此时段间，无论这个语言是单线程还是多线程的，都需要全部暂停等待 GC 的处理。</p>
+<p>这样的 STW 在大多数 GC 算法中都是必要的，不过有长有短（取决于具体算法）。这主要是因为 GC 在运行时总有一些数据需要确保 synchronization，防止并发的回收造成数据不安全的问题。我将 STW 的时长称为 <strong>GC 算法的时延（GC latency）</strong>；</p>
+<p>还有一点需要明确的是，我们引入 GC 是为了防止内存泄漏。而 “内存泄漏” 这个概念本身<strong><u>并不是</u></strong>说没有回收完所有的不再使用的空间就是泄漏了，而是<strong><u>没有及时的回收不再使用的堆空间，引发的一系列问题，包括堆溢出</u></strong>。</p>
+<p>所以重点在于 “及时” 而不是 “全部”。也就是说，一个 GC 算法可以不需要在一次回收过程清理掉全部的垃圾，而是只需要确保及时就行。</p>
+<p>于是我们还可以定义 <strong>GC throughput</strong>，即一次 GC 操作中，单位时间内回收记录的数量，这个指标能间接反映这个 GC 算法的效率，以及它究竟是否 “及时”。</p>
+<h2 id="8-2-Mark-amp-Swap"><a href="#8-2-Mark-amp-Swap" class="headerlink" title="8.2 Mark &amp; Swap"></a>8.2 Mark &amp; Swap</h2><p>一种 GC 策略是 “标记清除”（Mark-And-Swap，标记策略）+ 溢出清理（定时策略）：</p>
+<ul>
+<li><p>Mark：从可达有向图的根结点（已知存活的变量）开始遍历，将遇到的所有结点全部标记一遍；</p>
+</li>
+<li><p>Swap：将整个堆扫描一遍，把没有标记的结点放到 free list 中（相当于释放），并且清空所有标记（为下一轮 GC 准备）；</p>
+</li>
+<li>程序在 GC 开始时 freeze，在 GC 结束时 resume，从 free list 中分配堆空间；</li>
+<li>程序只有在 free list 为空时才进行 GC；</li>
+</ul>
+<blockquote>
+<p>目前正在使用这个策略的语言有 JavaScript；</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Mark phase:</span><br><span class="line">    for each root v</span><br><span class="line">        DFS(v)</span><br><span class="line"></span><br><span class="line">Sweep phase:</span><br><span class="line">    p &lt;- first address in heap</span><br><span class="line">    while p &lt; last address in heap</span><br><span class="line">        if record p is marked</span><br><span class="line">            unmark p</span><br><span class="line">        else let f1 be the first field in p</span><br><span class="line">            p.f1 &lt;- freelist</span><br><span class="line">            freelist &lt;- p</span><br><span class="line">        p &lt;- p + (size of record p)</span><br><span class="line"></span><br><span class="line">function DFS(x)</span><br><span class="line">    if x is a pointer and points to record y</span><br><span class="line">        if record y is not marked</span><br><span class="line">            mark y</span><br><span class="line">        for each field fi of record y</span><br><span class="line">            DFS(y.fi)</span><br></pre></td></tr></table></figure>
+<p>这样做的优缺点：</p>
+<ul>
+<li><p>优点：算法简单便于实现，很多情况下确实是有效的（满了就回收全部的垃圾）；</p>
+</li>
+<li><p>缺点：性能不佳（扫描全堆，throughput 不大），而且需要经常打断程序执行流先做垃圾回收，程序效率不佳（总体 STW 很长）。</p>
+</li>
+</ul>
+<p>分析一下：</p>
+<p>$T=c_1R+c_2H$（$R$ 为可达变量数、$H$ 为堆大小），每次增长 free list entry 数量 $H-R$，因此总体均摊时间：$\overline{T}=\dfrac{c_1R+c_2H}{H-R}$；</p>
+<p>于是我们知道：当 $H$ 和 $R$ 很接近的时候，GC 的性能会很差。因此我们的改进是，在 $\dfrac{R}{H}\gt0.5$ 的时候建议 OS 增大当前进程的堆的大小；</p>
+<p><u>第二个改进</u>，是考虑到如果只使用 DFS 函数调用递归很可能导致栈溢出（因为堆本身是很大的），考虑引入 显式的栈来实现 DFS；</p>
+<blockquote>
+<p>更有技巧一点的话，还有 pointer reversal 这类优化的方法。但是本文的主题不是讨论这些算法，因此略过，感兴趣的读者可以自行搜索。</p>
+</blockquote>
+<p><u>第三个改进</u>，对于 free list，我们可以模仿 Memory Allocation 的 aggregation list，管理多个 free list 并按照列表的大小来分类；</p>
+<h2 id="8-3-Reference-Count"><a href="#8-3-Reference-Count" class="headerlink" title="8.3 Reference Count"></a>8.3 Reference Count</h2><p>还有一类常见的 GC 策略是 “引用计数”（标记策略）+ 分配时清理（定时策略）；</p>
+<blockquote>
+<p>目前使用这种 GC 策略的语言有 Python、Swift 等等；</p>
+</blockquote>
+<p>这里我们对每一个在堆上的 record 维护一个额外的字段（<code>ref_cnt</code>）表明当前有多少变量指向它。</p>
+<p>然后在赋值、作用域变化等等情况时更新变量对应的值就行。</p>
+<blockquote>
+<p>举个例子，例如 record <code>x</code> 的某个 field <code>x.fi</code> 原本是 <code>z</code>（是堆上的 record）赋值为 <code>y</code>（另一个堆上的 record）此时：</p>
+<ul>
+<li>读写 <code>y</code> 的 reference count 使其增加；</li>
+<li>读写 <code>z</code> 的 reference count 使其减少；</li>
+<li>检查 <code>z</code> 的 reference count 如果是 0，则将 <code>z</code> 加入 freelist；</li>
+<li>而 <code>z</code> 中的字段（例如 <code>z.fi</code>）如果是堆上的指针，则<u>推迟到 <code>z</code> 所在的地址被从 free list 分配出去时再减小 reference count</u>；</li>
+</ul>
+</blockquote>
+<p>于是相较于同步的 Mark-and-Swap，引用计数的好处是：</p>
+<ul>
+<li>避免了批量、递归的检查回收操作，将部分的更新引用计数操作推迟到分配时（批处理提升了 GC throughput）；</li>
+<li>不需要频繁进行全堆扫描，提升了程序执行效率（压缩了 STW 的时长）；</li>
+</ul>
+<p>只不过引用计数还引入了一些问题：</p>
+<ul>
+<li><p>循环引用：相互引用的变量无法让 <code>ref_cnt</code> 减为 0（信息不充分会导致回收不充分）；</p>
+<blockquote>
+<p>解决方法 1：引入语义层面的语法特性，例如<strong><u>弱引用</u>（Weak References）</strong>，当内存压力比较大的时候，将这种弱引用视为没有引用。</p>
+<p>但是这相当于把难题丢给了开发者，容易导致程序运行时错误的出现（例如使用一个被释放了的弱引用变量）；</p>
+<p>解决方法 2：进行简单的 cycle detection，对某些容易成环的地方进行特殊检查，及时除环；</p>
+<p>解决方法 3：与 mark &amp; swap 结合（occasional），补上全局信息，但 mark 操作很昂贵；</p>
+</blockquote>
+</li>
+<li><p>内存访问性能问题：例如 <code>x.fi &lt;- p</code> 这个语句在加上引用计数的 GC 后，会变成 3 次内存访问，性能可能更差些：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">z &lt;- x.fi</span><br><span class="line">c &lt;- z.count</span><br><span class="line">c &lt;- c – 1</span><br><span class="line">z.count &lt;- c</span><br><span class="line">if c = 0 call putOnFreelist</span><br><span class="line">x.fi &lt;- p</span><br><span class="line">c &lt;- p.count</span><br><span class="line">c &lt;- c + 1</span><br><span class="line">p.count &lt;- c</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>正因为这两个问题，我们常常在一些 GC 学术原型中才能见到它，实际使用这种方法会出现一些难以避免的性能问题。但是不可否认的是，这种方法（思路）真的很简单和显然，所以它也被常常应用到其他的领域和方面。例如 file table 维护文件打开状态时使用、虚拟页和物理页的映射时物理页维护引用计数、C++ 的智能指针 <code>shared_ptr</code> 等等。</p>
+<h2 id="8-4-Copy-Collection"><a href="#8-4-Copy-Collection" class="headerlink" title="8.4 Copy Collection"></a>8.4 Copy Collection</h2><p>这类 GC 策略比较新，有些现代的应用（例如 Android 10+）就在使用这种 GC 策略。内容如下：</p>
+<ul>
+<li><p>将 heap 拆成两个部分：from-space &amp; to-space；</p>
+<p>from-space 专门存放分配的内容，to-space 专门管理回收的内容；</p>
+</li>
+<li><p>两个 space 都有一个 <code>limit</code> 指针表示该区域结尾；</p>
+</li>
+<li><p><code>next</code> 表示该区域接下来要插入的位置，分配内存就是向 <code>next</code> 后面追加可达的 entry；</p>
+</li>
+<li><p>如果 <code>next</code> 到 <code>limit</code> 的位置，证明当前的 semi-space 满了，我们从 <code>root</code> 根结点（目前肯定存活的）开始，将所有可达结点 copy 到另一个 semi-space 中（<code>next</code> 也移过去了），相当于丢弃了不可达结点、变相进行了一次 GC；</p>
+</li>
+</ul>
+<p>这样做有几点好处：</p>
+<ul>
+<li>不需要特地进行 mark + sweep 了，操作更简单，降低了时间复杂度，一次 copy 足矣（进一步降低 STW 长度）；</li>
+<li>每次 copy 都相当于整理出了连续的空闲堆空间，方便分配、减小了 external fragments，最大化 memory utilization；</li>
+</ul>
+<p>相比于 mark-and-sweep 也有坏处：</p>
+<ul>
+<li>如果大部分变量存活时间很长（$R\sim H$），会导致内存拷贝过多，overhead 很大；</li>
+<li>一半的空间利用率低下；</li>
+</ul>
+<p>实现 Copy Collection 的算法是 Cheney’s algorithm：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-cc-cheney-algo.png" width="400px" /></p>
+<blockquote>
+<p>解释一下算法：</p>
+<p>把当前准备切走的一边称为 from-space，另一边称为 to-space；</p>
+<p>每个被分配的 entry（$p$）的第一个字段（$f_1$）保存<u>指向当前分配对象自己</u>的指针（只有在移动更新时指向新的对应的 entry），其他字段（$f_i$）存放正常被分配的数据；</p>
+<p><code>Forward(p)</code> 函数的含义是将 <code>p</code> 指针对应的结点数据完全移动到 to-space（如果已经完成移动则什么也不做）；</p>
+<p>主函数的算法就是从根结点开始（先 forward 根结点）BFS 遍历结点、更新 <code>scan</code>，遍历到的直接调用 <code>Forward</code> 转移。同时需要更新拿在手上的指针，保证上层应用无感；</p>
+</blockquote>
+<p>这种算法有些优缺点：</p>
+<ul>
+<li>优点：不引入额外数据结构（没有额外的栈、不需要 reversal pointers）；</li>
+<li>缺点：影响原来程序的 locality！无法充分利用局部性（不相干的 record 可能被复制到一起），这会降低每次 GC 后的程序执行效率；</li>
+</ul>
+<p>因此我们作出优化：<strong><u>Semi-depth-first Algorithm</u></strong>，这也是 Copy Collection 最常见的实现方法：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-semi-df.png" width="700px"/></p>
+<p>这个算法的思路是 DFS，所以主函数省略了（就是对每个 root 结点调用 <code>Forward</code> 然后结束）。这个 <code>Forward</code> 函数我们在 Cheney’s Algorithm 中见过类似的结构，就是如果当前 entry（由 <code>p</code> 指向）完全移到 to-space（第一字段已经在 to-space 了），那么就直接返回，否则调用 <code>chase</code> 迁移；</p>
+<p>主要看 <code>Chase(p)</code> 的做法。<code>q</code> 和 <code>next</code> 有点像算法里的左右指针，<code>q</code> 表示当前正在迁移的 entry 的开头，<code>next</code> 则表示正在迁移的 entry 的结尾；</p>
+<p>而 <code>r</code> 和 <code>p</code> 又像一对前后指针，<code>p</code> 表示当前正在 copy 的节点，<code>r</code> 则是一轮 semi-DFS 从根到叶遍历的指针；</p>
+<p>中间 <code>for</code> 循环的作用是把要 copy 的 <code>p</code> 指向的 entry 的每个字段都复制到 to-space 中。同时 <code>Chase</code> 还需要考虑 <code>p</code> entry 中指向 from-space（分配在堆上但没迁移的 entry）的指针。</p>
+<blockquote>
+<p>为什么 <code>Chase</code> 需要考虑 <code>p</code> 中的指向 from-space 的指针？因为这里是 DFS，不能直接结束对 <code>p</code> 的迁移，否则就变成 BFS 了（Cheney’s Algorithm）；应该像这样一直沿树边递归到底；</p>
+</blockquote>
+<p>一轮 semi-DFS 后，如果 <code>p</code> 有多个 field 都指向堆，那么默认是先 copy 当前 <code>p</code> entry 中的最后一个 from-space 分配的地址，方便 <code>repeat</code> 循环递归（DFS）地移动 from-space 中分配的 entries；</p>
+<blockquote>
+<p>为啥是 copy 最后一个？因为递归过程一次只能保存一个，这也是算法称为 “semi-DFS” 的原因（没有完全遵循 DFS 的遍历方法）。更清楚一点，我们可以看下面的比较图（注意到 4、6 是最后才访问的）：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-semi-dfs.png" width="350px" /></p>
+<p>例如 <code>1 -&gt; 2 -&gt; 5</code> 后，一轮 semi-DFS 结束，虽然看到了 <code>4</code> 对应的 record，但也只是更新了 <code>2</code> 的 record 的指针，并没有 copy <code>4</code> 的 record 到 to-space；随后递归回溯到 <code>1</code> 再继续；</p>
+</blockquote>
+<h3 id="Optimizations"><a href="#Optimizations" class="headerlink" title="Optimizations?"></a>Optimizations?</h3><p>注意到，copy collection 对于堆空间的浪费还是很严重的，因为每次只使用一半的堆空间（另一边必须是无效的）。于是一个很简单的优化是，底层使用 <code>mmap</code> 来处理对堆空间的分配。我们可以让另一半（不在使用的 to-space）在 copy 前是 unmap 的状态（未分配物理页），这样能更充分地利用机器资源。</p>
+<blockquote>
+<p>但这么做也有点问题，在 GC collector 进行 copy collection 的途中可能出现物理内存猛增的情况；</p>
+<p>但这确实能缓解在除了 GC 阶段以外的其他时间里内存不够用的情况。</p>
+</blockquote>
+<p>注意到 Copy Collection 的均摊开销主要在 $\dfrac{c_3R}{\dfrac{H}{2}-R}$ 左右（$c_3\sim10$，$R$ 为存活记录的大小）；那么我们如何降低上述内存使用，并且继续提升整体 GC 性能呢？</p>
+<h2 id="8-5-General-Collection-Generations"><a href="#8-5-General-Collection-Generations" class="headerlink" title="8.5 General Collection (Generations)"></a>8.5 General Collection (Generations)</h2><h3 id="8-5-1-Design"><a href="#8-5-1-Design" class="headerlink" title="8.5.1 Design"></a>8.5.1 Design</h3><p>一般情况下，GC 的 throughput 和 latency 是相互制约的，例如我想要确保 throughput 很大，一般需要扫描更多的信息来进行批处理，但扫描更多的信息会导致 latency 的延长。</p>
+<p>但是这种 GC 的策略相较于前面几种方法，可以同时提升 throughput、降低 latency。主要是人们有以下的特性的观察（不是准确和普适的定律，而是经验假设）：</p>
+<ul>
+<li>堆上新创建的对象通常更容易先死去；</li>
+<li>堆上存活的时间越长的对象通常更不容易死去；</li>
+</ul>
+<blockquote>
+<p>堆上存活时间长的越长，短的越可能更短。也许可以用马太效应解释；</p>
+</blockquote>
+<p>基于这个特性，人们提出了 general collection 的 GC 策略（分代）：</p>
+<ul>
+<li><p>将 heap 分为若干区域 $G_0,\space G_1,\space G_2,\ldots$，编号从小到大存放的是创建对象的由新到旧（新生代 ~ 持久代）。被分配的对象首先被放入 $G_0$；</p>
+</li>
+<li><p>$G_0,G_1,\ldots$  这些代（generations）一般使用 Marking 的思路（给数据标记）；</p>
+</li>
+<li><p>GC collector 重点回收 $G_0$ 区域的对象。同时需要关注 $G_1,G_2,\ldots$ 中指向 $G_0$ 区域的指针（如果存在，$G_0$ 的这个区域就不能释放）；</p>
+<blockquote>
+<p>其实 $G_1,G_2,\ldots$ 中有指向 $G_0$ 区域的指针 这件事本身就很罕见。主要是因为根据经验假设，$G_0$ 只有很少一部分新生对象会进入 $G_1$ 以及更旧的代（10%-20%），而 $G_1$ 中的指针更普遍的是指向自己代或者更旧的代（因为先定义再使用嘛），更少有指向新一代的指针。</p>
+<p>相反的情况，如果 $G_0$ 中的数据有些指向 $G_1,G_2,\ldots$ 区域的指针，那么它们可以立即被释放；</p>
+</blockquote>
+</li>
+<li><p>每次 $G_0$ 未能清空 N 次（N 一般是 2~3 左右，应该看不同应用场景）的部分会转移到 $G_1$，并且更旧的代同理，依次进行；也正因如此，$G_0,G_1,\ldots$ 各代间的大小差距最好是指数级的；</p>
+</li>
+</ul>
+<p>这样做带来的好处是，每次回收只需要扫描原先 20% 左右的区域，但是能回收率能达到 80%，不仅减小了 latency（扫描的区域少了），而且增大了 throughput（单位时间回收的量增多了），极大提升 GC 效率。</p>
+<p>这种策略的均摊时间开销：$\dfrac{c_3R}{H-R}$（和 Copy Collection 相比，$\dfrac{H}{2}$ 变为 $H$）；并且通常情况下，由于 $G_0$ 本身不大，因此很多情况都有 $H\gt10R$，也就是说一般情况的均摊复杂度 $\dfrac{1}{9}c_3$（相对于前面的策略效率提升了 10 倍，如果只考虑 $G_0$ 的话）！</p>
+<p>可是，如果涉及更旧代的回收，时间开销还是很大的（例如如果只有两代，并且做一次 $G_0,G_1$ 回收，就相当于扫描了整个堆）。不过好在需要回收旧代的频率并不是很高。</p>
+<h3 id="8-5-2-Patch-Ways-of-Remembering"><a href="#8-5-2-Patch-Ways-of-Remembering" class="headerlink" title="8.5.2 Patch: Ways of Remembering"></a>8.5.2 Patch: Ways of Remembering</h3><p>现在回过头看一下，如果使用 general collection，有个问题是我们 “同时需要关注 $G_1,G_2,\ldots$ 中指向 $G_0$ 区域的指针”。</p>
+<p>虽然就像前面说的，这种情况很罕见，但还是需要考虑的，例如堆上分配的结构体在它被分配的很久以后突然更新了一个字段，这种情况就可能出现上述罕见的现象。于是我们<u>需要单独保存一些旧代中有指针指向新代的信息</u>（不然 GC collector 很难判断 $G_0$ 中会不会出现上述罕见情况，而且全表扫描太慢了）。</p>
+<p>为了解决这个问题，人们首先想出了借助一个 Remembered List 的方法：每次更新被分配 entry 的某个字段时，向这个 list 中加入一条更新的记录。这种方法有个问题，就是实际上可用的堆的空间一般很大，平均需要记录的更新数据可能会达到数个 MB，这对于一个内存中的列表而言开销已经比较大了。</p>
+<p>于是人们想使用 Remembered Set 来存放，因为它的去重性质，我们可以在分配的 object $b$ 中使用 1 个 bit 来记录它是否已在 remembered set 中；</p>
+<p>以上两种方法的粒度都是对象（很细），免不了占用比较大的内存资源。</p>
+<p>于是人们提出了粗粒度的信息存放方案（<strong><u>Card Marking</u></strong>，比较主流的实现方案）：</p>
+<ul>
+<li>将内存分为 $2^k$ bytes 大小的内存区域，称为 logical cards（逻辑卡片）；</li>
+<li>一个对象可以占据一个卡片的一部分，或者从卡片中间区域开始占据到后面的卡片；</li>
+<li>当 $b$ 地址在分配后被更新时，包含这个地址的卡片会被标记；</li>
+<li>可以用更小的 list（byte index 向右移动了 $k$ 位）来保存 mark 的情况；</li>
+</ul>
+<p>具体实现就是在每次更新 object 时打桩（在 <code>obj.f = a</code> 的后面加上代码，判断如果确实是 <code>G1</code> 指向 <code>G0</code> 的情况，则从 card 对应的 list 中取出并更新）；</p>
+<p>坏处：不清楚在这片区域的 cross generation pointer 具体在哪里，还需要在这片区域内继续查找（空间换时间）；</p>
+<p>另一种方法是用 Page 的粒度来管理这个信息（<strong>Page Marking</strong>）：</p>
+<ul>
+<li>就像 card marking，不过 $2^k$ 是页表大小；</li>
+<li>更新一个分配的 object 相当于 makes the page dirty；</li>
+<li>用户态程序可以在每次 GC 后标记 write-protected；</li>
+</ul>
+<p>这样相当于把 card marking 的打桩操作变成了用户态的 fault handler。但实际上开销也不小（毕竟需要进出内核以及用户态 handler）；</p>
+<h2 id="8-6-Incremental-Collection"><a href="#8-6-Incremental-Collection" class="headerlink" title="8.6 Incremental Collection"></a>8.6 Incremental Collection</h2><p>这里还有个更加复杂的回收策略，和实际应用结合得比较紧密。</p>
+<p>这个策略着重关注于优化 STW 时长（latency）这个指标，希望 GC 让应用停止的时间尽可能短（尤其是在涉及 UI 前台类型/端侧的语言中，不希望用户感受到卡顿）；</p>
+<p>比如对于数十 GB 的内存而言，同步的 Mark &amp; Swap 的 STW 可能在百毫秒级别，这对后台程序 / 服务器应用而言不那么关心，但是如果是端侧设备 / 浏览器 / 游戏设备 / 精确的嵌入式设备呢？这个问题就很突出了。</p>
+<p>这个时候，两种思路：</p>
+<ul>
+<li>让 GC 回收程序和应用并发执行（从根本上极大缩短甚至基本消灭 STW）；</li>
+<li>让 GC 回收程序按应用执行的情况增量地回收（通过减少需要扫描的数据量，也能极大缩短 STW）；</li>
+</ul>
+<p>这时我们需要引入一些概念：</p>
+<ul>
+<li><p>Collector：专门收集不再使用的分配的空间并释放；</p>
+</li>
+<li><p>Mutator：改变 reachable data 的关联图；</p>
+<blockquote>
+<p>将应用中改变 reachable 关系的逻辑抽象出来，它就是之前阻碍 GC collector 并发，也是 STW 出现的主要原因；</p>
+</blockquote>
+</li>
+<li><p>Incremental Collection：只有 Mutator 需要 Collector 回收时才进行回收（调用式关系）；</p>
+</li>
+<li><p>Concurrent Collection：在 Mutator 执行期间 Collector 并发执行（后台服务关系）；</p>
+</li>
+</ul>
+<p>现在介绍一种 Incremental Collection 的实现模型：<strong><u>Tricolor Marking</u>（三色标记模型）</strong>；</p>
+<p>任意一个被分配的记录只会处于 3 种颜色中：</p>
+<ul>
+<li>White: not visited by GC；</li>
+<li>Grey: visited by GC, but its children are not；</li>
+<li>Black: visited by GC, so as its children；</li>
+</ul>
+<p>算法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">procedure tricolor-marking:</span><br><span class="line">set root object gray // visit</span><br><span class="line"></span><br><span class="line">while they are any gray objects:</span><br><span class="line">    select a gray record p</span><br><span class="line">    for each field fi of p:</span><br><span class="line">        if fi.p is white:</span><br><span class="line">            color fi.p gray		// visit first time (可以用栈压入来实现)</span><br><span class="line">    color record p black		// visit second time (可以用栈弹出来实现)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里是 BFS 性质的遍历所以使用栈数据结构。可以类比，Copy Collection 中的 Cheney’s Algorithm，可以使用队列数据结构来实现；</p>
+</blockquote>
+<p>这里注意几个<strong><u>算法不变量</u>（Invariants）</strong>，它们是构建 Incremental Collection 的根本原理：</p>
+<ul>
+<li>不存在黑结点直接指向白结点的情况。如果有就说明黑色结点对应的对象并没有处理完全，出现了数据不一致的问题；</li>
+<li>灰结点一定在 collector 的数据结构（fringe）中，意味着正在处理；</li>
+</ul>
+<p>现在，我们希望在 tricolor marking 的基础上引入 incremental collection，就意味着，被分配的 object 在 GC 结束后继续留有标记，交给 mutator 执行。</p>
+<p>过一段时间后，再次进入 GC 执行算法时，可能就会出现上述算法不变量的违反。</p>
+<p>例如，已经染黑的结点（GC 完全扫描的结点）在上一轮 GC 结束后，被 mutator 追加了白色结点（上一轮 GC 结束后才分配的），这个时候就违反了第一个 invariant。</p>
+<p>于是！所谓的 incremental collection 做增量回收，就是通过在 runtime 分配堆空间时，采取措施保证 invariants 的成立（在 mutator 运行时，而非 collector 运行时），对变化的部分进行 GC 检查。</p>
+<p>基本的思路还是，针对基本的读写操作进行打桩（barriers）：</p>
+<ul>
+<li><p>Method 1 (Dijkstra, Lamport)：向黑结点 object 写入指针 field （插入白结点）时染灰（纳入 GC 管理中）；</p>
+</li>
+<li><p>Method 2 (Steele)：向黑结点 object 写入指针 field （插入白结点）时将父黑结点染灰（dirty，让之前的结点重新放入 GC fringe、表示需要重新扫描）；</p>
+<p>(Boehm, Demers, Shenker) 改进是把 black 结点的页改成 write-protected，page fault handler 更改权限为 writable，并且标记为灰色（但这么做也有性能问题）；</p>
+</li>
+<li><p>Method 3 (Baker)：在读<u>灰结点</u> object 的白子结点时提前将该白结点染灰（纳入 GC 管理），这样 mutator 永远无法获得一个不受 GC 管理的指针了！因此就不会出现 invariant 的违反问题；</p>
+<p>(Appel, Ellis, Li) 改进还是利用 page fault，但这个时候直接从灰结点开始进行一次 GC，染成黑色-灰色的结点；</p>
+</li>
+</ul>
+<p>于是，我们基于 Copy Collection 的 Cheney’s Algorithm 实现一个 Incremental Collection 算法 (read)：<strong><u>Baker’s Algorithm</u></strong>；</p>
+<p>基本前提：应用（mutator）和 GC（collector）处于同一线程中；</p>
+<p>定时策略：仅 allocate memory 时交互进行；</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-baker-algo.png" width="250px" /></p>
+<p>仍然把 heap 分为 from-space 和 to-space 两个部分；</p>
+<p>GC 过程仍然从堆内存满了后开始，但不是一次性做完，而是每次 allocation 时增量地做一点；步骤如下：</p>
+<ol>
+<li><p>当堆（from-space）满后，交换二者角色，现在 from-space 变成空的一边；并且立即 forward root 结点到 from-space；</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-baker-flip.png" width="250px" /></p>
+</li>
+<li><p>第一步结束后，不继续复制，而是先退出 GC 例程，回到应用（有点像协程 coroutine）；当应用在 GC 例程暂停期间 allocate 堆时，会再次唤醒 GC，此时：</p>
+<ul>
+<li><p>会直接分配在空的 from-space 的末端（减小 limit 的指针位置）；</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-baker-alloc.png" width="250px" /></p>
+</li>
+<li><p>对应的扫描并从 to-space 中复制已分配记录（注意，如果分配了 N bytes 空间，那么从 to-space 扫描的大小不小于 N bytes，为了 copy 的过程不慢于应用分配的速度）。注意 forwarding pointers；</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-baker-incr-scan.png" width="250px" /></p>
+</li>
+</ul>
+</li>
+<li><p>第一步结束后，如果应用在 GC 例程暂停期间 load references，创建了指向 to-space entry（这个 entry 是没有被复制到 from-space 过的）的 root 结点，那么根据 tricolor marking 理论，此时 to-space 中未被复制到 from-space 的 entries 全是白结点（没有被 GC 遍历过），这相当于直接将黑结点指向白结点（违反 invariant 1）。我们立即做一次 forward（但不关心它内部的 forwarding pointers）：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-baker-load1.png" width="550px" /></p>
+<p>如果指向的 to-space entry 是已被复制的，那么立即 forward：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-baker-load2.png" width="550px"/></p>
+</li>
+<li><p>当 <code>scan</code> 碰上 <code>next</code> 时，allocation 结束，本轮 GC 再次暂停，控制权又回到应用；</p>
+<p>只要保证 $R\lt\dfrac{1}{4}H$，在上述过程中就不会出现 GC 扫描时 from-space 用完的情况；</p>
+</li>
+</ol>
+<p>总结一下 incremental collection 的优缺点：</p>
+<ul>
+<li>优点：时延低，把复制的操作均摊到每次 allocation 时，减小了单次的 STW 时长，对 real-time app（例如浏览器/端侧设备渲染、游戏应用等等）友好；</li>
+<li>缺点：总体开销很大，每次 read 都多两条指令（compare &amp; jump）；性能开销高出 20%（而且还没有考虑 locality）；</li>
+</ul>
+<h2 id="8-7-Concurrent-Collection"><a href="#8-7-Concurrent-Collection" class="headerlink" title="8.7 Concurrent Collection"></a>8.7 Concurrent Collection</h2><p>之前我们讨论的是同步 GC，有没有异步 GC 呢？有的。就像前面说的，无论如何都需要 STW 来同步信息，只不过 STW 的长短罢了。在并行 GC 中，STW 的大部分工作都在 synchronization 中；</p>
+<p>这里全部展开的话篇幅过长，我们按下不表，在后面讨论 Java 的并行 GC 的算法时再作介绍。</p>
+<h2 id="8-8-Parallel-Scanvenge-Java"><a href="#8-8-Parallel-Scanvenge-Java" class="headerlink" title="8.8 Parallel Scanvenge (Java)"></a>8.8 Parallel Scanvenge (Java)</h2><p>一个内存密集型设计比较成功的语言。因此 Java 的 GC 设计的比较成熟。</p>
+<p>2010 年左右的时间，Java 8 默认使用的是 <strong><u>Parallel Scavenge (PS)</u></strong> 这种 GC 策略。</p>
+<p>定时策略：某个 semi-space 满了后；</p>
+<p>它其实也是一种 Generation GC 的策略（stop-copy-compact，也有 STW 存在）。不过 Parallel Scavenge 对于新代和旧代的 GC 算法是不同的。总体结构如下：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-modern-java-arch.png" width="350px" /></p>
+<p>注意到，Young Generation（新代）中存在 3 个 semi space:   Eden、From、To，使用 Minor GC 算法如下：</p>
+<ol>
+<li>Application allocate 空间时向 Eden 区域直接插入；</li>
+<li>Eden-space 满了后，从 root 遍历复制 reachable records 到 to-space；</li>
+<li>当 Eden-space 再次满了/ to-space 满了后，同时从 root 遍历复制 reachable records 到 from-space；<ul>
+<li>其中在 to-space 中存活 <code>K</code> 轮的 records，会被 promote 到 old generation(s) 中；</li>
+</ul>
+</li>
+<li>在一轮复制结束后，如果 from-space 快满了，则交换 to-space 和 from-space 的身份；</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-java-minor.png" /></p>
+<p>Minor GC 如何并行与 Application 执行（parallel execution）？</p>
+<ul>
+<li>Reference Tracking；</li>
+<li>Copy Race（Queue &amp; CAS）；</li>
+<li>Work Stealing；</li>
+</ul>
+<p>对于旧代（Old Generation）使用 Full/Major GC 算法：</p>
+<blockquote>
+<p>一般要执行 Full GC，那么这时可能剩余内存已经不多了。</p>
+</blockquote>
+<ul>
+<li><p>Marking:   Mark all live objects;</p>
+</li>
+<li><p>Summary:   Calculate new address for live objects;</p>
+<blockquote>
+<p>先算出地址，而不是上来就 copy，方便后面的 compaction；</p>
+</blockquote>
+</li>
+<li><p>Compact:   Move objects and update references;</p>
+<blockquote>
+<p>需要考虑一个问题，如果 destination 也是 source 呢？</p>
+</blockquote>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-java-major.png"/></p>
+<p>PS 这种策略也有些缺陷，例如空间是连续的（难以 split/adjust/reorganize），并且比例固定（在 VM 启动后固定）：</p>
+<p>而且 Minor GC（4 GB ~）一般在 100ms 左右，Major GC （16 GB ~）一般多于 1s。</p>
+<p>为了改进这个问题，我们可以：</p>
+<ul>
+<li><p>将 heap 的结构从 space 改成 regions（分块，smaller, segregated regions）：</p>
+</li>
+<li><p>Also including young and old spaces:   Adding a middleground between old and young，这被称为 <strong><u>Mixed GC</u></strong>；</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-java-mixed.png" width="350px" /></p>
+</li>
+<li><p>Collection set: including all regions to be collected；</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-java-collection-set.png" width="250px" /></p>
+</li>
+</ul>
+<p>当然，Parallel Scanvenge 有很强的特点，就是它是吞吐量垃圾收集器（Throughput Collector），它的设计目标是最大化应用程序的吞吐量。也就是说它适用于<strong><u>对吞吐量要求较高</u></strong>的应用程序，例如适合批处理任务或后台处理任务。</p>
+<h2 id="8-9-G1GC-Java"><a href="#8-9-G1GC-Java" class="headerlink" title="8.9 G1GC (Java)"></a>8.9 G1GC (Java)</h2><p>Garbage First GC（G1GC）主要也是采用了 Generation GC 的思想，不过具体细节有些改动。</p>
+<p>它将 Heap 分成 3 个部分，有点类似之前的 Parallel Scanvenge + Mixed GC 改进 + Collection Set 改进：</p>
+<ul>
+<li><strong>Eden:</strong> This is where newly created objects are allocated.</li>
+<li><strong>Survivor:</strong> There are typically two Survivor regions (S0 and S1), and they are used to  hold objects that have survived one or more garbage collection cycles.</li>
+<li><strong>Old Generation:</strong> This region is used to hold long-lived objects that have survived multiple garbage collection cycles.</li>
+</ul>
+<p>这里这篇文章描述的比较好，可以看看：<a target="_blank" rel="noopener external nofollow noreferrer" href="https://medium.com/@perspectivementor/how-g1-garbage-collector-work-in-java-e468a94ebed6">How G1GC Work in Java</a>；</p>
+<p>算法则主要分为 3 个阶段：</p>
+<ul>
+<li>标记阶段，即从 Roots References 开始，标记活跃对象；<ul>
+<li>此阶段一开始寻找 root 时需要 STW，不过因为数量很少，因此时间较短；</li>
+<li>然后需要遍历 reachable graph，此时是 concurrent mark，因此不需要 STW；</li>
+</ul>
+</li>
+<li>转移阶段，即把活跃对象复制到新的内存地址上；</li>
+<li>重定位阶段，因为转移导致对象的地址发生了变化，在重定位阶段，所有指向对象旧地址的指针都要调整到对象新的地址上。</li>
+</ul>
+<p>这里我们重点关注 G1GC 针对 Young GC 和 Mixed GC 的算法上，其主要流程如下：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-java-g1gc.png" width="550px" /></p>
+<p>此外，除了 Mixed GC 调整年轻代和年老代的回收阈值、heap 的分区收集结构，以及更强的并发能力以外，G1GC 还提供了<strong>预测性暂停时间</strong> 的特性，可以通过设置目标暂停时间（Pause Time Goal）来控制垃圾收集的暂停时间。</p>
+<p>最后，G1GC 是<u>为多核处理器和大内存系统设计的</u>，旨在替代 CMS（Concurrent Mark-Sweep，注意到历史原因）的并发垃圾收集器（也是 Concurrent GC 的一种）。</p>
+<h2 id="8-10-ZGC-Java"><a href="#8-10-ZGC-Java" class="headerlink" title="8.10 ZGC (Java)"></a>8.10 ZGC (Java)</h2><p>这是 Java 中的一个更新的 GC 机制。它在 Java 11 中实验性使用，在 Java 15 及以后可以正式作为生产环境的一种选择了。</p>
+<p>ZGC 致力于提供尽可能短的 STW 时间。它的目标是：</p>
+<ul>
+<li>STW 时间不超过 10 ms；</li>
+<li>STW 时间不会随着堆的大小，或者活跃对象的大小而增加；</li>
+<li>支持 8 MB~4 TB 级别的堆（未来支持 16 TB）。</li>
+</ul>
+<p>这主要是想匹配服务器应用程序的使用场景。因为在服务器应用程序中，大堆很常见（通常程序运行时间更长、运行的守护进程更多），而且需要快速的应用程序响应时间。</p>
+<p>ZGC 有两种算法，一种是 Generational 的（分代），这个和前面 G1GC 以及 Parallel Scanvenge 比较相似，能够利用到分代的好处（吞吐量上升和更低的时延）；也有一种是 non-generational 的，主要是考虑到禁用分代后可以对某些使用场景进行运行时性能优化。这里我们为了简便，就讨论 non-generational 的实现。下面我们将不分代的 ZGC 单独称为 “ZGC”；</p>
+<p>与 G1GC 的 Mixed GC 和 Young GC 类似，ZGC 也是采用标记然后复制的算法，不过 ZGC 对这部分的算法做了重大改进：ZGC 在标记、转移和重定位阶段几乎都是并发的。ZGC 垃圾回收周期如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-java-zgc.png" width="550px" /></p>
+<p>注意到 “初始标记” 就是我们在 G1GC 中讨论的，标记 root references，需要 STW、不能并发，不过时间很短。</p>
+<h3 id="Tricky-Things"><a href="#Tricky-Things" class="headerlink" title="Tricky Things"></a>Tricky Things</h3><p>ZGC通过着色指针和读屏障技术，解决了转移过程中准确访问对象的问题，实现了并发转移。大致原理描述如下：并发转移中“并发”意味着GC线程在转移对象的过程中，应用线程也在不停地访问对象。假设对象发生转移，但对象地址未及时更新，那么应用线程可能访问到旧地址，从而造成错误。而在ZGC中，应用线程访问对象将触发“读屏障”，如果发现对象被移动了，那么“读屏障”会把读出来的指针更新到对象的新地址上，这样应用线程始终访问的都是对象的新地址。那么，JVM是如何判断对象被移动过呢？就是利用对象引用的地址，即着色指针。下面介绍着色指针和读屏障技术细节。</p>
+<h4 id="References-Coloring"><a href="#References-Coloring" class="headerlink" title="References Coloring"></a>References Coloring</h4><blockquote>
+<p>着色指针是一种将信息存储在指针中的技术。</p>
+</blockquote>
+<p>ZGC 仅支持 64 位系统，它把 64 位虚拟地址空间划分为多个子空间，如下图所示：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-java-zgc-area.png" width="550px" /></p>
+<p>其中，<code>[0~4TB)</code> 对应 Java 堆，<code>[4TB ~ 8TB)</code> 称为 <code>M0</code> 地址空间，<code>[8TB ~ 12TB)</code> 称为 <code>M1</code> 地址空间，<code>[12TB ~ 16TB)</code> 预留未使用，<code>[16TB ~ 20TB)</code> 称为 <code>Remapped</code> 空间。</p>
+<p>当应用程序创建对象时，首先在堆空间申请一个虚拟地址，但该虚拟地址并不会映射到真正的物理地址。ZGC 同时会为该对象在 M0、M1 和 Remapped 地址空间分别申请一个虚拟地址，且这三个虚拟地址对应同一个物理地址，但这三个空间在同一时间有且只有一个空间有效。ZGC 之所以设置三个虚拟地址空间，是因为它使用“空间换时间”思想，去降低 GC 停顿时间。“空间换时间”中的空间是虚拟空间，而不是真正的物理空间。后续章节将详细介绍这三个空间的切换过程。</p>
+<p>与上述地址空间划分相对应，ZGC 实际仅使用 64 位地址空间的第 0~41 位，而第 42~45 位存储元数据，第 47~63 位固定为 0。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/gc-java-zgc-pointer.png" width="550px" /></p>
+<p>ZGC 将对象存活信息存储在 42~45 位中，这与传统的垃圾回收（例如 Reference Count）并将对象存活信息放在对象头中的策略是不相同的。</p>
+<h4 id="Load-Barriers"><a href="#Load-Barriers" class="headerlink" title="Load Barriers"></a>Load Barriers</h4><blockquote>
+<p>读屏障是 JVM 向应用代码插入一小段代码的技术。当应用线程从堆中读取对象引用时，就会执行这段代码。需要注意的是，仅“从堆中读取对象引用”才会触发这段代码。</p>
+</blockquote>
+<p>读屏障示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> obj.FieldA;    <span class="comment">// 从堆中读取引用，需要加入屏障</span></span><br><span class="line">&lt;Load barrier&gt;</span><br><span class="line"><span class="type">Object</span> <span class="variable">p</span> <span class="operator">=</span> o;            <span class="comment">// 无需加入屏障，因为不是从堆中读取引用</span></span><br><span class="line">o.dosomething();        <span class="comment">// 无需加入屏障，因为不是从堆中读取引用</span></span><br><span class="line"><span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span>  obj.FieldB;    <span class="comment">//无需加入屏障，因为不是对象引用</span></span><br></pre></td></tr></table></figure>
+<p>ZGC 中读屏障的代码作用：在对象标记和转移过程中，用于确定对象的引用地址是否满足条件，并作出相应动作。</p>
+<h2 id="8-11-Summary"><a href="#8-11-Summary" class="headerlink" title="8.11 Summary"></a>8.11 Summary</h2><p>总的来说，虽然垃圾收集器的技术在不断进步，但直到现在还没有最好的收集器出现，因为不存在“万能”的收集器，<u>只有适合某些使用场景的垃圾回收器</u>。</p>
+<h1 id="Chapter-9-JDNI-amp-SPI"><a href="#Chapter-9-JDNI-amp-SPI" class="headerlink" title="Chapter 9. JDNI &amp; SPI"></a>Chapter 9. JDNI &amp; SPI</h1><p>Java Oracle Doc 一目了然：</p>
+<p>Java Naming and Directory Interface (JNDI) 是一个应用程序编程接口 (API)，为使用 Java 编程语言编写的应用程序提供命名和目录功能。它的定义独立于任何特定的目录服务实现。因此，各种目录，无论新的、正在出现的和已经部署的，都可以用一种通用的方式访问。</p>
+<p>而 JNDI 体系结构包括一个 API 和一个服务提供商接口 (SPI)。Java 应用程序使用 JNDI API 访问各种命名和目录服务。SPI 使各种命名和目录服务能以透明方式插入，从而允许使用 JNDI API 的 Java 应用程序访问它们的服务。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/jndi-arch.gif" /></p>
+<p>补充：什么是 SPI？</p>
+<p>SPI 即 Service Provider Interface ，字面意思就是：“服务提供者的接口”，我的理解是：专门提供给服务提供者或者扩展框架功能的开发者去使用的一个接口。</p>
+<p>SPI 将服务接口和具体的服务实现分离开来，将服务调用方和服务实现者解耦，能够提升程序的扩展性、可维护性。修改或者替换服务实现并不需要修改调用方。</p>
+<p>SPI 和 API 有什么区别吗？下面一个图就能弄清楚：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/spi-vs-api.png" width="350px" /></p>
+<ul>
+<li>当实现方提供了接口和实现，我们可以通过调用实现方的接口从而拥有实现方给我们提供的能力，这就是 <strong>API</strong>。这种情况下，接口和实现都是放在实现方的包中。调用方通过接口调用实现方的功能，而不需要关心具体的实现细节。</li>
+<li>当接口存在于调用方这边时，这就是 <strong>SPI</strong> 。由接口调用方确定接口规则，然后由不同的厂商根据这个规则对这个接口进行实现，从而提供服务。</li>
+</ul>
+<p>补充：SPI 出现的原因是？</p>
+<p>面向对象设计鼓励模块间基于接口而非具体实现编程，以降低模块间的耦合，遵循依赖倒置原则，并支持开闭原则（对扩展开放，对修改封闭）。然而，直接依赖具体实现会导致在替换实现时需要修改代码，违背了开闭原则。为了解决这个问题，SPI 应运而生，它提供了一种服务发现机制，允许在程序外部动态指定具体实现。这与控制反转（IoC）的思想相似，将组件装配的控制权移交给了程序之外（IoC 比较著名的例子就是 Spring Framework）。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top/technical/java-adv-3/">https://blog.sjtuxhw.top/technical/java-adv-3/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Programming/">Programming</a><a class="post-meta__tags" href="/tags/Java/">Java</a><a class="post-meta__tags" href="/tags/GC/">GC</a><a class="post-meta__tags" href="/tags/Concurrent/">Concurrent</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/java-adv-3.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/review/algo-desgin-table/" title="算法设计知识点自查表"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/algo-design-table.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">算法设计知识点自查表</div></div><div class="info-2"><div class="info-item-1"> 四则运算、$\mathbf{Z}_N$ 下四则运算+幂运算复杂度；  欧几里得 GCD 递归复杂度证明；  拓展欧几里得算法求乘法逆元；  利用同余性质推算大数能否被整除；  费马小定理完整证明；  非 Carmichael 合数的费马测试证明；  对称加密、非对称加密、证书；  大师定理；  比较排序的时间下界证明（$n!$ 如何确定两边界？）；  快选算法在 25%-75% 判据下的时间复杂度；  矩阵算法、计数逆序（及拓展）时间复杂度推导、算法设计；  有向图中，有自环等价于存在回边的证明；  DAG 中，最大 post number 意味着源点、最小 post number 意味着汇点；  证明 DAG 中，至少有一个源点和一个汇点；   普通有向图中，最大 post number 意味着位于源点强连通部件内。但最小 post number 没有特性；  记忆：任何有向图的嵌图都是 DAG；  $G$ 中的源点强连通部件是 $G^R$ 中的汇点强连通部件；  证明：  DFS explore 子过程若从 $u$ 开始，必然以 $u$...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/technical/spring-boot-basic/" title="Java Spring Boot 入门"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/spring-boot.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-06</div><div class="info-item-2">Java Spring Boot 入门</div></div><div class="info-2"><div class="info-item-1"> 前置条件：WEB 基础（Socket，HTTP 整套规范），SQL 和数据库基础，Java 语言基础、前端基础（至少了解一种前端框架，本文以 React 为例）；  Chapter 0. Basic Concepts0.1 Servlet, war &amp; jar在接触 Web 框架时，你肯定能碰到一个绕不开的词：Servlet。它是什么？ Servlet 本质上就是一种规范，在 Java 的实现中就是一个 Web 规范接口。 所以，为什么要有这个规范？让我们回到最初的起点。  假设你什么框架都不用，想要徒手写一个能提供服务的服务器，那需要做哪些工作？ 其实原理比较简单，遵循当今互联网的 HTTP 协议发报文就行：  先编写基于多线程的 TCP 服务（Web 3.0 准备改用 UDP 了）； 然后在一个 TCP 连接中读取 HTTP 请求，发送 HTTP 响应即可；  但是其中还要考虑一些与网络协议相关、与业务逻辑无关的其他情况：  识别正确和错误的 HTTP 请求； 识别正确和错误的 HTTP 头； 复用 TCP 连接； 复用线程； IO...</div></div></div></a><a class="pagination-related" href="/technical/java-basic/" title="Java 学习笔记（1）"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/java1.jpeg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-28</div><div class="info-item-2">Java 学习笔记（1）</div></div><div class="info-2"><div class="info-item-1">Attention: 本文建立在具有一定 C++基础知识的前提上 Reference: Introduction to Java Programming 10th Edition (Y. Daniel Liang) 郑重声明：本文原创，资料引用已在原文相应位置进行标注，感谢为我们无偿提供知识和技术指导的创作者们，转载请注明   Basic Concepts解释型语言和编译型语言的区别编译型语言（以C++为例）的编译运行过程 预编译（*.c/cpp &amp; *.h —&gt; *.i ）：对应gcc/g++命令：gcc -E [xxx] -o [output.i] 展开所有宏定义#define（字符替换）； 处理所有条件预编译命令（#ifdef、#ifndef、#endif等）； 处理#include，具体操作是将指向的文件直接插入到文件的这一行（严格遵循上一步的条件）； 删除所有注释； 添加行号、文件标识，以便调试/编译出错时及时指出； 保留#pragma指令，以供编译器使用；   编译（*.i —&gt; *.s ，即高级语言转汇编语言）：对应gcc/g++命令：gcc...</div></div></div></a><a class="pagination-related" href="/technical/java-basic-2/" title="Java 学习笔记（二）"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/java2.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-02</div><div class="info-item-2">Java 学习笔记（二）</div></div><div class="info-2"><div class="info-item-1">Reference: Oracle Documentation Chapter 3. Java Record &amp; Java Bean3.1 Java Record在 Java 14 以后，官方引入了新的 Java 关键字：record； 那么这个 record 关键字究竟有什么用处呢？它和我们熟知的 class / interface / abstract class 又有什么区别呢？其实在 Java 14 以前，有一种需求写起来非常的麻烦，正因为这种需求才产生出了 record 关键字。这个需求是什么呢？ 举个例子，假如现在有个应用场景，想要定义一个数据类型，它只是用来存放一些数据（例如数据库查询的结果，或者是某个服务的返回信息）。 在很多实际情况下，我们希望使用这些数据就像 Java 内置基本类型一样，是不可变数据类型。这样做有几点好处：  复制构造时，不是引用传递，因此是深拷贝。这样使用起来和基本类型一样方便，但是又不用担心改错源数据（非引用链接）；  确保数据在多线程情况下无需同步，线程安全！   回忆下基础篇中的知识，要让 Java 类型（对象）behaves...</div></div></div></a><a class="pagination-related" href="/review/csapp-basic/" title="CSAPP Notes Basic"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-17</div><div class="info-item-2">CSAPP Notes Basic</div></div><div class="info-2"><div class="info-item-1">written by SJTU-XHW Reference:  CMU - 213, Computer Systems A Programmer’s Perspective 3rd Edition by Randal Bryant, David O’Hallaron 本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！ 内容很长，写起来很慢 😳   Chapter 0. Intro0.1 Ints are not Integers, Floats are not Reals $x^2\ge 0$：int（32-bit）may overflow； $a+(b+c)=(a+b)+c$：floats may discard some “unsignificant” digits；  0.2 Learn Assembly but never write it0.3 Memory Matters: Unbounded1234567891011121314typedef struct &#123;    int a[2];    double d;&#125;...</div></div></div></a><a class="pagination-related" href="/review/csapp-ecf-io/" title="CSAPP Notes: ECF &amp; I&#x2F;O"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp-ecf.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-16</div><div class="info-item-2">CSAPP Notes: ECF &amp; I&#x2F;O</div></div><div class="info-2"><div class="info-item-1">Chapter 13. Exceptional Control Flow 对应书中第 8 章。  异常控制流是现代计算机系统的一个相当重要的部分。 13.1 Control Flow 控制流：从机器打开到关闭的过程中，处理器只做一件事：读指令、执行指令，一个周期做一个指令。多核的机器则每个核心依次交替执行指令。这些指令序列被称为控制流。硬件正在执行的实际指令序列就被称为物理控制流。  改变内存中控制流的方法：分支 &amp; 跳转，过程调用 &amp; 返回（Branches &amp; Jumps &amp; Procedure call and return）；  都是对于程序状态变化的处理。    但以上的简单的改变控制流的方法对于处理复杂的系统级别的状态变化时，就显得非常拙劣。（例如 OS 协同软硬件的通信，如果还是以 if-else 的方法，那将会非常差劲）； 什么是 “系统级别的状态变化”？  数据从磁盘 / 网卡到达内存中； I/O 设备输入...</div></div></div></a><a class="pagination-related" href="/review/csapp-mm-cache/" title="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp-mh.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-10</div><div class="info-item-2">CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt</div></div><div class="info-2"><div class="info-item-1">Chapter 10. The Memory Hierarchy 本章将介绍系统的内存分层架构。  之前几章，我们对于内存的理解就是一个很大的字节数组，可以用地址作为下标进行访问。但事实上，真正的计算机的存储系统背后的设备层次结构设计远比这层抽象要复杂。 正是计算机的存储系统的层次结构对有限、离散资源的管理和抽象，才能让程序的内存看起来呈现出这种线性的数组结构。本章就来讨论计算机存储系统背后的层次结构。 10.1 Storage Technologies &amp; Trends在正式学习存储系统的层次结构前，有必要稍微弄清楚底层硬件的情况。 10.1.1 Random-Access Memory (RAM)当前大多数人所熟知的 “内存” 的一部分就是随机访问存储器（RAM），它具有以下的特征：  RAM 是个存储元件，I/O 吞吐速率快于绝大多数硬盘固件/磁盘（称为 “外存”）；  RAM 常常被打包放在 CPU 芯片中；  RAM 中每一个基本的存储单元被称为 单元胞（Cell），一个单元胞中存放 1 bit 数据；  很多个 RAM 芯片共同工作，组成了计算机的...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">SJTU-XHW</div><div class="author-info-description">A blog to document learning and life</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://blog.sjtuxhw.top/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! |•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-7-Java-Concurrent"><span class="toc-text">Chapter 7. Java Concurrent</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#7-1-Usage"><span class="toc-text">7.1 Usage</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-2-Synchronized-Methods"><span class="toc-text">7.2 Synchronized Methods</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-3-Reentrant-Synchronization"><span class="toc-text">7.3 Reentrant Synchronization</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-4-Atomic-Access-amp-Keyword-volatile"><span class="toc-text">7.4 Atomic Access &amp; Keyword volatile</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-5-Dead-Lock-Starvation-Live-Lock"><span class="toc-text">7.5 Dead Lock, Starvation, Live Lock</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-6-Condition-Variable-in-Java-Guarded-Blocks"><span class="toc-text">7.6 Condition Variable in Java: Guarded Blocks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-7-Immutable-Objects"><span class="toc-text">7.7 Immutable Objects</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-8-High-Level-Concurrency-Objects"><span class="toc-text">7.8 High Level Concurrency Objects</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-8-1-Lock-Objects"><span class="toc-text">7.8.1 Lock Objects</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-8-2-Executors"><span class="toc-text">7.8.2 Executors</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#A-Implementation-ThreadPoolExecutor"><span class="toc-text">A. Implementation: ThreadPoolExecutor</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#B-Implementation-ForkJoinTask"><span class="toc-text">B. Implementation: ForkJoinTask</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-8-3-Other-Utilities"><span class="toc-text">7.8.3 Other Utilities</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Concurrent-Collections"><span class="toc-text">Concurrent Collections</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Atomic-Variables"><span class="toc-text">Atomic Variables</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Virtual-Threads"><span class="toc-text">Virtual Threads</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-8-Java-Garbage-Collection"><span class="toc-text">Chapter 8. Java Garbage Collection</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#8-1-Problem-Definition"><span class="toc-text">8.1 Problem Definition</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-1-Why-amp-How"><span class="toc-text">8.1.1 Why &amp; How</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-2-GC-Metrics"><span class="toc-text">8.1.2 GC Metrics</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-2-Mark-amp-Swap"><span class="toc-text">8.2 Mark &amp; Swap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-3-Reference-Count"><span class="toc-text">8.3 Reference Count</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-4-Copy-Collection"><span class="toc-text">8.4 Copy Collection</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Optimizations"><span class="toc-text">Optimizations?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-5-General-Collection-Generations"><span class="toc-text">8.5 General Collection (Generations)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-1-Design"><span class="toc-text">8.5.1 Design</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-2-Patch-Ways-of-Remembering"><span class="toc-text">8.5.2 Patch: Ways of Remembering</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-6-Incremental-Collection"><span class="toc-text">8.6 Incremental Collection</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-7-Concurrent-Collection"><span class="toc-text">8.7 Concurrent Collection</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-8-Parallel-Scanvenge-Java"><span class="toc-text">8.8 Parallel Scanvenge (Java)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-9-G1GC-Java"><span class="toc-text">8.9 G1GC (Java)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-10-ZGC-Java"><span class="toc-text">8.10 ZGC (Java)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Tricky-Things"><span class="toc-text">Tricky Things</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#References-Coloring"><span class="toc-text">References Coloring</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Load-Barriers"><span class="toc-text">Load Barriers</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-11-Summary"><span class="toc-text">8.11 Summary</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Chapter-9-JDNI-amp-SPI"><span class="toc-text">Chapter 9. JDNI &amp; SPI</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/technical/java-adv-3/" title="Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/java-adv-3.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI"/></a><div class="content"><a class="title" href="/technical/java-adv-3/" title="Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI">Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI</a><time datetime="2025-01-06T05:44:06.000Z" title="发表于 2025-01-06 13:44:06">2025-01-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/review/algo-desgin-table/" title="算法设计知识点自查表"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/algo-design-table.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="算法设计知识点自查表"/></a><div class="content"><a class="title" href="/review/algo-desgin-table/" title="算法设计知识点自查表">算法设计知识点自查表</a><time datetime="2024-12-31T14:47:03.000Z" title="发表于 2024-12-31 22:47:03">2024-12-31</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/redis-starter/" title="Redis 入门：从实践到理论"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/redis.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis 入门：从实践到理论"/></a><div class="content"><a class="title" href="/technical/redis-starter/" title="Redis 入门：从实践到理论">Redis 入门：从实践到理论</a><time datetime="2024-11-12T13:05:37.000Z" title="发表于 2024-11-12 21:05:37">2024-11-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/python-sci-starter/" title="Python 科学计算入门"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/python_sci.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Python 科学计算入门"/></a><div class="content"><a class="title" href="/technical/python-sci-starter/" title="Python 科学计算入门">Python 科学计算入门</a><time datetime="2024-11-03T11:08:13.000Z" title="发表于 2024-11-03 19:08:13">2024-11-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/hilog-paper/" title="OpenHarmony Hilog 架构趣读"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/hilog-paper.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OpenHarmony Hilog 架构趣读"/></a><div class="content"><a class="title" href="/technical/hilog-paper/" title="OpenHarmony Hilog 架构趣读">OpenHarmony Hilog 架构趣读</a><time datetime="2024-10-29T05:14:04.000Z" title="发表于 2024-10-29 13:14:04">2024-10-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2025 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>Built With love &amp; </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Powered By </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><div style="display:flex;flex-flow:row;justify-content:center;align-items:center;"> <a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <span class="footer-separator">|</span> <a style="display:flex;flex-flow:row;align-items:center;" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> 本网站由 <img style="margin:0 3px;" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/upCloud_logo_blue.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"emoji":["https://unpkg.com/@waline/emojis@1.2.0/tw-emoji","https://unpkg.com/@waline/emojis@1.2.0/tieba"],"locale":{"reactionTitle":"你认为这篇文章怎么样？","placeholder":"给大佬递笔 XP\n[ Akismet AI Filter 🤖 ON ]"},"reaction":["https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsup.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsdown.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_antic.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_cool.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_sleepy.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_emm.gif"]}
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://waline.sjtuxhw.top/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script src="/js/rightmenu.js"></script><script src="/js/mourn.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
