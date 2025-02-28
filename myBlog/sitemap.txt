@@ -1,3 +1,4 @@
+https://blog.sjtuxhw.top/technical/pytorch-dim/
 https://blog.sjtuxhw.top/technical/java-adv-3/
 https://blog.sjtuxhw.top/review/algo-desgin-table/
 https://blog.sjtuxhw.top/talk/index.html
@@ -81,8 +82,8 @@ https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-3rd.html
 https://blog.sjtuxhw.top/dailyQ/%E6%9A%82%E5%81%9C%E6%9B%B4%E6%96%B0%E8%AF%B4%E6%98%8E.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-15th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-18th.html
-https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-1st.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-19th.html
+https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-1st.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-22th.html
 https://blog.sjtuxhw.top/categories/index.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-11th.html
@@ -92,8 +93,8 @@ https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-21th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-23th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-7th.html
 https://blog.sjtuxhw.top/about/index.html
-https://blog.sjtuxhw.top/friend-links/index.html
 https://blog.sjtuxhw.top/tags/index.html
+https://blog.sjtuxhw.top/friend-links/index.html
 https://blog.sjtuxhw.top/
 https://blog.sjtuxhw.top/tags/HDC/
 https://blog.sjtuxhw.top/tags/HarmonyOS/
@@ -124,9 +125,9 @@ https://blog.sjtuxhw.top/tags/JavaScript/
 https://blog.sjtuxhw.top/tags/Minecraft/
 https://blog.sjtuxhw.top/tags/Forge/
 https://blog.sjtuxhw.top/tags/make/
+https://blog.sjtuxhw.top/tags/Matlab/
 https://blog.sjtuxhw.top/tags/OS/
 https://blog.sjtuxhw.top/tags/Python/
-https://blog.sjtuxhw.top/tags/Matlab/
 https://blog.sjtuxhw.top/tags/React/
 https://blog.sjtuxhw.top/tags/Redis/
 https://blog.sjtuxhw.top/tags/SQL/
@@ -141,6 +142,8 @@ https://blog.sjtuxhw.top/tags/Appreciation/
 https://blog.sjtuxhw.top/tags/Flag/
 https://blog.sjtuxhw.top/tags/Qt/
 https://blog.sjtuxhw.top/tags/C/
+https://blog.sjtuxhw.top/tags/ML/
+https://blog.sjtuxhw.top/tags/PyTorch/
 https://blog.sjtuxhw.top/tags/Crawler/
 https://blog.sjtuxhw.top/tags/tease/
 https://blog.sjtuxhw.top/tags/holiday/

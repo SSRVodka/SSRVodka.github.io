@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>如何理解 PyTorch 函数的 dim 参数</title>
+      <link href="//technical/pytorch-dim/"/>
+      <url>//technical/pytorch-dim/</url>
+      
+        <content type="html"><![CDATA[<p>之前很长的一段时间内，我都不太清楚如何感性地理解 PyTorch 中的 <code>dim</code> 参数。最近琢磨到了一个还算比较好理解的方法，故简单记录在这里。</p><p><code>dim</code> 在 PyTorch 的很多函数中都可以指定，例如 <code>sum / mode / unsqueeze / topk</code> 等等，主要是告诉函数应该针对张量的哪个特定维度操作。</p><p>这在输入张量维度很高的时候就不那么直观了。虽说不理解问题不大，最多手写循环就能达到目的。但如果我们想尽量避免使用 python 的显式循环，或者还想要利用广播机制来更快的完成计算任务，就不得不总结一下了。</p><ul><li><p><strong><u>聚合类函数</u></strong>（<strong><u>减小维度数的运算</u></strong>，reduction operations），例如 <code>sum / mean / max / min / mode / topk</code> 等等；</p><ul><li><p><code>dim</code> 通常的语义是 “沿这个维度进行消除”，如果有指定 <code>keepdim=True</code>，则这个维度 size 压缩为 1；</p></li><li><p><code>dim</code> 的值就对应张量 shape 的索引；</p></li><li><p>被操作的每个元素的 shape 就是 原张量的 shape 在 <code>dim</code> 索引之后组成的新的 shape，即 <code>shape[dim+1:]</code>；</p></li></ul><blockquote><p>例如对于 <code>a = torch.tensor([ [ [[1],[2],[3]], [[2],[3],[4]] ], [ [[3],[4],[5]], [[4],[5],[6]] ] ])</code>，它的 shape 是 <code>(2, 2, 3, 1)</code>；</p><p>tips. <strong><u>对于高维张量的形状，请从外向里读，这样更清楚一点</u></strong>；</p><p>那么 <code>sum(a, dim=2)</code> 的含义就是沿着 size 为 3 的维度（shape 索引是 2）相加，被求和的元素的 shape 就是原 shape 中索引为 2 向后的组成的。不难发现 size 为 3 的维度的元素是 shape 是 <code>(1,)</code> 的子元素，把子元素加起来就行，答案应该是 <code>[ [ [[6]], [[9]] ], [ [[12]], [[15]] ] ]</code>；</p><p>再来个简单的：<code>b = torch.tensor([[1,2,3], [4,5,6]])</code>，这个 <code>(2,3)</code> 的张量是不是就非常清楚了？我们计算 <code>sum(b, dim=0)</code> 就是对 size 为 2 的维度求和，也就是元素是 shape <code>(3,)</code> 的张量求和，答案显然是 <code>[[5,7,9]]</code>；</p></blockquote></li><li><p><strong><u>拼接类函数</u></strong>（<strong><u>不改变维度数的运算</u></strong>），例如 <code>cat</code> 等，<code>dim</code> 通常的语义是 “拼接的方向”；</p><ul><li>“拼接的方向” 是指，拼接后 size 有变化的维度；例如 <code>a = torch.zeros(2, 3); b = torch.zeros(2, 4)</code>，<code>torch.cat([a,b], dim=1)</code> 就是让行对齐、列增大的拼接方式；</li><li>拼接得到的张量的 shape 和原张量的 shape 的维度数相同，只是某个维度上的 size 有所不同；</li></ul></li><li><p><strong><u>扩展类函数</u></strong>（<strong><u>增加维度数的运算</u></strong>，expansion operations），例如 <code>unsqueeze / stack</code> 等，<code>dim</code> 通常的语义是在原张量的指定维度下添加 size 为 N ($N\ge1$) 的维度；</p><ul><li><p>对于 <code>unsqueeze</code>，没有向张量引入其他信息，只是在原张量 shape 索引为 <code>dim</code> 的位置插入 1 来扩展；</p></li><li><p>比较难以理解的是 <code>stack</code>，很多人会把 <code>stack</code> 和 <code>cat</code> 的作用搞混。但我们只需要搞清楚本质上 <code>stack</code> 是维度扩展类函数，而 <code>cat</code> 则是拼接类函数，就行了！<code>cat</code> 不改变张量的维度，只是将两个或以上张量在已有维度上拼接；而 <code>stack</code> 则是通过新增一个维度来连接两个张量。</p><p>像 <code>a = torch.zeros(2,3); b = torch.ones(2,3)</code>，如果执行 <code>torch.stack([a,b], dim=2)</code>，则是在原张量 shape 为 <code>(2,3)</code> 的情况下构造一个 shape 为 <code>(2,3,2)</code> 的新张量（在 shape 索引为 <code>dim=2</code> 的位置插入一个 size=2 的维度，分别装 <code>a</code> 和 <code>b</code>）。至于最终如何表示输出的张量，很简单，就是在第三个维度把两个张量排在一起，这么表示：<code>[[[0, 1], [0, 1], [0, 1]], [[0, 1], [0, 1], [0, 1]]]</code>，还好只有 3 维，我们可以感性地画出来：</p><p><img src="imgs/pth_stack.jpg" width="450px" /></p></li></ul></li></ul><p>综上，在维度很高、没法感性理解的时候，可以尝试列出输入的 shape（从外向内读），然后在你要执行的函数中指定 <code>dim</code>，按规则写出输出的 shape，你就能清楚这个操作究竟在做什么了。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> technical </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> AI </tag>
+            
+            <tag> ML </tag>
+            
+            <tag> PyTorch </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Java 进阶（三）：垃圾回收、并发、JDNI &amp; SPI</title>
       <link href="//technical/java-adv-3/"/>
       <url>//technical/java-adv-3/</url>
