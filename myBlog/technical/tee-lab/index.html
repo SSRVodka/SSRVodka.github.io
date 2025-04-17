@@ -1,0 +1,608 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>机密计算与TEE：知识整理和试验笔记 | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Part 1. 机密计算与 TEE 技术入门知识整理本节参考文献参见 1.5 节。 1.0 Background为了防止未经授权的访问，数据安全性是基于三种方面构建的，即静态存储数据、传输中数据、和使用中数据。 业界目睹了几项引人注目的内存抓取（例如 Target 信用卡和个人信息泄露事件）和 CPU 侧信道攻击，还有许多虚拟机管理程序（Hypervisor）漏洞也被报道出来，这些攻击和漏洞的报道">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机密计算与TEE：知识整理和试验笔记">
+<meta property="og:url" content="https://blog.sjtuxhw.top/technical/tee-lab/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="Part 1. 机密计算与 TEE 技术入门知识整理本节参考文献参见 1.5 节。 1.0 Background为了防止未经授权的访问，数据安全性是基于三种方面构建的，即静态存储数据、传输中数据、和使用中数据。 业界目睹了几项引人注目的内存抓取（例如 Target 信用卡和个人信息泄露事件）和 CPU 侧信道攻击，还有许多虚拟机管理程序（Hypervisor）漏洞也被报道出来，这些攻击和漏洞的报道">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/tee-lab.jpg">
+<meta property="article:published_time" content="2025-04-17T15:31:36.000Z">
+<meta property="article:modified_time" content="2025-04-17T15:53:43.512Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="TEE">
+<meta property="article:tag" content="TrustZone">
+<meta property="article:tag" content="OpenHarmony">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/tee-lab.jpg"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.sjtuxhw.top/technical/tee-lab/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功 ヾ(≧∇≦*)ゝ',
+    error: '复制失败 (#`皿´)',
+    noSupport: '浏览器不支持 ╮(╯_╰)╭'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#333","bgDark":"#1f1f1f","position":"top-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '机密计算与TEE：知识整理和试验笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="/css/mouseConfig.css"/><link rel="stylesheet" href="/css/rightmenu.css"/><link rel="stylesheet" href="/css/custom_music.css"/><link rel="stylesheet" href="/css/addFonts.css"/><link rel="stylesheet" href="/css/titleFonts.css"/><link rel="stylesheet" href="/css/talk.css"/><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div id="main-loading-bg"><div class="truckWrapper"><div class="truckBody"><svg class="trucksvg" viewBox="0 0 198 93" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z" fill="currentColor" stroke="#282828" stroke-width="3"></path><path d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z" fill="#7D7C7C" stroke="#282828" stroke-width="3"></path><path d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z" fill="#282828" stroke="#282828" stroke-width="2"></path><rect x="187" y="63" width="5" height="7" rx="1" fill="#FFFCAB" stroke="#282828" stroke-width="2"></rect><rect x="193" y="81" width="4" height="11" rx="1" fill="#282828" stroke="#282828" stroke-width="2"></rect><rect x="6.5" y="1.5" width="121" height="90" rx="2.5" fill="#DFDFDF" stroke="#282828" stroke-width="3"></rect><rect x="1" y="84" width="6" height="4" rx="2" fill="#DFDFDF" stroke="#282828" stroke-width="2"></rect></svg></div><div class="truckTires"><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg></div><div class="road"></div><svg class="lampPost" fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 453.459 453.459" xml:space="preserve"><path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993 c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514 c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16 c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914 h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75 v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795 V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017 h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path></svg></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+      setTimeout(() => {
+        $loadingBox.style.display = 'none'
+      }, 800)
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()
+</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">75</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.sjtuxhw.top/cover_imgs/tee-lab.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/head_icon.png" alt="Logo"><span class="site-name">SJTU-XHW's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">机密计算与TEE：知识整理和试验笔记</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">机密计算与TEE：知识整理和试验笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-17T15:31:36.000Z" title="发表于 2025-04-17 23:31:36">2025-04-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-17T15:53:43.512Z" title="更新于 2025-04-17 23:53:43">2025-04-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">8.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>29分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/technical/tee-lab/#post-comment"><span class="waline-comment-count" data-path="/technical/tee-lab/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="Part-1-机密计算与-TEE-技术入门知识整理"><a href="#Part-1-机密计算与-TEE-技术入门知识整理" class="headerlink" title="Part 1. 机密计算与 TEE 技术入门知识整理"></a>Part 1. 机密计算与 TEE 技术入门知识整理</h2><p>本节参考文献参见 1.5 节。</p>
+<h2 id="1-0-Background"><a href="#1-0-Background" class="headerlink" title="1.0 Background"></a>1.0 Background</h2><p>为了防止未经授权的访问，数据安全性是基于三种方面构建的，即静态存储数据、传输中数据、和使用中数据。</p>
+<p>业界目睹了几项引人注目的内存抓取（例如 Target 信用卡和个人信息泄露事件）和 CPU 侧信道攻击，还有许多虚拟机管理程序（Hypervisor）漏洞也被报道出来，这些攻击和漏洞的报道显著提高了业界对  “使用中数据”的关注，另外，涉及恶意软件注入的著名攻击事件，例如 Triton 攻击和乌克兰电网袭击，更是使得保护“正在使用的数据”成为数据安全领域迫在眉睫的努力方向。</p>
+<p>机密计算就是针对数据在使用过程中的安全问题所提出的一种解决方案。它是一种基于硬件的技术，将数据、特定功能、应用程序，同操作系统、系统管理程序或虚拟机管理器以及其他特定进程隔离开来，让数据存储在受信任的执行环境（TEE）中，即使是使用调试器，也无法从外部查看数据或者执行操作。TEE 确保只有经过授权的代码才能访问数据，如果代码被篡改，TEE 将阻止其继续进行操作。</p>
+<h4 id="为什么机密计算需要以硬件为基础？"><a href="#为什么机密计算需要以硬件为基础？" class="headerlink" title="为什么机密计算需要以硬件为基础？"></a>为什么机密计算需要以硬件为基础？</h4><p>由于计算架构中任何层级中的安全性都可能因为基础层的漏洞而功亏一篑，任何计算层级的安全性取决在其之下层级的安全性。这个共识推动了对最低层安全解决方案的需求，直至硬件的硅组件。  </p>
+<p>通过为最低层硬件提供安全性，最大程度降低了对整个计算架构参与方依赖性，可以从所需受信任方列表中删除操作系统和设备驱动程序供应商，平台和外围设备供应商以及服务提供商及其系统管理员，从而减少在系统生命周期中任何时刻遭受潜在危害的风险。</p>
+<h2 id="1-1-Basic-Concepts"><a href="#1-1-Basic-Concepts" class="headerlink" title="1.1 Basic Concepts"></a>1.1 Basic Concepts</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/words.png" /></p>
+<p>补充：GP，2010 年 7 月 GP（Global Platform，全球平台组织）提出了 TEE 可信执行环境的设计，他们设计的 API 被称为 GlobalPlatform API。该组织致力于跨行业协作，识别、开发和发布规范，以促进在安全芯片技术上安全且可互操作地部署和管理多个嵌入式应用程序。</p>
+<p>先以 ARM 的 TrustZone 为例。随着智能手机的普及，手机上数据的价值越来越高，如电子支付密码（包括传统密码、指纹、人脸），带版权信息的数据等。为了进一步保护这些数据的安全，ARM 提出了 TrustZone 技术，其原理是将 CPU 的工作状态和其它相关硬件资源（中断、内存、外设和 cache 等）划分为安全（secure）和非安全（normal）两种类型，来达到数据隔离与保护。</p>
+<blockquote>
+<p>当 CPU 运行在 normal 状态时，将只能访问 non secure 空间的资源，而不能访问 secure 资源。当 CPU 运行在 secure 状态时，既能访问 non  secure 资源，也能访问 secure 资源；</p>
+</blockquote>
+<p>然后在 ARM 上，基于 Trustzone 技术实现了 TEE ，与之对应的是 REE，一般称 TEE 为 Secure World，REE 为 Normal World。OP-TEE（开源的 TEE OS）运行中 Secure World 里边，普通 OS（如 Linux，AOSP 等）运行在 Normal World 里边；</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/tee-arch.png" width="450px" /></p>
+<p>TEE 的特点：</p>
+<ul>
+<li>受硬件保护机制：TEE 隔离于 REE，只通过特定的入口于 TEE 通信，并不规定某一种硬件实现方法；</li>
+<li>高性能：TEE 运行时使用 CPU 的全部性能；</li>
+<li>快速通信机制：TEE 可以访问 REE 的内存，REE 无法访问受硬件保护的 TEE 内存；</li>
+</ul>
+<p>非安全操作系统在 TEE 规范中被称为富执行环境 (REE)。它通常是 Linux 操作系统的一个变种，例如 GNU/Linux 发行版或 AOSP。 </p>
+<p>TEE 的设计在 ARM 架构上主要依靠 TrustZone 技术作为底层硬件隔离机制。然而，它的结构也使其能够与任何符合 TEE 概念和目标的隔离技术兼容，例如以虚拟机形式运行或在专用 CPU 上运行。</p>
+<p>TEE 的主要设计目标是：</p>
+<ul>
+<li>隔离：TEE 提供与非安全操作系统的隔离，并使用底层硬件支持保护已加载的可信应用程序 (TA) 彼此隔离；</li>
+<li>占用空间小：TEE 应保持足够小，以便驻留在合理数量的片上内存中，就像基于 ARM 的系统一样；</li>
+<li>可移植性：TEE 旨在轻松插入到不同的架构和可用的硬件，并且必须支持各种设置，例如多个客户端操作系统或多个 TEE。</li>
+</ul>
+<p>研究者提供了三个类别用于比较不同的 TEE 实现，即<strong>功能性，安全性和可部署性</strong>：</p>
+<ul>
+<li><strong>功能标准</strong>：包括受保护的执行，密封存储，受保护的输入，受保护的输出和验证等环节，总体而言，这些标准衡量了整个使用周期中数据的物理保护，即接收，输入，处理，输出和验证；</li>
+<li><strong>安全标准</strong>：包括数据隔离，信息流控制，清理，损害限制。此类别更侧重于避免对系统进行特定攻击的机制；</li>
+<li><strong>可部署性</strong>：标准衡量了采用的障碍，包括对现有系统的支持，成本，开销和 SEE（Secure Execution Environment）性能；</li>
+</ul>
+<blockquote>
+<p>由于功能和安全性标准之间存在一些重叠，只需要关注重点部分。</p>
+</blockquote>
+<h2 id="1-2-启动流程？"><a href="#1-2-启动流程？" class="headerlink" title="1.2 启动流程？"></a>1.2 启动流程？</h2><p>根据 GP 标准，TEE 的启动流程只在系统启动时执行一次，要求：</p>
+<ul>
+<li>启动流程至少建立一个信任根 (RoT)，需要一些机制和方法去实现；</li>
+<li>一般情况下启动基于 ROM 代码：允许其他实现、依次验证加载的代码；</li>
+<li>一般情况下 TEE 首先启动：阻止 REE 接口生效。 Trusted OS 首先启动，再启动 REE；</li>
+</ul>
+<h2 id="1-3-主流的基于硬件-TEE-技术"><a href="#1-3-主流的基于硬件-TEE-技术" class="headerlink" title="1.3 主流的基于硬件 TEE 技术"></a>1.3 主流的基于硬件 TEE 技术</h2><h3 id="1-3-1-ARM-TrustZone"><a href="#1-3-1-ARM-TrustZone" class="headerlink" title="1.3.1 ARM TrustZone"></a>1.3.1 ARM TrustZone</h3><p>架构：</p>
+<ul>
+<li>每个物理的处理器内核提供了两个虚拟内核：一个被认为是非安全的，被称为“非安全区”（Normal World），另一个被认为是安全的，被称为“安全区”（Secure World）；</li>
+<li>以及一个在两者之间的上下文切换机制，称为监视模式（<code>EL3</code>）；</li>
+<li>硬件支持：ARM-v8 本身支持名为 secure mode 的模式，用来区分 normal mode。通过设置 Secure Configuration Register 系统寄存器来使能该模式的支持，该寄存器的最后 1 bit 为 0 的话，则表示当前 CPU 处于为 secure mode（注意和特权级不一样）；</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/arm-secure-mode.jpg" width="450px" /></p>
+<p>调用方式（最简单的情况下）：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/tee-call.png" width="450px" /></p>
+<p>当非安全区的用户模式需要获取安全区的服务时，</p>
+<ol>
+<li>首先需要进入到非安全区的特权模式（Normal World 的 Rich OS 内核态）；</li>
+<li>在该模式下调用 SMC（System Monitor  Call），处理器将进入到监视模式；</li>
+<li>监视模式备份非安全区的上下文，然后进入到安全区的特权模式，此时的运行环境是安全区的执行环境；</li>
+<li>此后进入到安全区的用户模式，执行相应的安全服务；</li>
+<li>原路返回；</li>
+</ol>
+<p>上述 Normal World 和 Secure World 的区分可以是物理的，也可以是虚拟的。</p>
+<p>物理和安全处理器以<strong><u>时间分割</u></strong>的方式共享物理处理器核心（分时复用？中断、调度是如何保证的？），这给了两个区域一个幻想，即它完全拥有处理器；</p>
+<blockquote>
+<p>这也给 Secure World 一个机会，使构建隔离的可编程环境成为可能，该环境可以运行各种安全应用程序。</p>
+</blockquote>
+<h3 id="1-3-2-Intel-SGX-Software-Guard-eXtensions"><a href="#1-3-2-Intel-SGX-Software-Guard-eXtensions" class="headerlink" title="1.3.2 Intel SGX (Software Guard eXtensions)"></a>1.3.2 Intel SGX (Software Guard eXtensions)</h3><ul>
+<li><p>是对 Intel 架构的扩展。在原有架构上增加了一组新的指令集和内存访问机制；这些扩展允许应用程序实现一个被称为安全区（enclave）的容器，在应用程序的地址空间（用户态）中划分出一块被保护的区域，为容器内的代码和数据提供机密性和完整性的保护；</p>
+</li>
+<li><p>这块有限大小的加密内存区域称为 Enclave Page Cache（EPC），支持 32MB，64MB 或 128MB （SGX2 可支持 256MB）；</p>
+</li>
+<li><p>SGX 通过硬件访问控制机制来保护 Enclave 的内存。容器中的信息不会被特殊权限的恶意软件的破坏，即使底层的高特权系统软件（例如 OS 或虚拟机管理程序）是恶意的或已被破坏，SGX 仍可抵抗物理内存访问类的攻击；</p>
+<ul>
+<li>从外到内访问（非法）：Page Fault；</li>
+<li>从内到外访问（合法）：由操作系统内存管理策略控制，而且 Enclave 只能在 Ring 3（用户态）请求系统调用；</li>
+</ul>
+</li>
+<li><p>SGX 的实现需要处理器、内存管理部件、BIOS、驱动程序、运行时环境等软硬件协同完成。除了提供内存隔离与保护安全属性，SGX 架构还支持远程认证和密封的功能，可用于安全软件应用和交互协议的设计；</p>
+</li>
+<li><p>SGX 安全模型：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/intel-sgx.png" width="250px" /></p>
+<ul>
+<li><strong>可信计算基（Trusted Computing Base，TCB）</strong>被视为 CPU 组件，而系统的其他部分则被视为不可信任；</li>
+<li>每个 SGX 应用程序至少包含两个不同的部分。 位于 Secure World 内部并在 Enclave Page Cache（EPC）中执行的受信任代码，以及位于不受信任的系统内存中并执行的不受信任的代码；</li>
+<li>不可信任的部分创建 Enclave，并且定义 entry point，然后执行放置在 Enclave Page Cache 的、加密且受信任的内存中的 Secure World 程序；</li>
+<li>Secure World 初始化后，不受信任的代码通过调用 <code>EENTER</code> 指令来调用 Enclave 代码，该指令将处理器模式从保护模式切换到安全区模式；然后处理器在 Enclave 内执行被调用的代码。调用 <code>EEXIT</code> 指令会导致 Enclave 内执行线程退出 Enclave，并且执行流程返回到不受信任的代码；</li>
+</ul>
+</li>
+<li><p>除了用户创建的 Enclave 外，SGX 还使用了一些基础架构 Enclave（例如 Reference Enclave 和 Configuration Enclave）为本地或远程验证机制提供支持；</p>
+</li>
+<li><p>SGX 提供了一个可以保护静态 Enclave 数据的 Enclave 密封机制，可以在系统内存和 EPC 之间安全封送数据，并且使用硬件内存加密引擎（MEE）来对数据进行加密和解密。</p>
+</li>
+<li><p>SGX 支持 Enclave 内部的多线程处理：每个 APP 都可以有自己独立的 TEE，甚至可以创建多个 TEE Enclave；</p>
+</li>
+</ul>
+<h3 id="1-3-3-AMD-SEV-Secure-Encrypted-Virtualization"><a href="#1-3-3-AMD-SEV-Secure-Encrypted-Virtualization" class="headerlink" title="1.3.3 AMD SEV (Secure Encrypted Virtualization)"></a>1.3.3 AMD SEV (Secure Encrypted Virtualization)</h3><ul>
+<li><p>内存加密方案。对整个操作系统进行内存加密，操作系统本身在 TCB（Trust Computing Base）中。可以防止通过总线/ DRAM 遭受物理攻击；</p>
+</li>
+<li><p>通过提供加密的 VM 隔离来解决高特权系统软件类别的攻击，每个虚拟机使用一个密钥隔离客户机系统和虚拟机管理程序；</p>
+</li>
+<li><p>密钥由 AMD 安全处理器生成和管理，内存控制器中嵌入了AES-128 加密引擎。 提供适当的密钥后，将自动对主存储器（memory）中的数据进行加密和解密；</p>
+</li>
+<li><p>系统管理程序（Hypervisor）更改通过使用硬件虚拟化指令以及与 AMD 安全处理器的通信来管理内存控制器中相应的密钥。也就是说<strong><u>系统组件（比如系统管理程序）试图读取客户机的内存时，只能看到被加密后的字节</u></strong>；</p>
+</li>
+<li><p>AMD SEV VM 使用客户机中页表中的加密比特 C 来控制一个内存页是私密的还是共享的，比特 C 的位置有具体实现定义，可以是物理地址的最高位。</p>
+<ul>
+<li><p>VM 标记共享（非加密）内存页时，C bit = 0，表明不必使用该 VM 的内存加密密钥对其加密；</p>
+</li>
+<li><p>私密（加密）内存页只能用于 VM，标记 C bit = 1。一个典型的 VM 中，大多数内存页被标记为私密的，只有那些与外部通信的内存页才会标记为共享的；</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/amd-sev.jpg" width="550px" /></p>
+</li>
+</ul>
+</li>
+<li><p>2017 年 AMD 又引入了 SEV-ES（Encrypted State）增加了对 CPU 寄存器状态的保护，当 VM 停止运行时，将加密所有 CPU 寄存器的内容；</p>
+<blockquote>
+<p>这样可以防止将 CPU 寄存器中的信息泄露给虚拟机管理程序之类的组件，甚至可以检测到对 CPU 寄存器状态的恶意修改。</p>
+</blockquote>
+</li>
+<li><p>AMD 又推出了 SEV-SNP。其建立在原始的 AMD SEV 和 SEV-ES 的基础上，可提供额外的基于硬件的内存完整性保护，以抵御基于管理程序的攻击，比如：数据回放、内存重新映射等。</p>
+<ul>
+<li>基本原理：如果 VM 能够读取内存的私有（加密）页面，则在它下次操作前必须始终只能读到最后一次写入的值。这意味着，如果 VM 将值 A 写入内存位置 X ，每当以后读取 X 时，它要么必须看到值 A，要么必须得到一个异常，指示无法读取内存。</li>
+</ul>
+</li>
+<li><p>该方案多用于云中的应用，可保护数据免受 CSP（Cloud Solution Provider）的侵害；</p>
+</li>
+</ul>
+<h3 id="1-3-4-Apple-SEP-Secure-Enclave-Processor"><a href="#1-3-4-Apple-SEP-Secure-Enclave-Processor" class="headerlink" title="1.3.4 Apple SEP (Secure Enclave Processor)"></a>1.3.4 Apple SEP (Secure Enclave Processor)</h3><ul>
+<li><p>使用一个独立于主处理器外的安全协处理器，其中包括基于硬件的密钥管理器，可提供额外的安全性保护。</p>
+<ul>
+<li>安全隔离区处理器是在片上系统（SoC）内制造的协处理器；它使用加密的内存，并包括一个硬件随机数生成器；</li>
+<li>安全协处理器提供了用于数据保护密钥管理的所有加密操作，即使内核受到威胁，也可以维护数据保护的完整性；</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/apple-sep.jpg" width="450px" /></p>
+</li>
+<li><p>安全隔区是集成到 Apple 片上系统 (SoC) 的专用安全子系统，由安全隔区处理器提供主要计算能力；</p>
+</li>
+<li><p>安全隔区与应用程序处理器之间的通信受到严格的控制：将其隔离到一个中断驱动的邮箱以及共享的内存数据缓冲区；</p>
+</li>
+<li><p>安全隔区包括一个专用的安全隔区 Boot ROM。与应用程序处理器 Boot ROM 类似，安全隔区 Boot ROM 也是不可更改的代码，用于为安全隔区建立硬件信任根；</p>
+</li>
+</ul>
+<h3 id="1-3-5-小结"><a href="#1-3-5-小结" class="headerlink" title="1.3.5 小结"></a>1.3.5 小结</h3><ul>
+<li><p>ARM TrustZone，利用硬件监督模式（<code>EL3</code>），使用指令或中断在同一处理器上的执行环境之间切换，像更高一级 “OS” 在 Secure World（Rich OS）和 Normal World（TEE OS）间调度和切换；</p>
+</li>
+<li><p>Intel SGX，用户态安全 Enclave，对特定区域的内存进行加密保护，在一个用户态进程内形成安全容器，对其中从 RAM 进出的内存数据进行加密，TCB 的规模最小（只有硬件和这个 Enclave），可以使用原本的系统调用（因为用户态），初始代码是从普通空间复制而来，不是加密信息；</p>
+<blockquote>
+<p>这个方案只有远程校验才能从外部加载/存储密钥；</p>
+</blockquote>
+</li>
+<li><p>AMD SEV，对整个 OS 内存加密，OS 本身就在 TCB 中，可以防止通过总线/ DRAM 遭受物理攻击，当客户机从租户获得密钥时，加密可以扩展到虚拟化环境；</p>
+</li>
+<li><p>Apple SEP，使用协处理器方案，即芯片组或 SoC 中内置协处理器，内部带有单独的操作系统和应用程序，应用通过安全信道与外部通信，通常包括加密引擎；</p>
+</li>
+</ul>
+<h2 id="1-4-GP-API"><a href="#1-4-GP-API" class="headerlink" title="1.4 GP API"></a>1.4 GP API</h2><p>GlobalPlatform 组织提供的 TEE API 规定了大多数适用场景所需的方法。一般情况下，REE 侧构成：</p>
+<ul>
+<li>CA（Client APP）对应一些上层应用，比如指纹采集、支付应用等，通过调用 TEE Client API 实现与 TEE 环境的交互；</li>
+<li>REE Communication Agent 为 TA 和 CA 之间的消息传递提供了 REE 支持；</li>
+<li>TEE Client API 是 REE 中的 TEE 驱动程序提供给外部的接口，可以使运行在 REE 中的 CA 能够与运行在 TEE 中的 TA 交换数据。</li>
+</ul>
+<p>TEE 侧构成：</p>
+<ul>
+<li>TA（Trusted  Application）是 TEE 中完成特定功能的应用；</li>
+<li>TEE Communication Agent 是可信操作系统的特殊组成部分，它与 REE Communication Agent 一起工作，使 TA 与 CA 之间安全地传输消息；</li>
+<li>TEE Internal Core API 是 TEE 操作系统提供给 TA 调用的内部接口，包括密码学算法，内存管理等功能；</li>
+<li>Trusted Device Drivers 可信设备驱动程序，为专用于 TEE 的可信外设提供通信接口；</li>
+<li>Shared Memory 是一块只有 CA 和 TA 可以访问的一块安全内存，CA 和 TA 通过共享内存来快速有效传输指令和数据；</li>
+</ul>
+<p>CA 常用接口：</p>
+<ul>
+<li><code>TEEC_InitializeContext</code>：对变量 Context 进行初始化配置，用来建立 CA 和 TEE 的联系，向 TEE 申请共享内存地址用于存放数据；</li>
+<li><code>TEEC_OpenSession</code>：建立一个 CA 和 TA 间的 session，用于 CA 和 UUID 指定的 TA 进行通信，是 CA 连接 TA 的起始点；</li>
+<li><code>TEEC_InvokeCommand</code>：依靠打开的 session，将传送命令请求给 TA，并将必要的指令执行参数一并发送给 TA；</li>
+<li><code>TEEC_CloseSession</code>：关闭 session，关闭 CA 和 TA 之间的通道；</li>
+<li><code>TEEC_FinalizeContext</code>：释放 Context，结束 CA 与 TEE 的连接；</li>
+</ul>
+<p>TA 接口：</p>
+<ul>
+<li><code>TA_CreateEntryPoint/TA_DestroyEntryPoint</code>：为 CA 建立/移除接入点，注册/取消 TA 的服务；</li>
+<li><code>TA_OpenSessionEntryPoint/TA_CloseSessionEntryPoint</code>：建立/关闭 CA 与 TA 之间的通讯通道；</li>
+<li><code>TA_InvokeCommandEntryPoint</code>：接收 CA 传送的指令和参数，并在这 TEE 侧执行；</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/tee-routine.png" width="450px" /></p>
+<h2 id="1-5-本部分参考文献"><a href="#1-5-本部分参考文献" class="headerlink" title="1.5 本部分参考文献"></a>1.5 本部分参考文献</h2><ul>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://optee.readthedocs.io/en/latest/">Optee Doc</a>；</li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://blog.csdn.net/feelabclihu/article/details/128157100">TEE SMC 理解 - CSDN</a>；</li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://zhuanlan.zhihu.com/p/401632688">浅谈基于硬件TEE的技术方案 - 知乎</a>；</li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://www.jianshu.com/p/929d806f7caf">TEE和MesaTEE - 简书</a>；</li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://kickstartembedded.com/2022/11/07/op-tee-part-3-setting-up-op-tee-on-qemu-raspberry-pi-3/">OP-TEE: Part 3 – Setting up OP-TEE on QEMU &amp; Raspberry Pi 3</a>；</li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://cs.brown.edu/courses/csci2390/2019/notes/s18-ryoan.pdf">TEE Thread Model - CS BROWN EDU</a>；</li>
+</ul>
+<h2 id="Part-2-TEE-的-OS-移植笔记-ARM"><a href="#Part-2-TEE-的-OS-移植笔记-ARM" class="headerlink" title="Part 2. TEE 的 OS 移植笔记 (ARM)"></a>Part 2. TEE 的 OS 移植笔记 (ARM)</h2><h2 id="2-1-Revisit-ARM-TrustZone"><a href="#2-1-Revisit-ARM-TrustZone" class="headerlink" title="2.1 Revisit: ARM TrustZone"></a>2.1 Revisit: ARM TrustZone</h2><h3 id="2-1-1-Basic-Settings"><a href="#2-1-1-Basic-Settings" class="headerlink" title="2.1.1 Basic Settings"></a>2.1.1 Basic Settings</h3><p>ARM 从 ARMv6 的架构开始引入了 TrustZone 技术。</p>
+<p> TrustZone 在硬件层面，借助 Secure Configuration Register（SCR）将 CPU 的工作状态分为了<strong>正常世界状态 （Normal World Status，NWS）和安全世界状态 （Secure World Status，SWS）</strong>。</p>
+<blockquote>
+<p>CPU 在访问安全设备或者安全内存地址空间时，芯片级别的安全扩展组件会去<strong>校验 CPU 发送的访问请求的安全状态读写信号位</strong>（Non-secure bit，NS bit）是 0 还是 1，以此来判定当前 CPU 发送的资源访问请求是安全请求还是非安全请求。</p>
+<p>而处于非安全状态的 CPU 将访问指令发送到系统总线上时，其访问请求的安全状态读写信号位都会被强制设置成 1，表示当前 CPU 的访问请求为非安全请求。</p>
+<p>而非安全请求试图去访问安全资源时会被安全扩展组件认为是非法访问的，于是就禁止其访问安全资源，因此该 CPU 访问请求的返回结果要么是访问失败，要么就是返回无效结果，这也就实现了对系统资源硬件级别的安全隔离和保护。</p>
+</blockquote>
+<p>支持 TrustZone 的芯片提供了对外围硬件资源的硬件级别的保护和安全隔离。当 CPU 处于正常世界状态时，任何应用（包括 Rich OS）都无法访问安全硬件设备，也无法访问属于安全世界状态下的内存、缓存（Cache）以及其他外围安全硬件设备。总的来说，TrustZone 需要起到以下作用：</p>
+<ul>
+<li>隔离功能（安全状态和非安全状态）；</li>
+<li>外设和内存 （物理上分开）；</li>
+<li>总线请求；</li>
+</ul>
+<p>这是一个支持 TZ 的 SoC：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/arm-tz-soc.png" width="650px" /></p>
+<p>TEE 支持基于 TrustZone 提供可信运行环境，为开发人员提供了 API，以方便他们开发实际应用程序。</p>
+<p>在实际应用时，可以将用户的敏感数据保存到 TEE 中，并由可信应用（TA）使用重要算法和处理逻辑来完成对数据的处理。当需要使用用户的敏感数据做身份验证时，则通过在 REE 侧定义具体的请求编号（ID）从 TEE  侧获取验证结果。验证的整个过程中用户的敏感数据始终处于 TEE 中，REE 侧无法查看到任何 TEE 中的数据。对于 REE 而言，TEE 中的 TA 相当于一个黑盒，只会接受有限且提前定义好的合法调用（TEEC），而至于这些合法调用到底是什么作用，会使用哪些数据，做哪些操作在 REE 侧是无法知晓的。如果在 REE 侧发送的调用请求是非法请求，TEE 内的 TA 是不会有任何的响应或是仅返回错误代码，并不会暴露任何数据给 REE 侧。</p>
+<p>TEE 的系统配置、内部逻辑、安全设备和安全资源的划分是与 CPU 的集成电路设计紧密挂钩的，<strong>使用 ARM 架构设计的不同 CPU，TEE 的配置完全不一样</strong>。国内外针对不同领域的 CPU 也具有不同的 TEE 解决方案。</p>
+<p>这里我想选择开源的 OPTEE 来进行移植，因为它文档支持丰富、提供了完整的 SDK、遵循 GP API。</p>
+<h3 id="2-1-2-ARM-v8-的-TrustZone"><a href="#2-1-2-ARM-v8-的-TrustZone" class="headerlink" title="2.1.2 ARM-v8 的 TrustZone"></a>2.1.2 ARM-v8 的 TrustZone</h3><h3 id="2-1-3-总线安全扩展"><a href="#2-1-3-总线安全扩展" class="headerlink" title="2.1.3 总线安全扩展"></a>2.1.3 总线安全扩展</h3><h3 id="2-1-4-TrustZone-中断控制"><a href="#2-1-4-TrustZone-中断控制" class="headerlink" title="2.1.4 TrustZone 中断控制"></a>2.1.4 TrustZone 中断控制</h3><h3 id="2-1-5-MMU-安全扩展"><a href="#2-1-5-MMU-安全扩展" class="headerlink" title="2.1.5 MMU 安全扩展"></a>2.1.5 MMU 安全扩展</h3><h3 id="2-1-6-Cache-amp-TLB-安全扩展"><a href="#2-1-6-Cache-amp-TLB-安全扩展" class="headerlink" title="2.1.6 Cache &amp; TLB 安全扩展"></a>2.1.6 Cache &amp; TLB 安全扩展</h3><p>TODO</p>
+<h2 id="2-2-ARM-Trusted-Firmware"><a href="#2-2-ARM-Trusted-Firmware" class="headerlink" title="2.2 ARM Trusted Firmware"></a>2.2 ARM Trusted Firmware</h2><h3 id="2-2-1-Concepts"><a href="#2-2-1-Concepts" class="headerlink" title="2.2.1 Concepts"></a>2.2.1 Concepts</h3><p>ARM可信任固件（ARM Trusted Firmware，ATF）是由 ARM 官方提供的底层固件，该固件统一 了 ARM 底层接口标准，如电源状态控制接口（Power Status Control Interface，PSCI）、安全启 动需求（Trusted Board Boot Requirements， TBBR）、安全世界状态（SWS）与正常世界状态（NWS）切换的安全监控模式调用（SMC）操作等。ATF 旨在将 ARM 底层的操作统一使代码能够重用和便于移植。</p>
+<h3 id="2-2-2-ATF-主要功能"><a href="#2-2-2-ATF-主要功能" class="headerlink" title="2.2.2 ATF 主要功能"></a>2.2.2 ATF 主要功能</h3><p>ATF 的源代码共分为 bl1、bl2、bl31、bl32、bl33 部分，其中：</p>
+<ul>
+<li>bl1、bl2、bl31 部分属于固定的固件；</li>
+<li>bl32 和 bl33 分别用于加载 TEE OS 和 REE 侧的镜像；整个加载过程可配置成安全启动的方式，每一个镜像文件在被加载之前都会验证镜像文件的电子签名是否合法；</li>
+<li>bl31 任务是接受 TEE OS 注册的服务入口点，并负责完成安全世界状态和正常世界状态之间的切换；</li>
+</ul>
+<p>ATF主要完成的功能如下：</p>
+<ul>
+<li><p>配置和初始化：</p>
+<ul>
+<li><p>初始化 Secure World 状态运行环境、异常向量、 控制寄存器、中断控制器、配置平台的中断。</p>
+</li>
+<li><p>初始化 ARM 通用中断控制器（General Interrupt Controller，GIC）2.0 版本和 3.0 版本的驱动初始化。</p>
+</li>
+<li><p>执行 ARM 系统 IP 的标准初始化操作以及安全扩展组件的基本配置。</p>
+</li>
+</ul>
+</li>
+<li><p>安全监控模式调用（Secure Monitor Call， SMC）请求的逻辑处理代码（Monitor 模式 / EL3）。</p>
+</li>
+<li>实现可信板级引导功能，对引导过程中加载的镜像文件进行电子签名检查。</li>
+<li>支持自有固件的引导，开发者可根据具体需求将自有固件添加到 ATF 的引导流程中。</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/atf-arch.png" width="650px" /></p>
+<p>其中：</p>
+<ul>
+<li><p>SMC Dispatcher：处理非安全世界的 SMC 请求，决定哪些 SMC 由 Trusted Firmware 在 EL3 处理，哪些转发给 TEE 进行处理；</p>
+</li>
+<li><p>Trusted Firmware 处理 PSCI 任务、或者 SoC 相关工作，例如一个播放 DRM Video 的调用情况：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/atf-call-eg.png" width="650px" /></p>
+<ol>
+<li>调用相关 CA，使用 <code>libDRM.so</code>；</li>
+<li>库调用 TrustZone Driver 向 Secure World 中的 TA 发起请求，同时将相关信息传递到 shared message buffer（非安全）中；</li>
+<li>SMC 进入 Secure World 的 TEE OS 后，从 message buffer 中获取相关信息并：<ul>
+<li><strong>Trusting the message</strong>：由于 message 是不可信的，所以 secure world 需要对这些内容进行一些认证；</li>
+<li><strong>Scheduling</strong>：对于 PSCI 类型快速处理并且不频繁请求，进入 EL3 处理完后退出到非安全状态。对于一些需要 TEE OS 处理的任务，不能被非安全中断打断，避免造成安全服务不可用；</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>以 OPTEE 为例，更细致一点：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/arm64-tz-components.png" width="450px" /></p>
+<ul>
+<li><p>CA 一般不直接使用 TEE Client API，而是使用中间 Service API 提供的服务，TEE Client API 再调用 OP-TEE Driver（暴露在设备文件系统 <code>/dev/tee0</code>），完成后续动作；</p>
+</li>
+<li><p>TEE Supplicant 为 TEE Daemon，有权使用 <code>/dev/teepriv0</code> 设备，在 OP-TEE 驱动的<u>挂载过程中</u>会建立正常世界状态与安全世界状态之间的共享内存，用于 OP-TEE Driver 与 OP-TEE 之间的数据共享；同时还会创建两个链表，分别用于保存来自 OP-TEE 的 RPC 请求和发送 RPC 请求的处理结果给 OP-TEE；</p>
+<blockquote>
+<p><strong>来自 OP-TEE 的 RPC 请求主要包括 socket 操作、REE 侧文件系统操作、加载 TA 镜像文件、数据库操作、共享内存分配和注册操作等</strong>。</p>
+</blockquote>
+<ul>
+<li>该进程在 Linux 系统启动过程中被自动创建，在编译时，该进程的启动信息会被写入到 <code>/etc/init.d</code> 文件中，而该进程的可执行文件则被保存在文件系统的 <code>bin</code> 目录下；</li>
+<li>该进程中会使用一个 loop 循环接收来自 OP-TEE 的 RPC 请求，且每次获取到来自 OP-TEE 的 RPC 请求后都会自动创建一个线程，用于接收 OP-TEE 驱动队列中来自 OP-TEE 的 RPC 请求信息，之所以这么做是因为时刻需要保证在 REE 侧有一个线程来接收 OP-TEE 的请求，实现 RPC 请求的并发处理；</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-2-3-Targets"><a href="#2-2-3-Targets" class="headerlink" title="2.2.3 Targets"></a>2.2.3 Targets</h3><p>现在我们就明白了，如果我们想把 TEE 功能移植到一个 ARM OS 上（例如 ChCore，OpenHarmony EduDist），需要集齐下面的组件：</p>
+<ul>
+<li>Normal World 状态的客户端库（提供给 CA 使用的 <code>libteec</code>）；</li>
+<li>Normal World 状态的可信驱动（给 Rich OS Kernel 使用的驱动，用以发起 SMC 等操作）；</li>
+<li>Secure World 的可信内核系统及配套的可信硬件驱动（TEE OS &amp; Secure Driver）；</li>
+<li>安全世界状态的可信应用库（<code>libutee</code>）；</li>
+<li>ATF 固件（应配置启动参数）；</li>
+</ul>
+<h2 id="2-3-OPTEE-启动过程试验"><a href="#2-3-OPTEE-启动过程试验" class="headerlink" title="2.3 OPTEE + 启动过程试验"></a>2.3 OPTEE + 启动过程试验</h2><h3 id="2-3-1-基于-QEMU-的-OPTEE-启动过程"><a href="#2-3-1-基于-QEMU-的-OPTEE-启动过程" class="headerlink" title="2.3.1 基于 QEMU 的 OPTEE 启动过程"></a>2.3.1 基于 QEMU 的 OPTEE 启动过程</h3><p>观察编译后的二进制目录：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/optee-build-dir.png" width="650px" /></p>
+<ul>
+<li><p>Linux (Rich OS) 镜像以及根文件系统：</p>
+<ul>
+<li><p>Image、linux.bin、uImage（u-boot wrapper 的 Image）；</p>
+</li>
+<li><p>rootfs.cpio.gz；</p>
+</li>
+</ul>
+</li>
+<li><p>ATF 固件（with OPTEE OS configurations）以及 u-boot；</p>
+</li>
+</ul>
+<p>在 OPTEE 官方提供的启动脚本中，入口 BIOS 为 <code>bl1.bin</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">run-only:</span><br><span class="line">    <span class="built_in">ln</span> -sf $(ROOT)/out-br/images/rootfs.cpio.gz $(BINARIES_PATH)/</span><br><span class="line">    $(call check-terminal)</span><br><span class="line">    $(call run-help)</span><br><span class="line">    $(call launch-terminal,54320,<span class="string">&quot;Normal World&quot;</span>)</span><br><span class="line">    $(call launch-terminal,54321,<span class="string">&quot;Secure World&quot;</span>)</span><br><span class="line">    $(call wait-for-ports,54320,54321)</span><br><span class="line">    <span class="built_in">cd</span> $(BINARIES_PATH) &amp;&amp; $(QEMU_BUILD)/aarch64-softmmu/qemu-system-aarch64 \</span><br><span class="line">        -nographic \</span><br><span class="line">        -serial tcp:localhost:54320 -serial tcp:localhost:54321 \</span><br><span class="line">        -smp $(QEMU_SMP) \</span><br><span class="line">        -s -S -machine virt,secure=on,mte=$(QEMU_MTE),gic-version=$(QEMU_GIC_VERSION),virtualization=$(QEMU_VIRT) \</span><br><span class="line">        -cpu $(QEMU_CPU) \</span><br><span class="line">        -d unimp -semihosting-config <span class="built_in">enable</span>=on,target=native \</span><br><span class="line">        -m $(QEMU_MEM) \</span><br><span class="line">        -bios bl1.bin		\</span><br><span class="line">        -initrd rootfs.cpio.gz \</span><br><span class="line">        -kernel Image -no-acpi \</span><br><span class="line">        -append <span class="string">&#x27;console=ttyAMA0,38400 keep_bootcon root=/dev/vda2 $(QEMU_KERNEL_BOOTARGS)&#x27;</span> \</span><br><span class="line">        $(QEMU_XEN) \</span><br><span class="line">        $(QEMU_EXTRA_ARGS)</span><br></pre></td></tr></table></figure>
+<p>先观察启动日志：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/optee-qemu-start-1.png" width="550px" /></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/optee-qemu-start-2.png" width="550px" /></p>
+<p>ATF 作为最底层固件，OP-TEE OS、 BootLoader、Linux 内核的加载都是由 ATF 来完成的，而且 <strong>ATF 实现了安全引导的功能</strong>。</p>
+<p>bl2 启动时通过触发 SMC 通知 bl1 将 CPU 控制权限交给 bl31，bl31 通过解析特定段中是否存在 OP-TEE Kernel 的入口来确定是否需要加载 OP-TEE。OP-TEE Kernel 启动后会触发安全监控模式调用重新进入到 bl31 中继续执行。</p>
+<p>bl31 通过查询链表的方式获取下一个需要被加载 REE 侧的镜像文件，并设定好 REE 侧运行时 CPU 的状态和运行环境，然后退出 EL3 并进入 REE 侧镜像文件的启动，一般第一个 REE 侧镜像文件为 BootLoader，BootLoader 会加载 Linux 内核。</p>
+<p>上面的安全引导过程是一个比较复杂和标准化的过程：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/atf-boot-seq.png" width="650px"/></p>
+<h3 id="2-3-2-设备树文件（Device-Tree）"><a href="#2-3-2-设备树文件（Device-Tree）" class="headerlink" title="2.3.2 设备树文件（Device Tree）"></a>2.3.2 设备树文件（Device Tree）</h3><p>Linux kernel 在 ARM 架构中引入 <code>device tree</code>（flattened device tree，FDT）的时候，怀揣着一个 Unify Kernel 的梦想，即同一个 Image，通过切换不同的 DTB（device tree binary/blob）支持多个不同的平台。</p>
+<p>device tree 在 kernel 中普及之后，U-Boot 也引入了 device tree 的概念。因此为了和 kernel 类似，U-Boot也需要一种新的 image 格式，这种格式需要支持以下特性：</p>
+<ul>
+<li>Image 中需要包含多个 DTB 文件；</li>
+<li>可以方便的选择使用哪个 DTB 文件；</li>
+</ul>
+<p>结合以上两点需求，U-Boot 推出了新的 image 格式：FIT image（flattened image tree）。它利用了 Device Tree Source files（DTS）的语法，生成的 Image 文件也和 DTB 文件类似（从 ITS 编译为 ITB）；</p>
+<p>在 ARM64 架构下，U-Boot 启动 Linux 内核<strong>必须使用设备树（Device Tree）文件</strong>。</p>
+<p>与早期的 ARM32 架构不同，ARM64 Linux 内核完全移除了对“板级文件”（Board-Specific Files）的支持，强制要求通过设备树（<code>*.dtb</code>）描述硬件配置。没有设备树，内核无法获取硬件信息（如 CPU、内存、外设等），导致启动失败。</p>
+<p>U-Boot启动内核时需完成以下步骤：</p>
+<ol>
+<li><strong>加载内核镜像</strong>：将 <code>Image</code> 或 <code>vmlinux</code> 加载到内存。</li>
+<li><strong>加载设备树文件</strong>：将编译后的设备树二进制文件（<code>*.dtb</code>）加载到另一块内存区域。</li>
+<li><strong>传递参数</strong>：通过寄存器（如 ARM64 的<code>x0</code>）将设备树地址告知内核。</li>
+</ol>
+<p>可以在 U-Boot 命令行中执行下面的指令来查看（如果是以 <code>-sd</code> 形式给出）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看设备树加载地址</span></span><br><span class="line"><span class="built_in">printenv</span> fdtaddr</span><br><span class="line"><span class="comment"># 手动加载设备树示例</span></span><br><span class="line"><span class="comment"># sd/emmc id=0, partition 1</span></span><br><span class="line">load mmc 0:1 <span class="variable">$&#123;fdtaddr&#125;</span> /boot/myboard.dtb</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-2-U-Boot-OpenHarmony-Edu-Dist-启动方案"><a href="#2-3-2-U-Boot-OpenHarmony-Edu-Dist-启动方案" class="headerlink" title="2.3.2 U-Boot + OpenHarmony Edu Dist 启动方案"></a>2.3.2 U-Boot + OpenHarmony Edu Dist 启动方案</h3><p>考虑最简单的情形，直接由  U-Boot 启动 OpenHarmony，如果成功后再尝试加入 OPTEE。</p>
+<h4 id="U-Boot-指令-UBOOT-BOOTCOMMAND"><a href="#U-Boot-指令-UBOOT-BOOTCOMMAND" class="headerlink" title="U-Boot 指令 (UBOOT_BOOTCOMMAND)"></a>U-Boot 指令 (<code>UBOOT_BOOTCOMMAND</code>)</h4><p><code>booti</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">booti &lt;kernel_addr&gt; [initrd_addr[:initrd_size]] [fdt_addr]</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>booti</code> 命令用于引导内核时加载一个二进制的内核镜像 (<code>Image</code>)，通常针对 ARM64 架构。</li>
+<li>与 <code>bootm</code> / <code>bootz</code> 类似，<code>booti</code> 也用于启动内核，但是二者针对的镜像格式不同。   <ul>
+<li><code>bootm</code> 主要用于启动 uImage 格式的内核（一般由 <code>mkimage</code> 工具打包而成）；</li>
+<li><code>bootz</code> 用于启动 zImage 格式的内核；</li>
+<li><code>booti</code> 则用于加载 Linux 的原始内核镜像（<code>Image</code> 文件）；</li>
+</ul>
+</li>
+</ul>
+<h4 id="尝试一：将-Image-和-ramdisk-img-打包成-boot-img-FAILED"><a href="#尝试一：将-Image-和-ramdisk-img-打包成-boot-img-FAILED" class="headerlink" title="尝试一：将 Image 和 ramdisk.img 打包成 boot.img (FAILED)"></a>尝试一：将 <code>Image</code> 和 <code>ramdisk.img</code> 打包成 <code>boot.img</code> (FAILED)</h4><p>理想情况下，启动过程应该是：</p>
+<ul>
+<li>bootloader 初始化 ROM 和 RAM 等硬件，加载分区表信息。</li>
+<li>bootloader 根据分区表加载 <code>boot.img</code>，从中解析并加载 <code>ramdisk.img</code> 到内存中。</li>
+<li>bootloader 准备好分区表信息，ramdisk 地址等信息，进入内核，内核加载 ramdisk 并执行 init。</li>
+<li>init 准备初始文件系统，挂载 <code>required.fstab</code>（包括 <code>system.img</code> 和 <code>vendor.img</code> 的挂载）。</li>
+<li>扫描 <code>system.img</code> 和 <code>vendor.img</code> 中 <code>etc/init</code> 目录下的启动配置脚本，执行各个启动命令。</li>
+</ul>
+<p>先 dump 出 <code>-machine virt</code> 机器的 DTB 文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-machine virt,dumpdtb=./virt.dtb</span><br></pre></td></tr></table></figure>
+<p>使用 <code>u-boot</code> 编译后的工具 <code>dtc</code> 解析内容（便于查看）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dtc -I dtb -O dts ./virt.dtb &gt; virt.dts</span><br></pre></td></tr></table></figure>
+<p>然后自行为 U-Boot 编写 ITS（Image Tree Source）文件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">/dts-v1/;</span><br><span class="line"> </span><br><span class="line">/ &#123;</span><br><span class="line">    description = <span class="string">&quot;U-Boot zImage-dtb-ramdisk&quot;</span>;</span><br><span class="line">    <span class="meta">#address-cells = <span class="string">&lt;1&gt;</span>;</span></span><br><span class="line">    images &#123;</span><br><span class="line">        kernel<span class="number">-1</span> &#123;</span><br><span class="line">            description = <span class="string">&quot;Linux kernel &quot;</span>;</span><br><span class="line">            data = /incbin/(<span class="string">&quot;./Image&quot;</span>);</span><br><span class="line">            type = <span class="string">&quot;kernel&quot;</span>;</span><br><span class="line">            arch = <span class="string">&quot;aarch64&quot;</span>;</span><br><span class="line">            os = <span class="string">&quot;linux&quot;</span>;</span><br><span class="line">            compression = <span class="string">&quot;none&quot;</span>;</span><br><span class="line">            load = &lt;<span class="number">0x40800000</span>&gt;;</span><br><span class="line">            entry = &lt;<span class="number">0x40800000</span>&gt;;</span><br><span class="line">        &#125;;</span><br><span class="line">         dtb<span class="number">-1</span> &#123;</span><br><span class="line">            description = <span class="string">&quot;ohos dtb &quot;</span>;</span><br><span class="line">            data = /incbin/(<span class="string">&quot;./virt.dtb&quot;</span>);</span><br><span class="line">            type = <span class="string">&quot;flat_dt&quot;</span>;</span><br><span class="line">            arch = <span class="string">&quot;aarch64&quot;</span>;</span><br><span class="line">            os = <span class="string">&quot;linux&quot;</span>;</span><br><span class="line">            compression = <span class="string">&quot;none&quot;</span>;</span><br><span class="line">        &#125;;</span><br><span class="line">        ramdisk<span class="number">-1</span> &#123;</span><br><span class="line">            description = <span class="string">&quot;Ramdisk Image&quot;</span>;</span><br><span class="line">            data = /incbin/(<span class="string">&quot;./ramdisk.img&quot;</span>);</span><br><span class="line">            type = <span class="string">&quot;ramdisk&quot;</span>;</span><br><span class="line">            arch = <span class="string">&quot;aarch64&quot;</span>;</span><br><span class="line">            os = <span class="string">&quot;linux&quot;</span>;</span><br><span class="line">            compression = <span class="string">&quot;none&quot;</span>;</span><br><span class="line">            load = &lt;<span class="number">0x44000000</span>&gt;;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">    configurations &#123;</span><br><span class="line">        <span class="keyword">default</span> = <span class="string">&quot;conf-boot&quot;</span>;</span><br><span class="line">        conf-boot &#123;</span><br><span class="line">            description = <span class="string">&quot;booting ARM Linux Kernel Image Ramdisk&quot;</span>;</span><br><span class="line">            kernel = <span class="string">&quot;kernel-1&quot;</span>;</span><br><span class="line">            fdt = <span class="string">&quot;dtb-1&quot;</span>;</span><br><span class="line">            ramdisk = <span class="string">&quot;ramdisk-1&quot;</span>;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><code>mkimage</code> 编译生成 <code>boot.img</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkimage -f boot.its boot.img</span><br></pre></td></tr></table></figure>
+<p>使用 <code>u-boot.bin</code>（U-Boot 编译产物，引导固件）作为 BIOS：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-bios u-boot.bin \</span><br></pre></td></tr></table></figure>
+<p>然后尝试了两种加载方法：</p>
+<ul>
+<li><code>virtio-blk-device</code> 加载；</li>
+<li>进入 U-Boot 命令行直接 load 文件：<ul>
+<li>只显示 <code>virt.dtb</code> 加载到 <code>0x40000000</code> 处；</li>
+</ul>
+</li>
+</ul>
+<p>失败，U-Boot 未能识别分区情况。</p>
+<h4 id="尝试二：将-Image-设备树-ramdisk-img-打包进-SD-设备-FAILED"><a href="#尝试二：将-Image-设备树-ramdisk-img-打包进-SD-设备-FAILED" class="headerlink" title="尝试二：将 Image, 设备树, ramdisk.img 打包进 SD 设备 (FAILED)"></a>尝试二：将 <code>Image</code>, 设备树, <code>ramdisk.img</code> 打包进 SD 设备 (FAILED)</h4><p>创建空的 SD Card 镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">dd</span> <span class="keyword">if</span>=/dev/zero of=boot.disk bs=1M count=1024</span><br></pre></td></tr></table></figure>
+<p>创建 GPT 分区，两个分区，一个存放 Kernel 和设备树，另一个存放 Rootfs：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sgdisk -n 0:0:+10M -c 0:kernel boot.disk</span><br><span class="line">sgdisk -n 0:0:0 -c 0:rootfs boot.disk</span><br></pre></td></tr></table></figure>
+<p>检查结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sgdisk -p boot.disk</span><br></pre></td></tr></table></figure>
+<p>找个空闲的 loop 设备，并且把镜像挂载上去，准备写入：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">losetup -f</span><br><span class="line"><span class="comment"># 假设返回 /dev/loopxx</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo losetup /dev/loopxx boot.disk</span><br><span class="line"><span class="comment"># 更新之前创建的表，让 host kernel 看到</span></span><br><span class="line">sudo partprobe /dev/loopxx</span><br></pre></td></tr></table></figure>
+<p>对新的分区格式化为 EXT4：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo mkfs.ext4 /dev/loopxxp1</span><br><span class="line">sudo mkfs.ext4 /dev/loopxxp2</span><br></pre></td></tr></table></figure>
+<p>挂载到两个任意不同空目录上，然后复制文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo mount -t ext4 /dev/loopxxp1 p1/</span><br><span class="line">sudo mount -t ext4 /dev/loopxxp2 p2/</span><br><span class="line">sudo <span class="built_in">cp</span> Image p1/</span><br><span class="line">sudo <span class="built_in">cp</span> virt.dtb p1/</span><br><span class="line">sudo <span class="built_in">cp</span> ramdisk.img p2/</span><br></pre></td></tr></table></figure>
+<p>卸载 loop 设备：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo umount p1 p2</span><br><span class="line">sudo losetup -d /dev/loopxx</span><br></pre></td></tr></table></figure>
+<p>将写好的 <code>boot.disk</code> 作为 SD 设置 QEMU，U-Boot 启动时用 <code>mmc</code> 指令读取。</p>
+<p>失败，U-Boot 未能通过内存校验。</p>
+<h4 id="尝试三：使用-mkimage-生成-ITB-文件，U-Boot-直接加载-BUGGY"><a href="#尝试三：使用-mkimage-生成-ITB-文件，U-Boot-直接加载-BUGGY" class="headerlink" title="尝试三：使用 mkimage 生成 ITB 文件，U-Boot 直接加载 (BUGGY)"></a>尝试三：使用 <code>mkimage</code> 生成 ITB 文件，U-Boot 直接加载 (BUGGY)</h4><p>添加 OPTEE 时，注意编译选项给 OPTEE OS 指定的 <code>NS_SHM</code>（Non-Safe Shared Memory）从 <code>0x42000000</code> 开始。因此把 Kernel 地址改到 <code>0x42000000</code>，RamDisk 改到 <code>0x45000000</code>，然后将 <code>mkimage -f xxx.its boot.itb</code> 加载到 <code>0x50200000</code>，并且从该处启动。</p>
+<p>最终成功启动 OPTEE Kernel，并且成功加载 OpenHarmony Kernel。但是卡在 Starting Kernel 这步，仍然在排查原因。</p>
+<h2 id="2-4-OpenTrustee-ChCore-OS-迁移试验"><a href="#2-4-OpenTrustee-ChCore-OS-迁移试验" class="headerlink" title="2.4 OpenTrustee (ChCore OS) 迁移试验"></a>2.4 OpenTrustee (ChCore OS) 迁移试验</h2><p>未完待续…</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top/technical/tee-lab/">https://blog.sjtuxhw.top/technical/tee-lab/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/TEE/">TEE</a><a class="post-meta__tags" href="/tags/TrustZone/">TrustZone</a><a class="post-meta__tags" href="/tags/OpenHarmony/">OpenHarmony</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/tee-lab.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/technical/rust-owner/" title="另一个角度看 Rust 所有权和借用"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/rust-owner.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">另一个角度看 Rust 所有权和借用</div></div><div class="info-2"><div class="info-item-1">笔者在一开始了解 Rust 的内存管理机制的时候，阅读了官方文档，以及网络上的教科书，它们首先都引入了所谓 “所有权” 和 “借用” 的概念。 笔者认为这样的叙述方法非常合适，特别是如果读者对操作系统原理与实现、C/C++ 语言不了解，那么这么讲授的方法是大概是最好的。因为这能够很快教给读者 rust 语言的规则，而不需要很多的知识储备或者语境。 但这也带来了弊端：很多读者会把它当作只有 rust 才有的特性、规定，但实际上这种系统设计思想可以用在很多地方。对于为什么 rust 要这么设计，则需要读者学了很长时间之后，结合计算机相关基础知识才能慢慢领会。 因此，个人认为应该从 C/C++ 如何变得安全的角度来讨论 rust 的这个语言特性会比较方便，因为 rust 本身就是在对标 C/C++ 内存不安全的问题，然后在此基础上进行改进。 笔者想提供一种思路，从 C/C++ 开发者的视角来解释 rust 为什么这么设计，然后再定义这两个性质，希望能对读者有所启发。本人学识短浅，望读者勘误/斧正。 如何设计一种全新的内存管理机制？假设你想创造一个新的编译型语言（就叫 rust），想和...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">SJTU-XHW</div><div class="author-info-description">A blog to document learning and life</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">75</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://blog.sjtuxhw.top/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! |•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-1-%E6%9C%BA%E5%AF%86%E8%AE%A1%E7%AE%97%E4%B8%8E-TEE-%E6%8A%80%E6%9C%AF%E5%85%A5%E9%97%A8%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%86"><span class="toc-text">Part 1. 机密计算与 TEE 技术入门知识整理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-0-Background"><span class="toc-text">1.0 Background</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%BA%E5%AF%86%E8%AE%A1%E7%AE%97%E9%9C%80%E8%A6%81%E4%BB%A5%E7%A1%AC%E4%BB%B6%E4%B8%BA%E5%9F%BA%E7%A1%80%EF%BC%9F"><span class="toc-text">为什么机密计算需要以硬件为基础？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-Basic-Concepts"><span class="toc-text">1.1 Basic Concepts</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%EF%BC%9F"><span class="toc-text">1.2 启动流程？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-%E4%B8%BB%E6%B5%81%E7%9A%84%E5%9F%BA%E4%BA%8E%E7%A1%AC%E4%BB%B6-TEE-%E6%8A%80%E6%9C%AF"><span class="toc-text">1.3 主流的基于硬件 TEE 技术</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-1-ARM-TrustZone"><span class="toc-text">1.3.1 ARM TrustZone</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-2-Intel-SGX-Software-Guard-eXtensions"><span class="toc-text">1.3.2 Intel SGX (Software Guard eXtensions)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-3-AMD-SEV-Secure-Encrypted-Virtualization"><span class="toc-text">1.3.3 AMD SEV (Secure Encrypted Virtualization)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-4-Apple-SEP-Secure-Enclave-Processor"><span class="toc-text">1.3.4 Apple SEP (Secure Enclave Processor)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-5-%E5%B0%8F%E7%BB%93"><span class="toc-text">1.3.5 小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-GP-API"><span class="toc-text">1.4 GP API</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-5-%E6%9C%AC%E9%83%A8%E5%88%86%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">1.5 本部分参考文献</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-2-TEE-%E7%9A%84-OS-%E7%A7%BB%E6%A4%8D%E7%AC%94%E8%AE%B0-ARM"><span class="toc-text">Part 2. TEE 的 OS 移植笔记 (ARM)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-Revisit-ARM-TrustZone"><span class="toc-text">2.1 Revisit: ARM TrustZone</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-1-Basic-Settings"><span class="toc-text">2.1.1 Basic Settings</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-2-ARM-v8-%E7%9A%84-TrustZone"><span class="toc-text">2.1.2 ARM-v8 的 TrustZone</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-3-%E6%80%BB%E7%BA%BF%E5%AE%89%E5%85%A8%E6%89%A9%E5%B1%95"><span class="toc-text">2.1.3 总线安全扩展</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-4-TrustZone-%E4%B8%AD%E6%96%AD%E6%8E%A7%E5%88%B6"><span class="toc-text">2.1.4 TrustZone 中断控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-5-MMU-%E5%AE%89%E5%85%A8%E6%89%A9%E5%B1%95"><span class="toc-text">2.1.5 MMU 安全扩展</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-6-Cache-amp-TLB-%E5%AE%89%E5%85%A8%E6%89%A9%E5%B1%95"><span class="toc-text">2.1.6 Cache &amp; TLB 安全扩展</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-ARM-Trusted-Firmware"><span class="toc-text">2.2 ARM Trusted Firmware</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1-Concepts"><span class="toc-text">2.2.1 Concepts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-2-ATF-%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD"><span class="toc-text">2.2.2 ATF 主要功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-3-Targets"><span class="toc-text">2.2.3 Targets</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-OPTEE-%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E8%AF%95%E9%AA%8C"><span class="toc-text">2.3 OPTEE + 启动过程试验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-1-%E5%9F%BA%E4%BA%8E-QEMU-%E7%9A%84-OPTEE-%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B"><span class="toc-text">2.3.1 基于 QEMU 的 OPTEE 启动过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-2-%E8%AE%BE%E5%A4%87%E6%A0%91%E6%96%87%E4%BB%B6%EF%BC%88Device-Tree%EF%BC%89"><span class="toc-text">2.3.2 设备树文件（Device Tree）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-2-U-Boot-OpenHarmony-Edu-Dist-%E5%90%AF%E5%8A%A8%E6%96%B9%E6%A1%88"><span class="toc-text">2.3.2 U-Boot + OpenHarmony Edu Dist 启动方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#U-Boot-%E6%8C%87%E4%BB%A4-UBOOT-BOOTCOMMAND"><span class="toc-text">U-Boot 指令 (UBOOT_BOOTCOMMAND)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%9D%E8%AF%95%E4%B8%80%EF%BC%9A%E5%B0%86-Image-%E5%92%8C-ramdisk-img-%E6%89%93%E5%8C%85%E6%88%90-boot-img-FAILED"><span class="toc-text">尝试一：将 Image 和 ramdisk.img 打包成 boot.img (FAILED)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%9D%E8%AF%95%E4%BA%8C%EF%BC%9A%E5%B0%86-Image-%E8%AE%BE%E5%A4%87%E6%A0%91-ramdisk-img-%E6%89%93%E5%8C%85%E8%BF%9B-SD-%E8%AE%BE%E5%A4%87-FAILED"><span class="toc-text">尝试二：将 Image, 设备树, ramdisk.img 打包进 SD 设备 (FAILED)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%9D%E8%AF%95%E4%B8%89%EF%BC%9A%E4%BD%BF%E7%94%A8-mkimage-%E7%94%9F%E6%88%90-ITB-%E6%96%87%E4%BB%B6%EF%BC%8CU-Boot-%E7%9B%B4%E6%8E%A5%E5%8A%A0%E8%BD%BD-BUGGY"><span class="toc-text">尝试三：使用 mkimage 生成 ITB 文件，U-Boot 直接加载 (BUGGY)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-OpenTrustee-ChCore-OS-%E8%BF%81%E7%A7%BB%E8%AF%95%E9%AA%8C"><span class="toc-text">2.4 OpenTrustee (ChCore OS) 迁移试验</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/technical/tee-lab/" title="机密计算与TEE：知识整理和试验笔记"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/tee-lab.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="机密计算与TEE：知识整理和试验笔记"/></a><div class="content"><a class="title" href="/technical/tee-lab/" title="机密计算与TEE：知识整理和试验笔记">机密计算与TEE：知识整理和试验笔记</a><time datetime="2025-04-17T15:31:36.000Z" title="发表于 2025-04-17 23:31:36">2025-04-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/rust-owner/" title="另一个角度看 Rust 所有权和借用"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/rust-owner.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="另一个角度看 Rust 所有权和借用"/></a><div class="content"><a class="title" href="/technical/rust-owner/" title="另一个角度看 Rust 所有权和借用">另一个角度看 Rust 所有权和借用</a><time datetime="2025-04-06T12:20:14.000Z" title="发表于 2025-04-06 20:20:14">2025-04-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/review/io-mul-more/" title="更多的 I/O 多路复用"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/io-mult-more.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="更多的 I/O 多路复用"/></a><div class="content"><a class="title" href="/review/io-mul-more/" title="更多的 I/O 多路复用">更多的 I/O 多路复用</a><time datetime="2025-04-01T04:13:25.000Z" title="发表于 2025-04-01 12:13:25">2025-04-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/embodied-3-papers-202503/" title="具身智能论文速读3篇 2025年3月"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/embodied-3-202503.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="具身智能论文速读3篇 2025年3月"/></a><div class="content"><a class="title" href="/technical/embodied-3-papers-202503/" title="具身智能论文速读3篇 2025年3月">具身智能论文速读3篇 2025年3月</a><time datetime="2025-03-02T15:36:58.000Z" title="发表于 2025-03-02 23:36:58">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/pytorch-dim/" title="如何理解 PyTorch 函数的 dim 参数"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/pth_dim.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="如何理解 PyTorch 函数的 dim 参数"/></a><div class="content"><a class="title" href="/technical/pytorch-dim/" title="如何理解 PyTorch 函数的 dim 参数">如何理解 PyTorch 函数的 dim 参数</a><time datetime="2025-02-18T12:17:05.000Z" title="发表于 2025-02-18 20:17:05">2025-02-18</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2025 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>Built With love &amp; </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Powered By </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><div style="display:flex;flex-flow:row;justify-content:center;align-items:center;"> <a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <span class="footer-separator">|</span> <a style="display:flex;flex-flow:row;align-items:center;" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> 本网站由 <img style="margin:0 3px;" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/upCloud_logo_blue.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"emoji":["https://unpkg.com/@waline/emojis@1.2.0/tw-emoji","https://unpkg.com/@waline/emojis@1.2.0/tieba"],"locale":{"reactionTitle":"你认为这篇文章怎么样？","placeholder":"给大佬递笔 XP\n[ Akismet AI Filter 🤖 ON ]"},"reaction":["https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsup.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsdown.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_antic.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_cool.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_sleepy.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_emm.gif"]}
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://waline.sjtuxhw.top/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script src="/js/rightmenu.js"></script><script src="/js/mourn.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

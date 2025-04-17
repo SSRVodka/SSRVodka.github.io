@@ -1,0 +1,370 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>另一个角度看 Rust 所有权和借用 | SJTU-XHW's blog</title><meta name="author" content="SJTU-XHW,sjtuxhw12345@sjtu.edu.cn"><meta name="copyright" content="SJTU-XHW"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="笔者在一开始了解 Rust 的内存管理机制的时候，阅读了官方文档，以及网络上的教科书，它们首先都引入了所谓 “所有权” 和 “借用” 的概念。 笔者认为这样的叙述方法非常合适，特别是如果读者对操作系统原理与实现、C&#x2F;C++ 语言不了解，那么这么讲授的方法是大概是最好的。因为这能够很快教给读者 rust 语言的规则，而不需要很多的知识储备或者语境。 但这也带来了弊端：很多读者会把它当作只有 rust">
+<meta property="og:type" content="article">
+<meta property="og:title" content="另一个角度看 Rust 所有权和借用">
+<meta property="og:url" content="https://blog.sjtuxhw.top/technical/rust-owner/index.html">
+<meta property="og:site_name" content="SJTU-XHW&#39;s blog">
+<meta property="og:description" content="笔者在一开始了解 Rust 的内存管理机制的时候，阅读了官方文档，以及网络上的教科书，它们首先都引入了所谓 “所有权” 和 “借用” 的概念。 笔者认为这样的叙述方法非常合适，特别是如果读者对操作系统原理与实现、C&#x2F;C++ 语言不了解，那么这么讲授的方法是大概是最好的。因为这能够很快教给读者 rust 语言的规则，而不需要很多的知识储备或者语境。 但这也带来了弊端：很多读者会把它当作只有 rust">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/rust-owner.jpg">
+<meta property="article:published_time" content="2025-04-06T12:20:14.000Z">
+<meta property="article:modified_time" content="2025-04-17T15:47:07.262Z">
+<meta property="article:author" content="SJTU-XHW">
+<meta property="article:tag" content="Programming">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="Rust">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/rust-owner.jpg"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.sjtuxhw.top/technical/rust-owner/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功 ヾ(≧∇≦*)ゝ',
+    error: '复制失败 (#`皿´)',
+    noSupport: '浏览器不支持 ╮(╯_╰)╭'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#333","bgDark":"#1f1f1f","position":"top-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '另一个角度看 Rust 所有权和借用',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="/css/mouseConfig.css"/><link rel="stylesheet" href="/css/rightmenu.css"/><link rel="stylesheet" href="/css/custom_music.css"/><link rel="stylesheet" href="/css/addFonts.css"/><link rel="stylesheet" href="/css/titleFonts.css"/><link rel="stylesheet" href="/css/talk.css"/><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="SJTU-XHW's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div id="main-loading-bg"><div class="truckWrapper"><div class="truckBody"><svg class="trucksvg" viewBox="0 0 198 93" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z" fill="currentColor" stroke="#282828" stroke-width="3"></path><path d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z" fill="#7D7C7C" stroke="#282828" stroke-width="3"></path><path d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z" fill="#282828" stroke="#282828" stroke-width="2"></path><rect x="187" y="63" width="5" height="7" rx="1" fill="#FFFCAB" stroke="#282828" stroke-width="2"></rect><rect x="193" y="81" width="4" height="11" rx="1" fill="#282828" stroke="#282828" stroke-width="2"></rect><rect x="6.5" y="1.5" width="121" height="90" rx="2.5" fill="#DFDFDF" stroke="#282828" stroke-width="3"></rect><rect x="1" y="84" width="6" height="4" rx="2" fill="#DFDFDF" stroke="#282828" stroke-width="2"></rect></svg></div><div class="truckTires"><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg></div><div class="road"></div><svg class="lampPost" fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 453.459 453.459" xml:space="preserve"><path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993 c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514 c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16 c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914 h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75 v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795 V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017 h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path></svg></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+      setTimeout(() => {
+        $loadingBox.style.display = 'none'
+      }, 800)
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()
+</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">75</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.sjtuxhw.top/cover_imgs/rust-owner.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/head_icon.png" alt="Logo"><span class="site-name">SJTU-XHW's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">另一个角度看 Rust 所有权和借用</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">另一个角度看 Rust 所有权和借用</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-06T12:20:14.000Z" title="发表于 2025-04-06 20:20:14">2025-04-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-17T15:47:07.262Z" title="更新于 2025-04-17 23:47:07">2025-04-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>13分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/technical/rust-owner/#post-comment"><span class="waline-comment-count" data-path="/technical/rust-owner/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>笔者在一开始了解 Rust 的内存管理机制的时候，阅读了官方文档，以及网络上的教科书，它们首先都引入了所谓 “所有权” 和 “借用” 的概念。</p>
+<p>笔者认为这样的叙述方法非常合适，特别是如果读者对操作系统原理与实现、C/C++ 语言不了解，那么这么讲授的方法是大概是最好的。因为这能够很快教给读者 rust 语言的规则，而不需要很多的知识储备或者语境。</p>
+<p>但这也带来了弊端：很多读者会把它当作只有 rust 才有的特性、规定，但实际上这种系统设计思想可以用在很多地方。对于为什么 rust 要这么设计，则需要读者学了很长时间之后，结合计算机相关基础知识才能慢慢领会。</p>
+<p>因此，个人认为应该从 C/C++ 如何变得安全的角度来讨论 rust 的这个语言特性会比较方便，因为 rust 本身就是在对标 C/C++ 内存不安全的问题，然后在此基础上进行改进。</p>
+<p>笔者想提供一种思路，从 C/C++ 开发者的视角来解释 rust 为什么这么设计，然后再定义这两个性质，希望能对读者有所启发。本人学识短浅，望读者勘误/斧正。</p>
+<h3 id="如何设计一种全新的内存管理机制？"><a href="#如何设计一种全新的内存管理机制？" class="headerlink" title="如何设计一种全新的内存管理机制？"></a>如何设计一种全新的内存管理机制？</h3><p>假设你想创造一个新的编译型语言（就叫 rust），想和 C/C++ 一样，<u>支持直接操纵变量的内存地址、引用</u>，但想要更安全，并且正在为这个语言设计编译器。</p>
+<p>我们知道，对于一个正常高级语言而言（无论是 C++/Java 还是其他的什么），为变量分配内存的方式有两类：</p>
+<ul>
+<li>一个是为编译时已知大小的变量分配（例如一个整型）。由于编译时长度已知，我们直接可以让编译器在栈（stack）上管理它们就行，这样不仅空间和时间效率高，而且不会有内存泄漏问题；</li>
+<li>一个是运行时才知道大小的变量分配（例如一个保存用户输入的字符串）。这时需要程序运行时动态分配内存，也正是为了应对这种需求，OS 才有了 “堆”（heap）这种运行时内存结构，允许程序在运行时动态分配内存。</li>
+</ul>
+<p>好，第一个（已知大小）的变量分配已经解决。以 C++ 为例，我们在写编译器时只需要把这些变量考虑在内，然后生成汇编的时候在当前函数的 activation record 中按需要的大小移动 <code>%rsp</code> 分配就行。</p>
+<p>对于第二个（编译时未知大小）的变量分配，我们通常有几种办法：</p>
+<ul>
+<li><p>语言直接向开发者暴露分配和释放堆空间的接口（C/C++）。这种内存管理方式需要手动分配和释放堆上内存，可能编写出内存不安全代码/内存泄漏；</p>
+<blockquote>
+<p>所谓内存不安全代码，可能是访问了指针指向的错误的内存区域、错误地修改了某块内存，导致程序意外结束。</p>
+<p>所谓内存泄漏不是真正 “泄漏”，在 OS 的角度看，只是应用程序内存释放不及时，或者要释放的地址丢了（unreachable），导致释放速度赶不上分配速度，最终耗尽了当前进程的虚拟内存空间。</p>
+</blockquote>
+</li>
+<li><p>语言向开发者暴露分配堆空间的接口 (Java/JavaScript) 或者 自动分配堆空间 (Python)，并采用自动垃圾回收（GC）的方式来释放堆空间。这种内存管理方式的好处是开发者不需要关心堆空间释放问题。</p>
+<p>但是 GC 对程序的影响就很有讲究了，人们为了防止 “GC 释放速度赶不上分配速度” 这种情况发生，想了很多种 GC 算法，例如 mark &amp; swap、reference count、copy collection、generation collection、Parallel Scavenge、G1GC、ZGC 等等，限于篇幅不再展开。</p>
+<p>即便想的如此周全，还有各种各样的问题：例如 STW（时停开销）、堆扫描的时间开销、循环引用导致内存泄漏（指 refcnt 方法），等等。</p>
+</li>
+</ul>
+<p>于是你想，如果我们开发的语言既不想用第一种方法（不安全），也不想用第二种方法（性能没法达到 C/C++ 水平），能不能<strong>同时兼顾安全性和性能</strong>呢？</p>
+<p>看起来只有<strong><u>在编译时就完成 “编译时未知大小的变量” 的堆分配工作</u></strong>了（让编译器帮我们管理堆空间）！</p>
+<p>这就是 rust 语言在设计时考虑内存分配的思路。</p>
+<p>好，现在我们需要解决针对变量操纵的几个问题：如何进行变量分配、如何进行变量传递（何时值传递、何时引用传递）。</p>
+<p>不妨先完全借鉴 C/C++ 内存分配的思路，为 rust 设计一种方案：</p>
+<ul>
+<li>对于编译时已知大小的变量，直接分配在栈上，默认使用值传递。即便是复合数据类型（不管有没有指针域）都是如此。<ul>
+<li>引入 “引用” 类型，来显式使用引用传递，节约构造成本。</li>
+<li>复制构造和值传递的方法，就是逐内存 byte 的复制，我们不妨称之为 <strong><u>copy trait</u></strong>（<code>Copy</code> 特性）；</li>
+</ul>
+</li>
+<li>对于编译时未知大小的变量，分配在堆上（需要手动释放），使用指针操纵（读写），指针本身使用值传递。</li>
+</ul>
+<p>这种方案对于当年的 rust 创造者来说不可容忍，因为：</p>
+<ul>
+<li>内存不安全。我们希望编译器帮我们回收堆上的空间；</li>
+<li>指针可以通过值传递 / copy trait 到处传播，不知道何时释放比较合适，不知道会不会出现 UAF / double free 的问题。</li>
+</ul>
+<p>所以作出改进：</p>
+<ol>
+<li>指针（当然在 rust 中可以不叫指针，只是表示堆上数据的一个类型）可以值传递，但是必须让编译器可以追踪到、必须明确变量内存释放的 “责任” 在确定的变量身上（<strong><u>把这个动作和有“责任”的变量的生命周期绑定起来</u></strong>，类似 C++ RAII），以便进行准确无误的、及时的回收工作，并且不允许实现隐式的 copy trait；</li>
+<li>用于引用传递的 “引用” 类型需要区分变量的可变性（因为 rust 之前设计的 “变量可变性” 要应对并发安全的场景）。并且需要注意到，引用也会影响到编译器对 “变量内存释放的责任” 的追踪。我们特别规定“引用”类型的传递是不能传递它引用的变量的 “内存释放的责任” 的！</li>
+</ol>
+<h3 id="对号入座"><a href="#对号入座" class="headerlink" title="对号入座"></a>对号入座</h3><p>其实，<u>改进 1 中 “内存释放的责任” 就是所有权抽象，改进 2 中的 “引用不能传递内存释放的责任” 就是借用抽象</u>。</p>
+<p>到此为止，我们就能理解为什么 rust 要设计 “所有权” 和 “借用” 了。</p>
+<p>现在笔者再搬出所有权、借用的 “规定”，你看看能不能对号入座了？</p>
+<p>Rust “所有权” 制定了以下规则（为了明确内存释放的责任）：</p>
+<ol>
+<li><p>Rust 中的<strong><u>每个值（特指堆上的数据）在同一时刻只能被一个变量所拥有</u></strong>，这个变量被称为该值的 “<strong>所有者 (owner)</strong>”；</p>
+<blockquote>
+<p>从变量的角度说，同一时刻只能绑定一个特定的值；</p>
+<p>其实有个特例（参见下文），可变引用（<code>&amp;mut T</code>）即便信息在栈上，也被所有权管理，因为它经过编译器翻译后底层是指针，为了确保赋值/复制的数据安全、方便所有权追踪，就这么设计了。</p>
+</blockquote>
+</li>
+<li><p>当所有者离开绑定值声明的作用域后，这个值将被丢弃（drop）；</p>
+</li>
+</ol>
+<p>就第一条而言，我们记住一个原则：<strong><u>“所有权” 是针对堆上的数据的</u></strong>，我们需要所有权管理的也就是堆上的数据。</p>
+<p>就第二条而言，大多数语言在效果上都是差不多的：即一个变量只在声明有效的作用域内能够使用。</p>
+<p>Rust “引用/借用” 制定了以下基本规则：</p>
+<ol>
+<li>引用需要区分变量的可变性（<code>&amp;T</code> 和 <code>&amp;mut T</code>，我们不难发现 <strong><u>Rust 的引用就是 C++ 指针的另一种表述形式</u></strong>，而不是 C++ 的引用）；</li>
+<li>一个变量的不可变引用（<code>&amp;T</code>）生命周期内可以出现多次，因为不会改变所有权；<ul>
+<li>因为不可变引用的安全性，<code>&amp;T</code> 单独实现 Copy Trait（意味着它不被所有权管理）；</li>
+</ul>
+</li>
+<li>一个变量的可变引用（<code>&amp;mut T</code>）在它的生命周期内只能出现一次、并且与不可变引用互斥。这是为了防止变量可见性冲突，也就是并发程序中共享资源的读者和写者间的关系；<ul>
+<li>同时考虑到可变引用也要支持赋值/复制，因此不实现 Copy Trait（<u>意味着即便它不存放在堆上，也被所有权管理</u>！）；</li>
+<li>考虑一下，可变引用被编译器翻译后，底层实现是指针，因此在所有权管理范围内；</li>
+</ul>
+</li>
+</ol>
+<p>Rust 通过上面的 “所有权” 和 “借用” 的规则，巧妙地保证了：</p>
+<ul>
+<li>编译器能够始终追踪到堆上变量整个生命周期的使用情况，并且能自动判断释放的合适时机，不需要手动释放，也不需要 GC；</li>
+<li>引用不会干扰内存管理的安全性；</li>
+<li>可变引用的互斥性，结合变量可变性限制，<strong><u>杜绝数据竞争现象</u></strong>，维护数据安全假设。</li>
+</ul>
+<p>最后，Rust 利用是否定义 Copy Trait 将一个类型是否会被所有权管理区分开来，方便具体实现。</p>
+<h3 id="归纳，然后演绎"><a href="#归纳，然后演绎" class="headerlink" title="归纳，然后演绎"></a>归纳，然后演绎</h3><p>现在我们明白了 Rust “所有权” 和 “借用” 的内容和原因，Rust 所有看似难以理解的语言特性都能得到合理解释。我们举几个例子：</p>
+<p><strong>Q0：为什么下面的例子有所有权问题？是不是违反了 “引用不会传递所有权” 的约定？</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s1</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">mut1</span> = &amp;<span class="keyword">mut</span> s1;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = mut1;</span><br><span class="line">    <span class="comment">// 已知 println 前 x 已经析构，并不存在两个可变引用冲突的问题</span></span><br><span class="line">    <span class="comment">// 但是报错 mut1 所有权已经转移</span></span><br><span class="line">    <span class="title function_ invoke__">println</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, mut1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>答：并没有违反。因为直到最后 <code>s1</code> 仍然可以访问（你可以把 <code>mut1</code> 改成 <code>s1</code> 看看），证明 <code>s1</code> 的可变引用不会传递 <code>s1</code> 的所有权。</p>
+<p>这个例子只是恰好展示了可变引用的性质。我们知道如果同时定义同个变量的两个可变引用，编译器会提示冲突：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello,&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">r</span> = &amp;<span class="keyword">mut</span> v;</span><br><span class="line"><span class="comment">// 编译器错误：有多于一个可变引用</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">x</span> = &amp;<span class="keyword">mut</span> v;</span><br></pre></td></tr></table></figure>
+<p>但是编译器允许可变引用传递，不过代价是所有权传递：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello,&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">r</span> = &amp;<span class="keyword">mut</span> v;</span><br><span class="line"><span class="comment">// 目前是正确的，但编译器的做法是，将 `r` 的所有权传给 `x` 了</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">x</span> = r;</span><br></pre></td></tr></table></figure>
+<p>这恰恰印证了一点：<strong><u><code>&amp;T</code> 不可变引用是有 Copy Trait 的，但是可变引用 <code>&amp;mut T</code>没有 Copy Trait，因此赋值会出现所有权转移</u></strong>（参见“对号入座”一节的可变引用规则）。</p>
+<p><strong><u>可变引用和 不可变引用 相当于 C++ 中的指针和常量指针</u></strong>（不是 C++ 引用，想想为什么）。</p>
+<p>因此最开始的例子中的问题是，<code>s1</code> 并没有所有权转移，所有权转移的是 <code>mut1</code> 可变引用变量本身：<code>mut1</code> 所有权转移到 <code>x</code> 上，然后 <code>x</code> 立即被编译器设计的汇编析构了，<code>mut1</code> 当然是无效的。</p>
+<p><strong>Q1：为什么下面的例子没有内存释放或者所有权的问题？</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s1</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">len</span> = <span class="title function_ invoke__">calculate_length</span>(&amp;s1);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;The length of &#x27;&#123;&#125;&#x27; is &#123;&#125;.&quot;</span>, s1, len);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">calculate_length</span>(s: &amp;<span class="type">String</span>) <span class="punctuation">-&gt;</span> <span class="type">usize</span> &#123;</span><br><span class="line">    s.<span class="title function_ invoke__">len</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>答：因为 <code>&amp;String</code> Rust 引用不会传递所有权。在 <code>calculate_length</code> 结束后，编译器知道所有权（释放的责任）不在局部变量 <code>s</code> 这里，就不会释放它；</p>
+<p>所有权仍然位于 <code>s1</code>，因此只有 <code>main</code> 结束（<code>s1</code> 生命周期结束），编译器才会去释放 <code>s1</code> 的堆上空间；</p>
+<p><strong>Q2：为什么下面的例子无法通过编译？</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="title function_ invoke__">change</span>(&amp;s);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">change</span>(some_string: &amp;<span class="type">String</span>) &#123;</span><br><span class="line">    some_string.<span class="title function_ invoke__">push_str</span>(<span class="string">&quot;, world&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>答：因为 Rust 引用根据变量的可变性作出区分。更改不可变引用就破坏了 Rust 作出的数据安全假设。</p>
+<p><strong>Q3：为什么可变引用同时只能存在一个？</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">r1</span> = &amp;<span class="keyword">mut</span> s;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">r2</span> = &amp;<span class="keyword">mut</span> s;</span><br><span class="line"><span class="comment">// 错误</span></span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;, &#123;&#125;&quot;</span>, r1, r2);</span><br></pre></td></tr></table></figure>
+<p>答：虽然 Rust 引用不传递所有权，但是多个可变引用在并发场景相当于共享资源多写者，破坏了 Rust 的数据安全假设。</p>
+<p><strong>Q4：为什么可变引用和不可变引用不能同时存在？</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">r1</span> = &amp;s;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">r2</span> = &amp;s;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">r3</span> = &amp;<span class="keyword">mut</span> s;</span><br><span class="line"><span class="comment">// 错误</span></span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;, &#123;&#125;, and &#123;&#125;&quot;</span>, r1, r2, r3);</span><br></pre></td></tr></table></figure>
+<p>答：同 Q3。这是并发场景共享资源临界区同时存在写者和读者，破坏了 Rust 数据安全假设。</p>
+<p><strong>Q5：为什么这样的写法又可以？</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">r1</span> = &amp;s;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">r2</span> = &amp;s;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">r3</span> = &amp;<span class="keyword">mut</span> s;</span><br><span class="line"><span class="comment">// 正确</span></span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, r3);</span><br></pre></td></tr></table></figure>
+<p>答：在新版 Rust 编译器中，默认使用 Liveness Analysis 进行 Dead Code Elimination。<code>r1</code> 和 <code>r2</code> 的生命周期只有定义的一行。到定义 <code>r3</code> 时，<code>r1/r2</code> 已经死亡了。如果读者了解过编译原理，这很容易可以看出。</p>
+<p><strong>Q6：为什么这样的引用无法通过编译？</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">reference_to_nothing</span> = <span class="title function_ invoke__">dangle</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">dangle</span>() <span class="punctuation">-&gt;</span> &amp;<span class="type">String</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    &amp;s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>答：这里和 C/C++ 有很大不同。虽然 <code>s</code> 创建在堆上，但是请记住回收是交给编译器完成的，而编译器是将回收动作和变量生命周期绑定的。</p>
+<p>也就是说，<code>s</code> 作为一个局部变量，在函数返回后生命周期就会结束，编译器会释放掉 <code>s</code> 涉及的堆空间。这个效果就和 C/C++ 返回指向函数栈上的局部变量的指针一样。</p>
+<p>总的来说，Rust 这么做就是为了方便追踪变量的释放责任（所有权），方便判断恰当的释放时机。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>对 C/C++ 开发者，总结一下：</p>
+<ul>
+<li><p>Rust 的所有权管理的是堆上的数据。本质上是通过所有权机制，让编译器帮你管理堆上的空间，不需手动分配和释放堆空间、不需 GC；</p>
+<blockquote>
+<p>也就是：只在编译期完成所有内存分配、释放的规则的制定。</p>
+</blockquote>
+</li>
+<li><p>所有实现 <code>Copy</code> traits 的类型，都是代表可以安全进行值拷贝的类型。例如不含指针域的定长简单复合类型、基本类型。</p>
+<ul>
+<li><code>Copy</code> traits 类比为 C++ 中的默认复制构造方法，隐式调用。</li>
+</ul>
+</li>
+<li><p>其他复合类型（一般是含有指针域的），在 rust 中都不能实现 <code>Copy</code> trait，因为可能隐式复制构造会造成指针共享，破坏了 rust 的所有权机制。</p>
+</li>
+<li><p>Rust 函数传参和 C++ 相同，默认值传递（无论是什么类型），除非显式使用引用记号（<code>&amp;T / &amp;mut T</code>，即 Rust 引用）；</p>
+<ul>
+<li>需注意 Rust 对数据竞争的安全性要求；</li>
+<li>需注意可变引用没有 Copy Trait，因此它本身就被所有权管理；</li>
+<li>需注意引用的生命周期，防止冲突。</li>
+</ul>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top">SJTU-XHW</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top/technical/rust-owner/">https://blog.sjtuxhw.top/technical/rust-owner/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.sjtuxhw.top" target="_blank">SJTU-XHW's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Programming/">Programming</a><a class="post-meta__tags" href="/tags/C/">C++</a><a class="post-meta__tags" href="/tags/Rust/">Rust</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/rust-owner.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/technical/tee-lab/" title="机密计算与TEE：知识整理和试验笔记"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/tee-lab.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">机密计算与TEE：知识整理和试验笔记</div></div><div class="info-2"><div class="info-item-1">Part 1. 机密计算与 TEE 技术入门知识整理本节参考文献参见 1.5 节。 1.0 Background为了防止未经授权的访问，数据安全性是基于三种方面构建的，即静态存储数据、传输中数据、和使用中数据。 业界目睹了几项引人注目的内存抓取（例如 Target 信用卡和个人信息泄露事件）和 CPU 侧信道攻击，还有许多虚拟机管理程序（Hypervisor）漏洞也被报道出来，这些攻击和漏洞的报道显著提高了业界对  “使用中数据”的关注，另外，涉及恶意软件注入的著名攻击事件，例如 Triton 攻击和乌克兰电网袭击，更是使得保护“正在使用的数据”成为数据安全领域迫在眉睫的努力方向。 机密计算就是针对数据在使用过程中的安全问题所提出的一种解决方案。它是一种基于硬件的技术，将数据、特定功能、应用程序，同操作系统、系统管理程序或虚拟机管理器以及其他特定进程隔离开来，让数据存储在受信任的执行环境（TEE）中，即使是使用调试器，也无法从外部查看数据或者执行操作。TEE 确保只有经过授权的代码才能访问数据，如果代码被篡改，TEE...</div></div></div></a><a class="pagination-related" href="/review/io-mul-more/" title="更多的 I/O 多路复用"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/io-mult-more.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">更多的 I/O 多路复用</div></div><div class="info-2"><div class="info-item-1">最近总结了一些 OS I/O 多路复用的知识。之前对 I/O Multiplexer 的认知还停留在 select 系统调用，现在是时候扩展一下视野了。 1. 从 Socket 模型开始Socket 作为一个应用层和传输层间的的抽象，支持网络层 IPv4 / IPv6，以及传输层 TCP / UDP。 双方要进行网络通信前，各自需要创建一个 Socket。 如果是基于 UDP 的套接字：  如果是基于 TCP 的套接字：  以基于 TCP 的套接字为例，首先使用 socket() 创建一个网络协议为 IPv4，以及传输协议为 TCP 的 Socket 结构体，然后使用 bind() 绑定 Server IP 和进程服务端口 port，并监听 listen() 在该端口上（listen 仅改变状态）；  之所以需要指定 Server IP，是因为一台机器是可以有多个网卡的，每个网卡都有对应的 IP 地址。Socket 允许指定监听的网卡。0.0.0.0 表示监听所有的 network interfaces； port 即为传输层信息，对应指定线程的服务。  Server 端...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/technical/qt-for-beginners-1/" title="从C++入门Qt（一）"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/qt1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-28</div><div class="info-item-2">从C++入门Qt（一）</div></div><div class="info-2"><div class="info-item-1">written by SJTU-XHW Reference: C++ GUI Programming with Qt 4 (2nd Edition)  注意：本文章将讲解 Qt 5 入门知识，需要一定的 C++ 基础 本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！ 观前提示：本系列的所有完整代码在整理好后，都会存放在仓库中，有需要可以自取 ~   Chapter 0 前置知识0.1 C++ 基础 和 面向对象编程0.2 C++ 的宏（macro） 宏的定义非常自由甚至可以把一个符号定义为一个很长的字符串，甚至代码；主要是因为宏的工作原理是编译前将宏直接原封不动地替换；例如下面的极端例子：  123456789101112131415// 直接把 HELLO 定义为一串代码#define HELLO \    QLabel* label = new QLabel(&quot;&lt;h2&gt;&lt;i&gt;Hello,&lt;/i&gt;&lt;font color=red&gt;Qt!&lt;/font&gt;&lt;/h2&gt;&quot;);\   ...</div></div></div></a><a class="pagination-related" href="/technical/qt-for-beginners-3/" title="从C++入门Qt（三）"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/qt3.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-30</div><div class="info-item-2">从C++入门Qt（三）</div></div><div class="info-2"><div class="info-item-1">written by SJTU-XHW Reference: C++ GUI Programming with Qt 4 (2nd Edition)  注意：本文章将讲解 Qt 5 入门知识，需要一定的 C++ 基础 本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！ 观前提示：本系列的所有完整代码在整理好后，都会存放在仓库中，有需要可以自取 ~   前面 4 章节的内容都是从具体项目来学习 Qt 的方法，也已经让我们初步认识了 Qt 的使用方法，下面的内容将按类分块来介绍，文章的篇幅也会短一些。 Chapter 5. Qt 常用事件Qt 中常用的 Event 主要有：鼠标事件、键盘事件、内部事件。其中内部事件绝大多数都交给 信号-槽 来处理，少部分的内部事件在特定情况需要重写，例如 QPaintEvent（下一章说）、 QCloseEvent 关闭事件（实现关闭前确认）。前两个事件是输入事件，都继承于 QInputEvent。 5.1 内部事件前面介绍过，对于内部事件（特指关闭事件），QCloseEvent 的使用方法也很简单，重写 void...</div></div></div></a><a class="pagination-related" href="/technical/qt-for-beginners-2/" title="从C++入门Qt（二）"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/qt2.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-16</div><div class="info-item-2">从C++入门Qt（二）</div></div><div class="info-2"><div class="info-item-1">written by SJTU-XHW Reference: C++ GUI Programming with Qt 4 (2nd Edition)  注意：本文章将讲解 Qt 5 入门知识，需要一定的 C++ 基础 本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！ 观前提示：本系列的所有完整代码在整理好后，都会存放在仓库中，有需要可以自取 ~   Chapter 4 第一个完整的 Qt 入门项目 在完成以上的学习过程后，在座诸位都具有独立写出一个极简的、较为完整 Qt 项目的能力； 以下，本人将用 纯代码方式 方式完成这个项目； 本章末，会总结到目前为止学到的所有 Qt 类的继承/思维图。  观前提示：本项目的设计思路很长，完整源代码放在 仓库 里，有需要可以取出查看 ~ 本章的目的是为了学习 Qt 一些组件的用法而已 ~ 项目目标：模仿 Microsoft Excel 设计一个表格应用程序。 4.1 创建主窗口 UI4.1.1 子类化 QMainWindow创建一个主窗口最方便的方法是利用 Qt 库中已有的设计类：QMainWindow。 QMainWindow 和...</div></div></div></a><a class="pagination-related" href="/review/csapp-basic/" title="CSAPP Notes Basic"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp_123.jpeg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-17</div><div class="info-item-2">CSAPP Notes Basic</div></div><div class="info-2"><div class="info-item-1">written by SJTU-XHW Reference:  CMU - 213, Computer Systems A Programmer’s Perspective 3rd Edition by Randal Bryant, David O’Hallaron 本人知识浅薄，文章难免有问题或缺漏，欢迎批评指正！ 内容很长，写起来很慢 😳   Chapter 0. Intro0.1 Ints are not Integers, Floats are not Reals $x^2\ge 0$：int（32-bit）may overflow； $a+(b+c)=(a+b)+c$：floats may discard some “unsignificant” digits；  0.2 Learn Assembly but never write it0.3 Memory Matters: Unbounded1234567891011121314typedef struct &#123;    int a[2];    double d;&#125;...</div></div></div></a><a class="pagination-related" href="/review/csapp-ecf-io/" title="CSAPP Notes: ECF &amp; I&#x2F;O"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp-ecf.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-16</div><div class="info-item-2">CSAPP Notes: ECF &amp; I&#x2F;O</div></div><div class="info-2"><div class="info-item-1">Chapter 13. Exceptional Control Flow 对应书中第 8 章。  异常控制流是现代计算机系统的一个相当重要的部分。 13.1 Control Flow 控制流：从机器打开到关闭的过程中，处理器只做一件事：读指令、执行指令，一个周期做一个指令。多核的机器则每个核心依次交替执行指令。这些指令序列被称为控制流。硬件正在执行的实际指令序列就被称为物理控制流。  改变内存中控制流的方法：分支 &amp; 跳转，过程调用 &amp; 返回（Branches &amp; Jumps &amp; Procedure call and return）；  都是对于程序状态变化的处理。    但以上的简单的改变控制流的方法对于处理复杂的系统级别的状态变化时，就显得非常拙劣。（例如 OS 协同软硬件的通信，如果还是以 if-else 的方法，那将会非常差劲）； 什么是 “系统级别的状态变化”？  数据从磁盘 / 网卡到达内存中； I/O 设备输入...</div></div></div></a><a class="pagination-related" href="/review/csapp-mm-cache/" title="CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/csapp-mh.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-10</div><div class="info-item-2">CSAPP Notes: Memory Hierarchy &amp; Cache &amp; Opt</div></div><div class="info-2"><div class="info-item-1">Chapter 10. The Memory Hierarchy 本章将介绍系统的内存分层架构。  之前几章，我们对于内存的理解就是一个很大的字节数组，可以用地址作为下标进行访问。但事实上，真正的计算机的存储系统背后的设备层次结构设计远比这层抽象要复杂。 正是计算机的存储系统的层次结构对有限、离散资源的管理和抽象，才能让程序的内存看起来呈现出这种线性的数组结构。本章就来讨论计算机存储系统背后的层次结构。 10.1 Storage Technologies &amp; Trends在正式学习存储系统的层次结构前，有必要稍微弄清楚底层硬件的情况。 10.1.1 Random-Access Memory (RAM)当前大多数人所熟知的 “内存” 的一部分就是随机访问存储器（RAM），它具有以下的特征：  RAM 是个存储元件，I/O 吞吐速率快于绝大多数硬盘固件/磁盘（称为 “外存”）；  RAM 常常被打包放在 CPU 芯片中；  RAM 中每一个基本的存储单元被称为 单元胞（Cell），一个单元胞中存放 1 bit 数据；  很多个 RAM 芯片共同工作，组成了计算机的...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">SJTU-XHW</div><div class="author-info-description">A blog to document learning and life</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">75</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://blog.sjtuxhw.top/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! |•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E4%B8%80%E7%A7%8D%E5%85%A8%E6%96%B0%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6%EF%BC%9F"><span class="toc-text">如何设计一种全新的内存管理机制？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E5%8F%B7%E5%85%A5%E5%BA%A7"><span class="toc-text">对号入座</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E7%BA%B3%EF%BC%8C%E7%84%B6%E5%90%8E%E6%BC%94%E7%BB%8E"><span class="toc-text">归纳，然后演绎</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/technical/tee-lab/" title="机密计算与TEE：知识整理和试验笔记"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/tee-lab.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="机密计算与TEE：知识整理和试验笔记"/></a><div class="content"><a class="title" href="/technical/tee-lab/" title="机密计算与TEE：知识整理和试验笔记">机密计算与TEE：知识整理和试验笔记</a><time datetime="2025-04-17T15:31:36.000Z" title="发表于 2025-04-17 23:31:36">2025-04-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/rust-owner/" title="另一个角度看 Rust 所有权和借用"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/rust-owner.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="另一个角度看 Rust 所有权和借用"/></a><div class="content"><a class="title" href="/technical/rust-owner/" title="另一个角度看 Rust 所有权和借用">另一个角度看 Rust 所有权和借用</a><time datetime="2025-04-06T12:20:14.000Z" title="发表于 2025-04-06 20:20:14">2025-04-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/review/io-mul-more/" title="更多的 I/O 多路复用"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/io-mult-more.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="更多的 I/O 多路复用"/></a><div class="content"><a class="title" href="/review/io-mul-more/" title="更多的 I/O 多路复用">更多的 I/O 多路复用</a><time datetime="2025-04-01T04:13:25.000Z" title="发表于 2025-04-01 12:13:25">2025-04-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/embodied-3-papers-202503/" title="具身智能论文速读3篇 2025年3月"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/embodied-3-202503.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="具身智能论文速读3篇 2025年3月"/></a><div class="content"><a class="title" href="/technical/embodied-3-papers-202503/" title="具身智能论文速读3篇 2025年3月">具身智能论文速读3篇 2025年3月</a><time datetime="2025-03-02T15:36:58.000Z" title="发表于 2025-03-02 23:36:58">2025-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/pytorch-dim/" title="如何理解 PyTorch 函数的 dim 参数"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/pth_dim.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="如何理解 PyTorch 函数的 dim 参数"/></a><div class="content"><a class="title" href="/technical/pytorch-dim/" title="如何理解 PyTorch 函数的 dim 参数">如何理解 PyTorch 函数的 dim 参数</a><time datetime="2025-02-18T12:17:05.000Z" title="发表于 2025-02-18 20:17:05">2025-02-18</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2025 By SJTU-XHW  |  tech SJTU saves the world</div><div class="framework-info"><span>Built With love &amp; </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Powered By </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><div style="display:flex;flex-flow:row;justify-content:center;align-items:center;"> <a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <span class="footer-separator">|</span> <a style="display:flex;flex-flow:row;align-items:center;" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> 本网站由 <img style="margin:0 3px;" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/upCloud_logo_blue.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"emoji":["https://unpkg.com/@waline/emojis@1.2.0/tw-emoji","https://unpkg.com/@waline/emojis@1.2.0/tieba"],"locale":{"reactionTitle":"你认为这篇文章怎么样？","placeholder":"给大佬递笔 XP\n[ Akismet AI Filter 🤖 ON ]"},"reaction":["https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsup.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsdown.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_antic.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_cool.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_sleepy.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_emm.gif"]}
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://waline.sjtuxhw.top/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script src="/js/rightmenu.js"></script><script src="/js/mourn.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
