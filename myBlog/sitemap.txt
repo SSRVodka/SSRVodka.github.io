@@ -1,3 +1,5 @@
+https://blog.sjtuxhw.top/review/os-el-and-mem/
+https://blog.sjtuxhw.top/technical/ml-roadmap/
 https://blog.sjtuxhw.top/gallery/index.html
 https://blog.sjtuxhw.top/technical/tee-lab/
 https://blog.sjtuxhw.top/review/io-mul-more/
@@ -79,9 +81,9 @@ https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-17th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-20th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-2nd.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-4th.html
-https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-5th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-8th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-9th.html
+https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-5th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-3rd.html
 https://blog.sjtuxhw.top/dailyQ/%E6%9A%82%E5%81%9C%E6%9B%B4%E6%96%B0%E8%AF%B4%E6%98%8E.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-15th.html
@@ -128,6 +130,8 @@ https://blog.sjtuxhw.top/tags/Concurrent/
 https://blog.sjtuxhw.top/tags/JavaScript/
 https://blog.sjtuxhw.top/tags/Minecraft/
 https://blog.sjtuxhw.top/tags/Forge/
+https://blog.sjtuxhw.top/tags/ML/
+https://blog.sjtuxhw.top/tags/Roadmap/
 https://blog.sjtuxhw.top/tags/make/
 https://blog.sjtuxhw.top/tags/Matlab/
 https://blog.sjtuxhw.top/tags/OS/
@@ -149,7 +153,6 @@ https://blog.sjtuxhw.top/tags/C/
 https://blog.sjtuxhw.top/tags/EmbodiedAI/
 https://blog.sjtuxhw.top/tags/IL/
 https://blog.sjtuxhw.top/tags/Rust/
-https://blog.sjtuxhw.top/tags/ML/
 https://blog.sjtuxhw.top/tags/PyTorch/
 https://blog.sjtuxhw.top/tags/Crawler/
 https://blog.sjtuxhw.top/tags/tease/
