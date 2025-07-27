@@ -1,0 +1,501 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Transformer 论文精读 | SSRVodka's blog</title><meta name="author" content="SSRVodka,xhwpro@gmail.com"><meta name="copyright" content="SSRVodka"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="笔记温习一下经典的 Transformer 架构的论文。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Transformer 论文精读">
+<meta property="og:url" content="https://blog.sjtuxhw.top/technical/transformer/index.html">
+<meta property="og:site_name" content="SSRVodka&#39;s blog">
+<meta property="og:description" content="笔记温习一下经典的 Transformer 架构的论文。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/transformer.jpg">
+<meta property="article:published_time" content="2025-07-20T15:15:10.000Z">
+<meta property="article:modified_time" content="2025-07-27T11:03:15.138Z">
+<meta property="article:author" content="SSRVodka">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="ML">
+<meta property="article:tag" content="Paper">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/transformer.jpg"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.sjtuxhw.top/technical/transformer/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功 ヾ(≧∇≦*)ゝ',
+    error: '复制失败 (#`皿´)',
+    noSupport: '浏览器不支持 ╮(╯_╰)╭'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#333","bgDark":"#1f1f1f","position":"top-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Transformer 论文精读',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="/css/mouseConfig.css"/><link rel="stylesheet" href="/css/rightmenu.css"/><link rel="stylesheet" href="/css/custom_music.css"/><link rel="stylesheet" href="/css/addFonts.css"/><link rel="stylesheet" href="/css/titleFonts.css"/><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="SSRVodka's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div id="main-loading-bg"><div class="truckWrapper"><div class="truckBody"><svg class="trucksvg" viewBox="0 0 198 93" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z" fill="currentColor" stroke="#282828" stroke-width="3"></path><path d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z" fill="#7D7C7C" stroke="#282828" stroke-width="3"></path><path d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z" fill="#282828" stroke="#282828" stroke-width="2"></path><rect x="187" y="63" width="5" height="7" rx="1" fill="#FFFCAB" stroke="#282828" stroke-width="2"></rect><rect x="193" y="81" width="4" height="11" rx="1" fill="#282828" stroke="#282828" stroke-width="2"></rect><rect x="6.5" y="1.5" width="121" height="90" rx="2.5" fill="#DFDFDF" stroke="#282828" stroke-width="3"></rect><rect x="1" y="84" width="6" height="4" rx="2" fill="#DFDFDF" stroke="#282828" stroke-width="2"></rect></svg></div><div class="truckTires"><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg></div><div class="road"></div><svg class="lampPost" fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 453.459 453.459" xml:space="preserve"><path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993 c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514 c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16 c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914 h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75 v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795 V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017 h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path></svg></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+      setTimeout(() => {
+        $loadingBox.style.display = 'none'
+      }, 800)
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()
+</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">78</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.sjtuxhw.top/cover_imgs/transformer.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/head_icon.png" alt="Logo"><span class="site-name">SSRVodka's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Transformer 论文精读</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/dailyQ/"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> DailyQuestion</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Transformer 论文精读</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-20T15:15:10.000Z" title="发表于 2025-07-20 23:15:10">2025-07-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-27T11:03:15.138Z" title="更新于 2025-07-27 19:03:15">2025-07-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">5.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>19分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/technical/transformer/#post-comment"><span class="waline-comment-count" data-path="/technical/transformer/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>笔记温习一下经典的 Transformer 架构的论文。</p>
+<span id="more"></span>
+<h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><ul>
+<li><p>循环神经网络、卷积神经网络的演化过程、结构、代表性的模型；</p>
+</li>
+<li><p>传统的注意力机制（attention）已经在很多场合下成为序列/转录模型的不可分割的一部分，因为无论两个词语语义的依赖在输入/输出序列中距离多远，都能建模依赖关系。但是这种传统的注意力机制仍然没有用在 recurrent 网络中。</p>
+</li>
+<li><p>自注意力机制（self-attention）是通过关联单个序列中的的不同位置，来计算这个序列的 hidden representation。自注意力机制在此前被成功应用与阅读理解、抽象总结等任务中；</p>
+</li>
+<li><p>另外有工作表明，基于循环注意力机制（recurrent attention）的端到端记忆网络（end-to-end memory networks），它并没有采用传统 RNN 的序列对齐循环（sequence-aligned recurrence）的计算方法，仍然能在简单语言问答、语言建模等任务上取得比较好的效果；</p>
+<blockquote>
+<p>循环注意力机制：一种将注意力机制与循环神经网络（RNN）相结合的技术，常见的有 Recurrent Attention Model（RAM）和 Recurrent Attention Convolutional Neural Network（RA - CNN）等模型；</p>
+<p>序列对齐循环（sequence-aligned recurrence）：是一种与循环神经网络（RNN）相关的计算方式。通常沿输入和输出序列的符号位置进行因子计算（Recurrent models typically factor computation along the symbol positions of the input and output sequences），将位置与计算时间中的步骤对齐，根据前一个隐藏状态  $h_{t-1}$ 和位置 $t$  的输入生成新的隐藏状态 $h_{t}$。这种计算方式具有内在的序列性，导致训练示例中的并行化难以实现，在处理长序列时，由于内存限制会影响跨示例的批处理效率。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
+<li><p>RNN 和 GRU/LSTM 之类的模型已经在语言序列建模（尤其是序列到序列，或者称为 “转录模型”，transduction models）、机器翻译等领域达到了 SOTA 级别的效果；</p>
+</li>
+<li><p>Recurrent 类型的模型由于采用的是 sequence-aligned recurrence 的计算方法，极大阻碍了计算的并行化，尤其是在序列很长的情况下；</p>
+<ul>
+<li>虽然目前的工作进行了 factorization tricks 以及条件计算（后者还增强了模型的 performance）来优化性能，但是 Recurrent 网络串行计算的根源问题仍然无法解决；</li>
+</ul>
+</li>
+<li><p>CNN 架构的模型如 ByteNet/ConvS2S 等使用 CNN 作为 basic building block，可以并行计算所有输入输出位置的 hidden representations 数据，但是输入输出间任意位置需要进行的计算量会随着位置距离增长而增长（ByteNet 是线性的，ConvS2S 是对数的）。</p>
+<p>但这也会导致模型难以学习到较远距离的两个位置之间的依赖关系。</p>
+</li>
+</ul>
+<p>基于上述背景，这个工作提出了 Transformer 模型架构，<strong>直接避开了 sequence-aligned recurrence 的做法</strong>，仅依靠注意力机制来构建一个输入/输出间的全局依赖。</p>
+<p>目前 Transformer 也是第一个仅依靠自注意力机制（而不是使用 sequence-aligned recurrence 或者卷积的方法）来计算输入输出序列 representations 的转录模型。</p>
+<p>这个架构的重要好处之一是可以尽可能地利用并行化的计算资源。另外 Transformer 还解决了 CNN 模型在解决序列长距离依赖时的高额时间开销问题：常数时间！</p>
+<blockquote>
+<p>但同时由于引入了平均注意力加权的位置参数（averaging attention-weighted positions），代价是 reduced effective resolution（丢失有效分辨率）。本文通过引入<strong><u>多头注意力机制</u></strong>来缓解这一点。</p>
+</blockquote>
+<h2 id="模型架构"><a href="#模型架构" class="headerlink" title="模型架构"></a>模型架构</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/transformer.png" width="320px" /></p>
+<p>研究表明大部分的有竞争力的序列转录模型都有一个 encoder-decoder 结构。Transformer 也不例外：</p>
+<ul>
+<li>encoder（上图左框）将符号表示的输入序列 $(x_1,x_2,\ldots,x_n)$ 映射到序列连续表示（a sequence of continuous representations）$z=(z_1,\ldots,z_n)$；</li>
+<li>给定序列的连续表示 $z$，decoder（上图右框）就能每次生成一个输出序列 $(y_1,\ldots,y_m)$ 的一个元素，并且每一步模型都是<strong><u>自回归的</u></strong>（self-regressive，指前面步骤中生成的符号会作为后面序列生成的额外的输入）。</li>
+</ul>
+<p>Transformer 总体就是遵循上述的架构设计，使用堆叠的 self-attention 块、由全连接层组成的 encoder 和 decoder，搭建出上图的结构。</p>
+<h3 id="Encoder-和-Decoder-设计"><a href="#Encoder-和-Decoder-设计" class="headerlink" title="Encoder 和 Decoder 设计"></a>Encoder 和 Decoder 设计</h3><p>encoder 由 $N=6$ 的完全相同的层组成（参见上图示意），每个 layer 有两个 sub-layers：多头注意力机制，以及逐位的前馈全连接网络（position-wise fully connected feed-forward network）。</p>
+<p>每个 sub-layers 周围引入残差连接块、正则化层，即每个 sub-layers 输出为 $\text{LayerNorm}(x+\text{Sublayer(x)})$，其中 $\text{Sublayer}$ 是 sub-layers 中实现的函数。</p>
+<blockquote>
+<p>为了容易实现残差连接块，模型的所有 sub-layers，包括 embedding layers 的输出维度都是 $d=512$；</p>
+</blockquote>
+<p>decoder 同样由 $N=6$ 的完全相同的层堆叠而成。不过其中的 sub-layers 有 3 个，除了 encoder 中有的两个以外，又加了一个 masked 多头注意力层（以及同样的残差连接-正则化层），用于处理输入的之前的输出序列（自回归嘛）。</p>
+<blockquote>
+<p>为什么处理输入的 output embedding 的多头注意力层有 mask 呢？</p>
+<p>主要考虑到<strong>防止模型在训练时“作弊”（Peeking Ahead），即防止模型利用当前要预测位置之后的信息（未来信息）来预测当前的位置</strong>。</p>
+<p>这个问题就像把 validation set 直接作为 training set 一样，这会严重影响训练效果。</p>
+<p>目的就是让模型在预测 $y_t$ 时不会“看到” $y_{t+1}$ 以及以后的信息。</p>
+</blockquote>
+<h3 id="Attention-设计以及创新点"><a href="#Attention-设计以及创新点" class="headerlink" title="Attention 设计以及创新点"></a>Attention 设计以及创新点</h3><p>一个注意力函数实际上能被描述为 <code>&#123;a query, a set&#123;k: v&#125;&#125; -&gt; an output</code> 的映射。</p>
+<p>其中查询（query）、键（key）、值（value）、输出（output，即注意力分数）都是向量。</p>
+<p>而输出实质上就是值（values）的加权和，其中这些“权重” 是由一个 “适配性函数”（compatibility function）计算出的 <strong><u>这个查询 query 与对应键 key 的匹配的程度</u></strong>。</p>
+<p>文章中介绍的这个算法就是 QKV 算法，注意力机制的<strong><u>一种高效的实现形式</u></strong>。</p>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<p>读者这里可能会好奇，为什么将 query 和 key 的匹配程度作为权重加权到 value 上就能得到注意力分数，且这个做法是有效的？也就是说：为什么 QKV 算法、以及注意力机制是有效的？</p>
+<p>其实关键在于它模拟了人类认知中一个核心过程：<strong>选择性聚焦</strong>。它允许模型在处理信息时，<strong>动态地、有选择性地</strong>将有限的“认知资源”集中在输入信息中最相关、最重要的部分上，而忽略或弱化不相关的部分。</p>
+<p>因此说，注意力机制的核心思想就是“动态、内容相关的信息选择”，就是让模型具备这种<strong>动态聚焦</strong>的能力。</p>
+<p>它让模型在处理某个特定元素（<code>Query</code>）时，能够“有意识地”去“看”其他元素（<code>Key</code>），并根据它们与当前元素的相关性（<code>Query-Key</code> 匹配度）来决定从这些元素中提取多少信息（加权 <code>Value</code>）。</p>
+<p>它也因此突破了固定编码的局限。做个比较：</p>
+<ul>
+<li><p>传统的神经网络层（如全连接层、CNN、RNN）在编码一个元素（如一个词、一个像素）时，主要依赖于其<strong>固定的上下文窗口</strong>或<strong>预定义的位置关系</strong>（如 CNN 的卷积核、RNN 的时序依赖）。</p>
+<p>这种固定方式在处理长距离依赖、理解复杂关系或需要<strong>全局上下文</strong>信息时效率低下或效果不佳。</p>
+</li>
+<li><p>相比之下，注意力机制允许模型在处理序列中任何一个位置时，都能<strong>直接访问并评估序列中所有其他位置的信息</strong>，并根据<strong>内容的相关性</strong>（而非固定的位置或距离）来决定依赖程度。</p>
+</li>
+</ul>
+<p>上述思考的有效性也被实验结果所证明。</p>
+</blockquote>
+<p>根据我们上面的注意力机制的定义，我们只需要设计一个 compatibility function 不就能完成注意力的计算了吗！我们记 compatibility function 为 $f_c$，那么</p>
+<script type="math/tex; mode=display">
+\text{attention score}=f_c(q, k)\cdot v</script><p>这里 $f_c$ 算出的结果是一个关系矩阵 $R_{ij}=(r)_{ij}$ 表示 $q_i$ 与 $k_j$ 的匹配程度，最后矩阵向量点积表示求加权和，得到对应的注意力分数。</p>
+<p>这里因为我们想以匹配程度作为参考，给 $v$ 做个权重，因此希望满足：</p>
+<ul>
+<li>计算结果的元素求和为 1（<strong>归一化与概率解释性</strong>）；</li>
+<li>并且希望<strong>显著放大</strong>最高分数与其他分数之间的<strong>相对差异</strong>实现 “强聚焦” 的效果（<strong>突出显著项与抑制不相关项</strong>）；</li>
+<li>还希望利于神经网络的后续梯度的计算（<strong>梯度计算的优化</strong>）；</li>
+</ul>
+<p>因此 softmax 完美符合上述要求（本身输出归一化、可解释性强、非线性指数放大效应、容易计算导数），我们修改为下面的公式更为准确：</p>
+<script type="math/tex; mode=display">
+\text{attention score}=\text{softmax}(f_c(q, k))\cdot v</script><p>我们将 $f_c(q,k)$ 称为对齐分数，它的每个元素就是对应的、未归一化的 “query 和对应 key 的匹配程度”。</p>
+<h4 id="创新点-1：缩放点积注意力-Scaled-Dot-Product-Attention"><a href="#创新点-1：缩放点积注意力-Scaled-Dot-Product-Attention" class="headerlink" title="创新点 1：缩放点积注意力 (Scaled Dot-Product Attention)"></a>创新点 1：缩放点积注意力 (Scaled Dot-Product Attention)</h4><p>对于适配性函数的具体定义，文章介绍了一种 “缩放点积” 的定义，即 $f_c(q,k)=\dfrac{1}{\sqrt{d_k}}\cdot q^T\cdot k$)，其中$q$ 和 $k$ 向量均为 $d_k$ 维。</p>
+<p>因为计算机中一般需要批量并行计算，因此我们一般将输入向量堆叠成矩阵，具体计算起来会比上面单个向量的计算复杂一些：输入包含同样维度 $d_k$ 的 query 和 keys 向量（分别记为 $q_i$ 和 $k_i$），以及一个维度 $d_v$ 的 values 向量 $v_i$，输出对齐分数，计算方法：将一个 $q_i$ 与所有 $k_j$ 点积，每个都除以 $\sqrt{d_k}$，得到 $q_i$ 和 $k_j$ 的对齐分数。</p>
+<p>例如 $q_i$（第 $i$ 个 query 向量）和 $k_j$（第 $j$ 个 key 向量）的关于缩放点积的对齐分数：</p>
+<script type="math/tex; mode=display">
+e_{ij}=\dfrac{q_i^T\cdot k_j}{\sqrt{d_k}}</script><p>最终注意力分数计算过程等价于下面的矩阵式：</p>
+<script type="math/tex; mode=display">
+\text{Attention}(Q,K,V)=\text{softmax}(\dfrac{QK^T}{\sqrt{d_k}})V</script><p>我们将使用 “缩放点积” 作为适配性函数的注意力机制称为 “缩放点积注意力”。</p>
+<blockquote>
+<p>[!NOTE]</p>
+<p>文章中也提到，并不是一开始就知道要用缩放点积函数作为 compatibility function，作者实际上先考虑的是常用的两种函数：加性、点积（分别对应加性注意力、点积注意力）。</p>
+<p>加性函数是使用一个含有单层隐藏层的前馈神经网络，公式（$\tanh$ 是激活函数）：</p>
+<script type="math/tex; mode=display">
+f_c(q,k)=v^T\tanh(W_q\cdot q+W_k\cdot k)</script><p>虽然理论上，上述加性函数和点积函数的复杂度相当，但实际计算机计算起来点积函数的时间和空间消耗都更好一些，因为后者可以利用被高度优化的矩阵乘法计算代码。</p>
+<p>不过文章指出，使用点积函数时，在 $d_k$ 很大的情况下，效果不如加性函数，作者推测可能是<strong><u>点积结果过大导致 Softmax 梯度消失</u></strong>，因此在点积后添加了一个 $\dfrac{1}{\sqrt{d_k}}$ 的缩放，这才提出了缩放点积。</p>
+<p>原文：We suspect that for large values of $d_k$, the dot products grow large in magnitude, pushing the softmax function into regions where it has  extremely small gradients [4]. To counteract this effect, we scale the dot products by $\dfrac{1}{\sqrt{d_k}}$.</p>
+</blockquote>
+<h4 id="创新点-2：多头注意力机制"><a href="#创新点-2：多头注意力机制" class="headerlink" title="创新点 2：多头注意力机制"></a>创新点 2：多头注意力机制</h4><p>文章注意到，与其使用单个的注意力函数来处理 $d_{\text{model}}$ 个的 $q,k,v$，不如将它们投影（线性变换）到 $h$ 个不同方向（分别是 $d_k,d_k,d_v$ 维的线性空间），然后对它们并行地求注意力分数，每个方向都能得到 $d_v$ 维输出值（注意力分数）。</p>
+<p>作者指出这样做的作用是，<strong><u>增强模型捕捉不同子空间信息的能力</u></strong>。</p>
+<blockquote>
+<p>原文：Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions. With a single attention head, averaging inhibits this.</p>
+</blockquote>
+<p>这样的多头注意力计算更加繁琐一些，我们直接展示结论（$d_\text{model}$ 组数据同时计算的矩阵计算式）：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\text{MultiHead}(Q,K,V)&=\text{Concat}(\text{head}_1,\ldots,\text{head}_h)W^O\\
+\text{where head}_i&=\text{Attention}(QW_i^Q,KW_i^K,VW_i^V)
+\end{aligned}</script><p>其中 $W_i^Q\in\mathbf{R}^{d_{\text{model}}\times d_k},\space W_i^K\in\mathbf{R}^{d_{\text{model}}\times d_k},W_i^V\in\mathbf{R}^{d_{\text{model}}\times d_v}$ 以及 $W^O\in\mathbf{R}^{hd_v\times d_\text{model}}$ 均为用于投影的超参数矩阵。</p>
+<p>本文的工作实验时取的值 $h=8,d_k=d_v=\dfrac{1}{h}d_{\text{model}}=64$。</p>
+<p>Transformer 架构也充分利用了注意力机制，例如：</p>
+<ul>
+<li><strong><u>Encoder 的每一个自注意力层</u></strong>；<ul>
+<li>输入：注意这里 <code>Q = K = V = 该层前一层的输出</code>（queries、keys 和 value 全部是一样的）；</li>
+<li>目的：让输入序列中的<strong>每个词（位置）</strong> 能够关注到输入序列中<strong>所有其他词（位置）</strong>，捕捉词与词之间的依赖关系（无论距离远近）；</li>
+<li>特点：<ul>
+<li>全局上下文：每个词的表示都融合了整个输入序列的信息；</li>
+<li>并行计算：因为 <code>Q</code>, <code>K</code>, <code>V</code> 都来自同一序列的上一层输出，且计算不依赖顺序，整个层的计算可以高度并行化；</li>
+<li>多头注意力；</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong><u>Decoder 的掩码自注意力层</u></strong>；<ul>
+<li>输入：仍然是 <code>Q = K = V = 该层前一层的输出</code>；</li>
+<li>目的：让输出序列中<strong>正在预测的位置 <code>i</code></strong> 能够关注到<strong>已经生成的输出序列中在它之前的所有位置（<code>1</code> 到 <code>i-1</code>）</strong>，但<strong>不能</strong>看到它自身 (<code>i</code>) 或它之后 (<code>i+1</code> 到 <code>m</code>) 的位置。简言之，<strong>保持自回归（Autoregressive）特性，避免信息泄露（作弊）</strong>；</li>
+<li>特点：<ul>
+<li>掩码：在计算 <code>Q</code>（位置 <code>i</code>）与所有 <code>K</code>（位置 <code>j</code>）的点积后、进行 softmax 之前，会将 <code>j &gt; i</code> 的位置对应的点积结果设置为一个非常大的负数（如 $-10^9$ 或 $-\infty$）。这样，经过 softmax 后，这些未来位置的权重就几乎为 0；</li>
+<li>其他同 encoder 的自注意力层；</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong><u>Encoder-Decoder 注意力层</u>（encoder-decoder attention layers）</strong>：<ul>
+<li>输入：注意这个时候与前面的不太一样：<ul>
+<li><strong>查询（Q）</strong>：来自<strong>解码器前一层的输出</strong>（即 Masked Self-Attention 子层的输出，代表了当前预测位置 <code>i</code> 及之前的信息）。</li>
+<li><strong>键（K）</strong> 和 <strong>值（V）</strong>：来自<strong>编码器的最终输出</strong>（即最后一层编码器的输出，代表了整个输入序列的编码信息）；</li>
+</ul>
+</li>
+<li>目的：让输出序列中<strong>正在预测的位置 <code>i</code></strong> 能够关注到<strong>整个输入序列的所有位置（<code>1</code> 到 <code>n</code>）</strong>。这是经典的“源-目标”注意力机制，让解码器在生成目标词时，能够动态地聚焦于输入序列中最相关的部分（<u>类似于传统 Seq2Seq + Attention 模型中的注意力</u>，不了解可以参考 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://notes.sjtuxhw.top/machine_learning/ml.html#81-%E4%BB%8E-rnn-encoder-decoder-%E5%88%B0-attention-%E6%9C%BA%E5%88%B6">这里</a>）；</li>
+<li>特点：<ul>
+<li>源-目标对齐： 核心作用是根据当前目标状态，在源端信息中找到最相关的上下文。这是翻译、摘要等任务的关键；</li>
+<li>信息桥梁： 这是连接编码器和解码器信息的主要通道；</li>
+<li>多头注意力；</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="创新点-3：逐位的前馈神经网络"><a href="#创新点-3：逐位的前馈神经网络" class="headerlink" title="创新点 3：逐位的前馈神经网络"></a>创新点 3：逐位的前馈神经网络</h4><p>之前介绍架构时指出每两个 sub-layers 中一个是逐位的全连接前馈神经网络，采用一个 ReLU 激活函数和两层线性全连接层：</p>
+<script type="math/tex; mode=display">
+\text{SubLayer}_\text{FFN}(x)=\max(0,\space xW_1+b_1)W_2+b_2</script><p>其中输入输出的维度都为 $d_\text{model}=512$，两个线性层中间的维度是 $d_{ff}=2048$；</p>
+<p>此外，文章指出这部分还可以用 kernel size 为 1 的两个卷积层来代替。</p>
+<h4 id="创新点-4-Embeddings-and-Softmax-的使用"><a href="#创新点-4-Embeddings-and-Softmax-的使用" class="headerlink" title="创新点 4:   Embeddings and Softmax 的使用"></a>创新点 4:   Embeddings and Softmax 的使用</h4><p>和一般的序列转录模型一样，Transformer 使用 embedding 的方法将输入/输出的 tokens 转为 $d_\text{model}$ 维度的向量，并且使用 linear transformation 层和 softmax 层将 decoder 输出转换为预测的 next-token 概率。</p>
+<p>在本文构建的模型中，作者将两个 embedding layers（input/output embedding layers，参见上图架构中的粉红色块）和 pre-softmax linear transformation（参见上图架构中 decoder 输出的第一个 Linear 块）共用了相同的参数权重矩阵，不过在 embedding layers 中，这些权重还会被乘以 $\sqrt{d_\text{model}}$；</p>
+<h4 id="创新点-5：位置编码-Positional-Encoding"><a href="#创新点-5：位置编码-Positional-Encoding" class="headerlink" title="创新点 5：位置编码 Positional Encoding"></a>创新点 5：位置编码 Positional Encoding</h4><p>因为 Transformer 架构模型不含有 sequence-aligned recurrence 计算方法，也不含有卷积操作，所以，为了让模型利用并感知到序列的具体顺序信息，作者还在 input/output embedding 传给 encoder/decoder 前注入了 tokens 在序列中相对或绝对的位置信息，这被称为 “<strong>位置编码</strong>”。</p>
+<p>位置编码和 embedding vectors 的维度都是 $d_\text{model}$ 维，因此可以直接相加起来。</p>
+<p>一般位置编码可以通过学习获得，也可以事先给定，本文中选取了不同频率的正弦/余弦函数作为位置编码信息（这也是为什么上图架构图把 position encoding 部分画成了示波器的形状）：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+PE_{(pos,2i)}&=\sin(\dfrac{pos}{10000^{2i/d_\text{model}}})\\
+PE_{(pos,2i+1)}&=\cos(\dfrac{pos}{10000^{2i/d_\text{model}}})
+\end{aligned}</script><p>其中 $pos$ 表示 token 在 sequence 中的位置，$i$ 表示的是一个 embedding vector 的维度索引（共 $d_\text{model}$ 维）。因此每个位置 $pos$ 对应一个 $d_\text{model}$ 维向量，<strong>偶数列</strong>用正弦函数，<strong>奇数列</strong>用余弦函数。</p>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<p>为什么需要 “让模型感知到序列的具体顺序信息”（设计动机）？为什么这么设计（这么设计的原因）？</p>
+<p>设计动机简单来说就一个：<strong><u>弥补 self-attention 的位置不变性的问题</u></strong>。</p>
+<p>我们数学上注意到，自注意力机制（Self-Attention）本身是具有<strong><u>置换不变性</u></strong>的（Permutation Invariant）。即：若打乱输入序列顺序，输出不变（仅依赖词之间的相似度）。</p>
+<p>但是同时我们又需要模型必须感知序列顺序，例如掌握语义的差别：“猫追狗”不等于“狗追猫”。</p>
+<p>那么这样设计的原因也是和数学特性有关：<strong><u>对任意固定偏移量 $k$，$PE_{pos+k}$ 可表示为 $PE_{pos}$ 的线性变换</u></strong>。证明：</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}
+\sin(\omega_i(pos+k))\\\cos(\omega_i(pos+k))
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos(\omega_ik)&\sin(\omega_ik)\\-\sin(\omega_ik)&\cos(\omega_ik)
+\end{bmatrix}
+\begin{bmatrix}
+\sin(\omega_i(pos))\\\cos(\omega_i(pos))
+\end{bmatrix}</script><p>其中 $w_i=\dfrac{1}{10000^{2i/d_\text{model}}}$，这意味着 $i$ 越大，位置编码的“频率” 越高，越倾向于捕获全局位置信息（长距离依赖），反之倾向于捕获局部位置信息（相邻词关系）。</p>
+<p>这样的特性可以让模型轻松地学习相对位置。</p>
+<p>除了数学特性，这么还有其他的两个方面的考虑：</p>
+<ul>
+<li><p>外推性（Extrapolation）：正弦/余弦函数的<strong>周期性</strong>允许模型泛化到比训练时更长的序列（如测试时遇到更长的句子），相比较下，可学习的位置嵌入（Learned Positional Embedding）则难以泛化到未见过的位置；</p>
+<blockquote>
+<p>原文：We also experimented with using learned positional embeddings [8] instead, and found that the two versions produced nearly identical results (see Table 3 row (E)). We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than the ones encountered during training.</p>
+</blockquote>
+</li>
+<li><p><strong>值域有界</strong>：<code>[−1,1]</code>，与词嵌入（通常归一化）兼容。</p>
+</li>
+</ul>
+</blockquote>
+<h2 id="训练方法"><a href="#训练方法" class="headerlink" title="训练方法"></a>训练方法</h2><p>文章基于包含了 45 万词语对的 WMT 2014 English-German 数据集训练，句子被 encoded 为  byte-pair encoding（参考了 CoRR 的工作）。</p>
+<p>使用的梯度下降的优化器是自适应学习率的 Adam optimizer（$\beta_1=0.9,\beta_2=0.98,\varepsilon=10^{-9}$），并且自定义控制学习率的策略：先预留 $warmup_steps=4000$ 这些 steps 来让学习率线性增长，后面在以平方根反比的速度减小学习率：</p>
+<script type="math/tex; mode=display">
+l=d^{-0.5}_\text{model}\cdot\min(\text{step-num}^{-0.5},\text{step-num}\cdot\text{warmup-steps}^{-1.5})</script><p>文章训练过程中使用了 3 种正则化方法：</p>
+<ul>
+<li>Residual Dropout：对每个 sub-layer 的输出采用了残差连接（在输入下一层 sub-layer 以及归一化前）。另外，在向 embeddings 加 positional encodings 时也用了 dropout；实验用的 base model 的  dropout rate 取 0.1；</li>
+<li>Label Smoothing：训练过程中，使用 smoothing rate 取 $\varepsilon=0.1$；</li>
+</ul>
+<blockquote>
+<p>知识补充：什么是标签平滑（label smoothing）？</p>
+<p>在传统的分类任务（如机器翻译的词预测）中，标签通常采用 <strong>one-hot 编码</strong>（正确词的概率=1，其他词=0）。但问题是这会使模型过度自信（overconfident），强制将正确词概率推至 1，其他词压至 0。容易导致过拟合，降低泛化能力。</p>
+<p>标签平滑的做法是，将正确词的目标概率设为 $1-\varepsilon$，并将剩余概率 $\varepsilon$ <strong>均匀分配</strong>给所有其他词（共 $V$ 个词）：</p>
+<script type="math/tex; mode=display">
+P=\left\{\begin{aligned}
+1-\varepsilon&,\space\text{if correct}\\
+\dfrac{\varepsilon}{V-1}&,\space\text{otherwise}
+\end{aligned}\right.</script><p>那么为什么说 label smoothing 会损害 perplexity（模型困惑度）呢？回顾 perplexity 定义（交叉熵的指数），<strong><u>perplexity 值越低表示模型预测的越准确、越不太可能有很多不确定的用词选择</u></strong>：</p>
+<script type="math/tex; mode=display">
+\text{perplexity}=\exp(-\dfrac{1}{N}\sum\limits_{i=1}^N\log P(w_i|\text{context}))</script><p>而 label smoothing 会让<strong>目标分布更“平滑”</strong>，显然会提升模型的 perplexity；</p>
+<p>但它也在另一个方便提升了模型的泛化性：</p>
+<ul>
+<li>模型不会对训练数据中的噪声或特定模式过度敏感；</li>
+<li>并且减少了 over-confident 的可能，在测试时对模糊边界（如近义词）更鲁棒；</li>
+</ul>
+</blockquote>
+<h2 id="效果简述"><a href="#效果简述" class="headerlink" title="效果简述"></a>效果简述</h2><p>文章先对于 “为什么选择自注意力机制” 做了一些理论上的比较：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/layer-comp.png" width="650px" /></p>
+<p>综合了整体复杂度、串行计算效率，以及关键路径长度比较，self-attention 在保证 performance（原文：could yield more interpretable models）的同时确保高效：Not only do individual attention heads clearly learn to perform different tasks, many appear to exhibit behavior related to the syntactic and semantic structure of the sentences.</p>
+<p>然后摆出了和其他 Seq2Seq 模型的优越 performance：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/perf.png" width="550px" /></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top">SSRVodka</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top/technical/transformer/">https://blog.sjtuxhw.top/technical/transformer/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.sjtuxhw.top" target="_blank">SSRVodka's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AI/">AI</a><a class="post-meta__tags" href="/tags/ML/">ML</a><a class="post-meta__tags" href="/tags/Paper/">Paper</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/transformer.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/technical/sc-paper/" title="阅读: A Hardware-Software Co-Design for Efficient Secure Containers"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/sc.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">阅读: A Hardware-Software Co-Design for Efficient Secure Containers</div></div><div class="info-2"><div class="info-item-1">这是一篇 2025 年的关于软硬协同的安全容器设计的文章。 0. Overview虚拟机级别的容器中，每个容器运行在虚拟机虚拟出的独立内核上，因此隔离性很强。但其依赖于通用虚拟机虚拟出的虚拟化硬件，与 OS 级别的容器相比，会导致不可忽略的性能开销。而在嵌套虚拟化场景下，secure container 运行在虚拟机中，这个性能的 gap 会显著地扩大。 本篇文章基于两个角度提出容器内核隔离（CKI），一个软硬协调的高效机密容器设计。  首先，Protection Keys for Supervisor（PKS）可以帮助我们构建一个新的权限级别，用于在 Host Kernel 中安全地配置多个容器内核，而不涉及 non-root ring 0（Intel 中的 Guest Kernel 所处级别）； 其次，secure container 使用的通用虚拟化技术提供很多容器实际隔离并不需要的特性，例如二阶段页表翻译，这引入了可以避免的性能开销；  因此容器内核隔离技术在跑容器内核时：  避免使用虚拟化硬件，并移除不必要的虚拟化技术（像二阶段地址翻译）。它使用 PKS...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/technical/ml-roadmap/" title="知识图谱：Machine Learning Roadmap"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ml-roadmap.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-08</div><div class="info-item-2">知识图谱：Machine Learning Roadmap</div></div><div class="info-2"><div class="info-item-1">笔者感觉 ML 这块知识点太多，互联网上多数信息都难以结构化，尤其是一个方向的知识火起来后，每个人都写一篇博客，看的眼花缭乱。。因此笔者简单总结了一下机器学习领域的知识图谱，方便知识体系构建和回顾。 如有错误，欢迎读者勘误斧正。  </div></div></div></a><a class="pagination-related" href="/technical/embodied-3-papers-202503/" title="具身智能论文速读3篇 2025年3月"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/embodied-3-202503.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-02</div><div class="info-item-2">具身智能论文速读3篇 2025年3月</div></div><div class="info-2"><div class="info-item-1">HumanUP: Learning Getting-Up Policies for Real-World Humanoid Robots主旨：如何通过强化学习（RL）和仿真到现实（Sim-to-Real）的方法，为人形机器人开发能够从不同跌倒姿势和不同地形中自主起身的控制策略； 背景：人形机器人在实际应用中容易跌倒，而手动设计控制器来处理各种跌倒姿势和复杂地形非常困难。现有的控制器通常只能处理有限的跌倒情况，缺乏泛化能力。因此，论文提出了一种基于学习的框架，通过仿真训练生成能够在真实世界中应对多种跌倒姿势和地形的起身策略。目前的挑战有：  非周期性行为：起身任务不像行走那样有固定的周期性接触模式，接触序列需要动态调整。 丰富的接触：起身过程中，机器人不仅依靠脚部接触地面，还可能利用身体其他部位（如手臂、躯干）来施加力。 稀疏奖励：起身任务的奖励信号较为稀疏，机器人需要在长时间内做出正确的动作才能获得奖励。   论文的解决方案 HumanUP：  第一阶段（Stage...</div></div></div></a><a class="pagination-related" href="/technical/pytorch-dim/" title="如何理解 PyTorch 函数的 dim 参数"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/pth_dim.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-18</div><div class="info-item-2">如何理解 PyTorch 函数的 dim 参数</div></div><div class="info-2"><div class="info-item-1">之前很长的一段时间内，我都不太清楚如何感性地理解 PyTorch 中的 dim 参数。最近琢磨到了一个还算比较好理解的方法，故简单记录在这里。 dim 在 PyTorch 的很多函数中都可以指定，例如 sum / mode / unsqueeze / topk 等等，主要是告诉函数应该针对张量的哪个特定维度操作。 这在输入张量维度很高的时候就不那么直观了。虽说不理解问题不大，最多手写循环就能达到目的。但如果我们想尽量避免使用 python 的显式循环，或者还想要利用广播机制来更快的完成计算任务，就不得不总结一下了。  聚合类函数（减小维度数的运算，reduction operations），例如 sum / mean / max / min / mode / topk 等等；  dim 通常的语义是 “沿这个维度进行消除”，如果有指定 keepdim=True，则这个维度 size 压缩为 1；  dim 的值就对应张量 shape 的索引；  被操作的每个元素的 shape 就是 原张量的 shape 在 dim 索引之后组成的新的 shape，即...</div></div></div></a><a class="pagination-related" href="/technical/algo-in-ai/" title="Algorithms in AI"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-20</div><div class="info-item-2">Algorithms in AI</div></div><div class="info-2"><div class="info-item-1">Chapter 0. Intro0.1 The definition of Artificial Intelligence Think rationally -&gt; Think like people -&gt; Act like people -&gt; Act rationally.  The system maximumly achieving predefined goals. -&gt; Maximize the expected utility. (最大化预期效用)   Brains and AI  Why not reverse engineering the brains? -&gt; Not as modular as software.  But there are the lessons learned from the brain (interleave, 交织在一起):  Memory (data): Judge situations depending on the previous experiences...</div></div></div></a><a class="pagination-related" href="/technical/hilog-paper/" title="OpenHarmony Hilog 架构趣读"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/hilog-paper.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-29</div><div class="info-item-2">OpenHarmony Hilog 架构趣读</div></div><div class="info-2"><div class="info-item-1">最近看到一篇讨论 OpenHarmony Hilog 日志子系统的设计的论文，遂进行了一番阅读。该论文发表在软件学报上。 摘要 分析当今主流日志系统的技术架构和优缺点； 基于 OpenHarmony 操作系统的异构设备互联特性，设计 HiLog 日志系统模型规范； 设计并实现第 1 个面向 OpenHarmony 的日志系统 HiLog, 并贡献到 OpenHarmony 主线； 对 HiLog 日志系统的关键指标进行测试和对比试验；  实现的 HiLog 具有以下特征：  基础性能：日志写入阶段吞吐量分别为 1 500 KB/s 和 700 KB/s，吞吐量相对 Android Log 提升 114%； 日志持久化：压缩率 3.5%，丢包率...</div></div></div></a><a class="pagination-related" href="/technical/xpc-paper/" title="论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/xpc-paper.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-28</div><div class="info-item-2">论文阅读 - XPC: Architectural Support for Secure and Efficient Cross Process Call</div></div><div class="info-2"><div class="info-item-1">这是一篇 2019 年的关于微内核 IPC 性能优化的文章。 摘要微内核有很多引人注目的 features，例如 安全性、容错性、模块化，以及可定制性，这些特性近期在学术界和工业界又再次掀起了一股研究热潮（including seL4, QNX and Google’s Fuchsia OS）。  Google’s Fuchsia’s kernel (called Zircon)  但是 IPC（进程间通信）作为微内核的 阿喀琉斯之踵，仍然是导致微内核 OS 总体性能较低的主要因素之一。同时 IPC 在宏内核中也扮演者很重要的角色，例如 Android Linux，其中的移动端程序会经常和用户态服务通过 IPC 通信。所以优化 IPC 自然是一个很重要的课题。 之前学界对 IPC 在软件层面的优化都绕不开 Kernel，因为 IPC 在这方面的主要开销就是 域切换（domain switch）和消息复制/重映射（message copying/remapping）；在硬件层面的优化方法主要是 给内存和能力打...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">SSRVodka</div><div class="author-info-description">A blog to document learning and life</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">78</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/SSRVodka"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://blog.sjtuxhw.top/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss" style="color: #a200ff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Thanks for visiting! |•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="toc-text">前置知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84"><span class="toc-text">模型架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Encoder-%E5%92%8C-Decoder-%E8%AE%BE%E8%AE%A1"><span class="toc-text">Encoder 和 Decoder 设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Attention-%E8%AE%BE%E8%AE%A1%E4%BB%A5%E5%8F%8A%E5%88%9B%E6%96%B0%E7%82%B9"><span class="toc-text">Attention 设计以及创新点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9-1%EF%BC%9A%E7%BC%A9%E6%94%BE%E7%82%B9%E7%A7%AF%E6%B3%A8%E6%84%8F%E5%8A%9B-Scaled-Dot-Product-Attention"><span class="toc-text">创新点 1：缩放点积注意力 (Scaled Dot-Product Attention)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9-2%EF%BC%9A%E5%A4%9A%E5%A4%B4%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6"><span class="toc-text">创新点 2：多头注意力机制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9-3%EF%BC%9A%E9%80%90%E4%BD%8D%E7%9A%84%E5%89%8D%E9%A6%88%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-text">创新点 3：逐位的前馈神经网络</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9-4-Embeddings-and-Softmax-%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">创新点 4:   Embeddings and Softmax 的使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9-5%EF%BC%9A%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81-Positional-Encoding"><span class="toc-text">创新点 5：位置编码 Positional Encoding</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95"><span class="toc-text">训练方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%88%E6%9E%9C%E7%AE%80%E8%BF%B0"><span class="toc-text">效果简述</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/technical/transformer/" title="Transformer 论文精读"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/transformer.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Transformer 论文精读"/></a><div class="content"><a class="title" href="/technical/transformer/" title="Transformer 论文精读">Transformer 论文精读</a><time datetime="2025-07-20T15:15:10.000Z" title="发表于 2025-07-20 23:15:10">2025-07-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/sc-paper/" title="阅读: A Hardware-Software Co-Design for Efficient Secure Containers"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/sc.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="阅读: A Hardware-Software Co-Design for Efficient Secure Containers"/></a><div class="content"><a class="title" href="/technical/sc-paper/" title="阅读: A Hardware-Software Co-Design for Efficient Secure Containers">阅读: A Hardware-Software Co-Design for Efficient Secure Containers</a><time datetime="2025-07-01T10:14:11.000Z" title="发表于 2025-07-01 18:14:11">2025-07-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/ml-roadmap/" title="知识图谱：Machine Learning Roadmap"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ml-roadmap.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="知识图谱：Machine Learning Roadmap"/></a><div class="content"><a class="title" href="/technical/ml-roadmap/" title="知识图谱：Machine Learning Roadmap">知识图谱：Machine Learning Roadmap</a><time datetime="2025-06-08T06:59:31.000Z" title="发表于 2025-06-08 14:59:31">2025-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/review/os-el-and-mem/" title="OS 的特权级切换与内存管理总览：以 Linux AArch64 为例"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/os-sum.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OS 的特权级切换与内存管理总览：以 Linux AArch64 为例"/></a><div class="content"><a class="title" href="/review/os-el-and-mem/" title="OS 的特权级切换与内存管理总览：以 Linux AArch64 为例">OS 的特权级切换与内存管理总览：以 Linux AArch64 为例</a><time datetime="2025-05-30T08:49:12.000Z" title="发表于 2025-05-30 16:49:12">2025-05-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/tee-lab/" title="机密计算与TEE：知识整理和试验笔记"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/tee-lab.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="机密计算与TEE：知识整理和试验笔记"/></a><div class="content"><a class="title" href="/technical/tee-lab/" title="机密计算与TEE：知识整理和试验笔记">机密计算与TEE：知识整理和试验笔记</a><time datetime="2025-04-17T15:31:36.000Z" title="发表于 2025-04-17 23:31:36">2025-04-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2025 By SSRVodka  |  tech SJTU saves the world</div><div class="framework-info"><span>Built With love &amp; </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Powered By </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><div style="display:flex;flex-flow:row;justify-content:center;align-items:center;"> <a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <span class="footer-separator">|</span> <a style="display:flex;flex-flow:row;align-items:center;" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> 本网站由 <img style="margin:0 3px;" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/upCloud_logo_blue.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"emoji":["https://unpkg.com/@waline/emojis@1.2.0/tw-emoji","https://unpkg.com/@waline/emojis@1.2.0/tieba"],"locale":{"reactionTitle":"你认为这篇文章怎么样？","placeholder":"给大佬递笔 XP\n[ Akismet AI Filter 🤖 ON ]"},"reaction":["https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsup.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsdown.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_antic.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_cool.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_sleepy.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_emm.gif"]}
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://waline.sjtuxhw.top/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script src="/js/rightmenu.js"></script><script src="/js/mourn.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
