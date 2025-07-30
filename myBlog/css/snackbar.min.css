@@ -1,0 +1,208 @@
+.snackbar-container {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition-property: top, right, bottom, left, opacity;
+  font-size: 16px;
+  font-weight: bolder;
+  min-height: 60px;
+  min-width: 720px;
+  background-color: #2c3e50;
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ffffff;
+  line-height: 24px;
+  padding: 16px 24px;
+  bottom: -100px;
+  top: -100px;
+  opacity: 0;
+  z-index: 9999;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+
+/* 进度条效果 */
+.snackbar-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.1) 20%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    rgba(255, 255, 255, 0.1) 80%, 
+    rgba(255, 255, 255, 0) 100%);
+  background-size: 200% 100%;
+  transform: translateX(-100%);
+  animation: progress 3.5s linear forwards;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 进度条动画 */
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 自定义持续时间的进度条 */
+.snackbar-container[data-duration="short"]::before { animation-duration: 2s; }
+.snackbar-container[data-duration="medium"]::before { animation-duration: 4s; }
+.snackbar-container[data-duration="long"]::before { animation-duration: 6s; }
+
+.snackbar-container .action {
+  background: inherit;
+  display: inline-block;
+  border: none;
+  font-size: inherit;
+  text-transform: uppercase;
+  color: #4fc3f7;
+  margin: 0 0 0 24px;
+  padding: 8px 16px;
+  min-width: min-content;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.snackbar-container .action:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.snackbar-container .action:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.snackbar-message {
+  z-index: 2;
+  flex-grow: 1;
+  margin-right: 16px;
+}
+
+@media (min-width: 640px) {
+  .snackbar-container {
+    max-width: 720px;
+    margin: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .snackbar-container {
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 0;
+    margin: 0;
+    min-width: auto;
+  }
+}
+
+.snackbar-pos.bottom-center {
+  top: auto !important;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+.snackbar-pos.bottom-left {
+  top: auto !important;
+  bottom: 0;
+  left: 0;
+}
+
+.snackbar-pos.bottom-right {
+  top: auto !important;
+  bottom: 0;
+  right: 0;
+}
+
+.snackbar-pos.top-left {
+  bottom: auto !important;
+  top: 0;
+  left: 0;
+}
+
+.snackbar-pos.top-center {
+  bottom: auto !important;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+.snackbar-pos.top-right {
+  bottom: auto !important;
+  top: 0;
+  right: 0;
+}
+
+@media (max-width: 640px) {
+  .snackbar-pos.bottom-center,
+  .snackbar-pos.top-center {
+    left: 0;
+    transform: none;
+  }
+}
+
+/* 显示状态 */
+.snackbar-container.active {
+  opacity: 1;
+  bottom: 32px;
+  top: auto;
+  animation: fadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.snackbar-container.active.top {
+  bottom: auto;
+  top: 32px;
+  animation: fadeInDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* 隐藏状态 */
+.snackbar-container.hiding {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+/* 动画效果 */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}

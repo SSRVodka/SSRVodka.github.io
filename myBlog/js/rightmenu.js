@@ -1,5 +1,9 @@
+//@author: SSRVodka
 // RightMenu 鼠标右键菜单
 let rmf = {};
+
+// 当前右键点击的目标元素
+let currentTarget = null;
 
 // 显示右键菜单
 rmf.showRightMenu = function(isTrue, x=0, y=0){
@@ -49,7 +53,7 @@ rmf.switchReadMode = function(){
     newEle.addEventListener('click', clickFn)
 }
 
-//复制选中文字
+// 复制选中文字
 rmf.copySelect = function(){
     /* !!! WARN !!! No i18n here */
     try {
@@ -65,9 +69,56 @@ rmf.scrollToTop = function(){
     btf.scrollToDest(0, 500);
 }
 
+// 复制图片地址
+rmf.copyImageUrl = function(){
+    if (currentTarget && currentTarget.tagName === 'IMG') {
+        const imageUrl = currentTarget.src;
+        navigator.clipboard.writeText(imageUrl).then(() => {
+            GLOBAL_CONFIG.Snackbar !== undefined && btf.snackbarShow("图片地址已复制!");
+        }).catch(err => {
+            GLOBAL_CONFIG.Snackbar !== undefined && btf.snackbarShow("复制失败: " + err);
+        });
+    }
+}
+
+// 下载图片
+rmf.downloadImage = function(){
+    if (currentTarget && currentTarget.tagName === 'IMG') {
+        const link = document.createElement('a');
+        link.href = currentTarget.src;
+        link.download = currentTarget.alt || 'image';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
+// 复制链接地址
+rmf.copyLink = function(){
+    if (currentTarget && currentTarget.tagName === 'A') {
+        const linkUrl = currentTarget.href;
+        navigator.clipboard.writeText(linkUrl).then(() => {
+            GLOBAL_CONFIG.Snackbar !== undefined && btf.snackbarShow("链接地址已复制!");
+        }).catch(err => {
+            GLOBAL_CONFIG.Snackbar !== undefined && btf.snackbarShow("复制失败: " + err);
+        });
+    }
+}
+
+// 在新标签页打开链接
+rmf.openLinkNewTab = function(){
+    if (currentTarget && currentTarget.tagName === 'A') {
+        window.open(currentTarget.href, '_blank');
+    }
+}
+
 // 右键菜单事件
 if(! (navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))){
     window.oncontextmenu = function(event){
+
+        // current mouse target
+        currentTarget = event.target;
+
         // Hide elements with the class 'rightMenu-group' and 'hide'
         let rightMenuGroups = document.querySelectorAll('.rightMenu-group.hide');
         rightMenuGroups.forEach(group => {
@@ -77,6 +128,15 @@ if(! (navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mob
         // Show the element with the id 'menu-text' if there is a text selection
         if (document.getSelection().toString()) {
             document.getElementById('menu-text').style.display = 'block';
+        }
+        // Show the element with the id 'menu-image' if there is a image target
+        if (currentTarget.tagName === 'IMG') {
+            document.getElementById('menu-image').style.display = 'block';
+        }
+        
+        // Show the element with the id 'menu-link' if there is a link target
+        if (currentTarget.tagName === 'A') {
+            document.getElementById('menu-link').style.display = 'block';
         }
 
         // Get the page coordinates

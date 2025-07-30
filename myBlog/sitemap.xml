@@ -2,16 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://blog.sjtuxhw.top/about/index.html</loc>
+    <loc>https://blog.sjtuxhw.top/technical/transformer/</loc>
     
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://blog.sjtuxhw.top/technical/transformer/</loc>
+    <loc>https://blog.sjtuxhw.top/technical/java-adv-3/</loc>
+    
+    <lastmod>2025-07-30</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.sjtuxhw.top/about/index.html</loc>
     
     <lastmod>2025-07-27</lastmod>
     
@@ -113,15 +122,6 @@
     <loc>https://blog.sjtuxhw.top/technical/pytorch-dim/</loc>
     
     <lastmod>2025-02-28</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.sjtuxhw.top/technical/java-adv-3/</loc>
-    
-    <lastmod>2025-01-18</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -949,7 +949,7 @@
 
   <url>
     <loc>https://blog.sjtuxhw.top/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -957,546 +957,546 @@
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/HDC/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/HarmonyOS/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/AI/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Algorithm/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/CDN/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/CMake/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/GNU/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Programmimg/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/CSAPP/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/ICS/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Programming/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Math/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Docker/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Container/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Fiddler/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Crack/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Disassembly/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/git/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/MQ/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Web/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Microservice/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Java/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Spring/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/GC/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Concurrent/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/JavaScript/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Minecraft/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Forge/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/ML/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Roadmap/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/make/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Matlab/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/OS/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Paper/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Python/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/React/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Redis/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/SQL/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Database/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/MySQL/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/TypeScript/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Security/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/poem/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/essay/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Anime/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Appreciation/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Flag/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Qt/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/C/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Robot/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/IL/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Rust/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/PyTorch/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Crawler/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/tease/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/holiday/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Data-Structure/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Linear-List/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Sort/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Hash-Table/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/BSTree/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Tree/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Discrete-Math/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/External-Search/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/B-Tree/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Graph/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/IO/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/TEE/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/TrustZone/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/OpenHarmony/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Linux/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Logic/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Set-Theory/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/Algorithms/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/novel/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/IPC/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/MicroKernel/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/tags/VM/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -1505,28 +1505,28 @@
   
   <url>
     <loc>https://blog.sjtuxhw.top/categories/literary/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/categories/technical/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/categories/chat/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://blog.sjtuxhw.top/categories/review/</loc>
-    <lastmod>2025-07-27</lastmod>
+    <lastmod>2025-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
