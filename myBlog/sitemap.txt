@@ -1,3 +1,5 @@
+https://blog.sjtuxhw.top/technical/2025-ccf/
+https://blog.sjtuxhw.top/literary/2023-hdc/
 https://blog.sjtuxhw.top/technical/transformer/
 https://blog.sjtuxhw.top/technical/java-adv-3/
 https://blog.sjtuxhw.top/about/index.html
@@ -61,7 +63,6 @@ https://blog.sjtuxhw.top/review/convex-opt/
 https://blog.sjtuxhw.top/technical/cmake-advanced/
 https://blog.sjtuxhw.top/chat/my-cdn-services/
 https://blog.sjtuxhw.top/technical/algo-in-ai/
-https://blog.sjtuxhw.top/literary/2023-hdc/
 https://blog.sjtuxhw.top/gallery/2023-April/index.html
 https://blog.sjtuxhw.top/gallery/2023-January/index.html
 https://blog.sjtuxhw.top/gallery/2023-July/index.html
@@ -104,10 +105,13 @@ https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-7th.html
 https://blog.sjtuxhw.top/friend-links/index.html
 https://blog.sjtuxhw.top/tags/index.html
 https://blog.sjtuxhw.top/
+https://blog.sjtuxhw.top/tags/Conference/
 https://blog.sjtuxhw.top/tags/HDC/
 https://blog.sjtuxhw.top/tags/HarmonyOS/
 https://blog.sjtuxhw.top/tags/AI/
 https://blog.sjtuxhw.top/tags/Algorithm/
+https://blog.sjtuxhw.top/tags/CCF/
+https://blog.sjtuxhw.top/tags/Robot/
 https://blog.sjtuxhw.top/tags/CDN/
 https://blog.sjtuxhw.top/tags/CMake/
 https://blog.sjtuxhw.top/tags/GNU/
@@ -153,7 +157,6 @@ https://blog.sjtuxhw.top/tags/Appreciation/
 https://blog.sjtuxhw.top/tags/Flag/
 https://blog.sjtuxhw.top/tags/Qt/
 https://blog.sjtuxhw.top/tags/C/
-https://blog.sjtuxhw.top/tags/Robot/
 https://blog.sjtuxhw.top/tags/IL/
 https://blog.sjtuxhw.top/tags/Rust/
 https://blog.sjtuxhw.top/tags/PyTorch/
