@@ -1,3 +1,4 @@
+https://blog.sjtuxhw.top/chat/web-search-mcps/
 https://blog.sjtuxhw.top/technical/2025-ccf/
 https://blog.sjtuxhw.top/literary/2023-hdc/
 https://blog.sjtuxhw.top/technical/transformer/
@@ -86,8 +87,8 @@ https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-20th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-2nd.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-4th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-5th.html
-https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-8th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-9th.html
+https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-8th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-3rd.html
 https://blog.sjtuxhw.top/dailyQ/%E6%9A%82%E5%81%9C%E6%9B%B4%E6%96%B0%E8%AF%B4%E6%98%8E.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-15th.html
@@ -99,11 +100,11 @@ https://blog.sjtuxhw.top/categories/index.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-11th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-14th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-16th.html
-https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-23th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-21th.html
+https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-23th.html
 https://blog.sjtuxhw.top/dailyQ/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-7th.html
-https://blog.sjtuxhw.top/tags/index.html
 https://blog.sjtuxhw.top/friend-links/index.html
+https://blog.sjtuxhw.top/tags/index.html
 https://blog.sjtuxhw.top/
 https://blog.sjtuxhw.top/tags/Conference/
 https://blog.sjtuxhw.top/tags/HDC/
@@ -148,6 +149,8 @@ https://blog.sjtuxhw.top/tags/Redis/
 https://blog.sjtuxhw.top/tags/SQL/
 https://blog.sjtuxhw.top/tags/Database/
 https://blog.sjtuxhw.top/tags/MySQL/
+https://blog.sjtuxhw.top/tags/Agent/
+https://blog.sjtuxhw.top/tags/MCP/
 https://blog.sjtuxhw.top/tags/TypeScript/
 https://blog.sjtuxhw.top/tags/Security/
 https://blog.sjtuxhw.top/tags/poem/
