@@ -1,0 +1,357 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案 | SSRVodka's blog</title><meta name="author" content="SSRVodka,xhwpro@gmail.com"><meta name="copyright" content="SSRVodka"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="越过交叉编译的重重阻碍，我在将 ROS2 及其生态迁移到原生 OpenHarmony 平台上的过程中遇到了一个比较大的问题：ROS2 似乎无法加载插件形态的动态链接库！就是说，launch 一个 ROS2 应用（需要动态链接库）本身是可以的，但是这个 ROS2 应用如果使用到了动态链接库插件（一般通过 ROS2 的 class_loader 组件间接加载）就出问题了。 TL; DR:（太长不看版）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案">
+<meta property="og:url" content="https://blog.sjtuxhw.top/technical/ros2ohos-plugins-fail/index.html">
+<meta property="og:site_name" content="SSRVodka&#39;s blog">
+<meta property="og:description" content="越过交叉编译的重重阻碍，我在将 ROS2 及其生态迁移到原生 OpenHarmony 平台上的过程中遇到了一个比较大的问题：ROS2 似乎无法加载插件形态的动态链接库！就是说，launch 一个 ROS2 应用（需要动态链接库）本身是可以的，但是这个 ROS2 应用如果使用到了动态链接库插件（一般通过 ROS2 的 class_loader 组件间接加载）就出问题了。 TL; DR:（太长不看版）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/ohos-ros2nav2-fix.jpg">
+<meta property="article:published_time" content="2025-12-18T12:49:17.000Z">
+<meta property="article:modified_time" content="2025-12-18T13:12:11.319Z">
+<meta property="article:author" content="SSRVodka">
+<meta property="article:tag" content="HarmonyOS">
+<meta property="article:tag" content="OpenHarmony">
+<meta property="article:tag" content="ROS2">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/ohos-ros2nav2-fix.jpg"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.sjtuxhw.top/technical/ros2ohos-plugins-fail/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="/css/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功 ヾ(≧∇≦*)ゝ',
+    error: '复制失败 (#`皿´)',
+    noSupport: '浏览器不支持 ╮(╯_╰)╭'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#333","bgDark":"#1f1f1f","position":"top-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="/css/mouseConfig.css"/><link rel="stylesheet" href="/css/rightmenu.css"/><link rel="stylesheet" href="/css/custom_music.css"/><link rel="stylesheet" href="/css/addFonts.css"/><link rel="stylesheet" href="/css/titleFonts.css"/><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="SSRVodka's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div id="main-loading-bg"><div class="truckWrapper"><div class="truckBody"><svg class="trucksvg" viewBox="0 0 198 93" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z" fill="currentColor" stroke="#282828" stroke-width="3"></path><path d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z" fill="#7D7C7C" stroke="#282828" stroke-width="3"></path><path d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z" fill="#282828" stroke="#282828" stroke-width="2"></path><rect x="187" y="63" width="5" height="7" rx="1" fill="#FFFCAB" stroke="#282828" stroke-width="2"></rect><rect x="193" y="81" width="4" height="11" rx="1" fill="#282828" stroke="#282828" stroke-width="2"></rect><rect x="6.5" y="1.5" width="121" height="90" rx="2.5" fill="#DFDFDF" stroke="#282828" stroke-width="3"></rect><rect x="1" y="84" width="6" height="4" rx="2" fill="#DFDFDF" stroke="#282828" stroke-width="2"></rect></svg></div><div class="truckTires"><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg></div><div class="road"></div><svg class="lampPost" fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 453.459 453.459" xml:space="preserve"><path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993 c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514 c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16 c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914 h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75 v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795 V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017 h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path></svg></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+      setTimeout(() => {
+        $loadingBox.style.display = 'none'
+      }, 800)
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()
+</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">65</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">84</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://notes.sjtuxhw.top"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> Notes</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener external nofollow noreferrer" href="https://www.travellings.cn/go.html"><i class="fa-fw fa-solid fa-train-subway"></i><span> Travelling</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.sjtuxhw.top/cover_imgs/ohos-ros2nav2-fix.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/head_icon.png" alt="Logo"><span class="site-name">SSRVodka's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://notes.sjtuxhw.top"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> Notes</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener external nofollow noreferrer" href="https://www.travellings.cn/go.html"><i class="fa-fw fa-solid fa-train-subway"></i><span> Travelling</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-12-18T12:49:17.000Z" title="发表于 2025-12-18 20:49:17">2025-12-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-12-18T13:12:11.319Z" title="更新于 2025-12-18 21:12:11">2025-12-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>10分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/technical/ros2ohos-plugins-fail/#post-comment"><span class="waline-comment-count" data-path="/technical/ros2ohos-plugins-fail/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>越过交叉编译的重重阻碍，我在将 ROS2 及其生态迁移到原生 OpenHarmony 平台上的过程中遇到了一个比较大的问题：ROS2 似乎无法加载插件形态的动态链接库！就是说，launch 一个 ROS2 应用（需要动态链接库）本身是可以的，但是这个 ROS2 应用如果使用到了动态链接库插件（一般通过 ROS2 的 <code>class_loader</code> 组件间接加载）就出问题了。</p>
+<p>TL; DR:（太长不看版）最终解决方案请参见 “<a href="#Final-Solution">Final Solution</a>” 一节；如果想看问题根源请参见 “<a href="#四、问题根源">问题根源</a>” 一节。</p>
+<p>下文将详细叙述调试经过，供读者思考、相互学习。举个实际迁移调试过程中的例子。下面是我编写的问题描述：</p>
+<hr>
+<p>我在 OpenHarmony 上运行迁移的 Navigation2 框架时遇到一些问题，加载的 navigation2 相关的动态链接库出现加载失败的问题。</p>
+<p>运行的应用环境是任意一个使用 navigation2 的 ROS 应用，例如 B 站鱼香肉丝 UP 开发的 fishbot 机器人的 <code>navigation2.launch.py</code>（删除 rviz2 结点）。</p>
+<p>问题的图片信息如下：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/1.png" /></p>
+<hr>
+<p>并且不仅仅是一个 <code>DifferentialMotionModel</code>（<code>libmotions_lib.so</code>），其他所有插件，如 StaticLayer（<code>liblayers.so</code>）全部报错。。</p>
+<h3 id="一、猜测：Symbols-Not-Found"><a href="#一、猜测：Symbols-Not-Found" class="headerlink" title="一、猜测：Symbols Not Found?"></a>一、猜测：Symbols Not Found?</h3><p>首先我考虑，会不会是符号缺失问题？在 OpenHarmony 上交叉编译可能有些链接参数和 runpath 设置有问题？</p>
+<p>于是使用 <code>readelf -d</code>、<code>nm -D -C</code>、<code>ldd</code> 工具（从 glibc 上移植过来的），一通查找发现，并不缺少动态链接库，也不缺少符号。</p>
+<p><strong><u>那么排除符号缺失问题，只能是加载问题</u></strong>。为什么相同的动态链接库代码，在 Ubuntu 上正常运行，但在 OpenHarmony 上运行失败呢？它们最大的区别是 musl libc 和 glibc。</p>
+<h3 id="二、临时的解决方案？新问题出现"><a href="#二、临时的解决方案？新问题出现" class="headerlink" title="二、临时的解决方案？新问题出现"></a>二、临时的解决方案？新问题出现</h3><p>这样只能从 ROS2 加载所有插件的源码入手。通过源码层层查找可知，ROS2 主动加载动态链接库（尤其是插件）的逻辑位于 <code>rcutils</code> 包，以及 <code>class_loader</code> 包。 </p>
+<p>查找方法是先找加载 Nav2 插件（其实不仅仅是 Nav2 插件）的函数，按调用链溯源到 <code>rcutils/src/shared_library.c</code> 和 <code>class_loader/include/class_loader/class_loader_core.hpp</code>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/3.png" /></p>
+<p>我们发现，<code>class_loader</code> 中，创建插件中对象实例的函数中 <code>dynamic_cast</code> 总是返回空指针，提示转换失败。</p>
+<p>我再次确认，Ubuntu 上并不存在这个问题，所以指针指向的数据区域理应是对的（因为代码逻辑没问题）？</p>
+<p>为了快速确认是否是这里的问题，我临时将 <code>dynamic_cast</code> 改为 <code>static_cast</code> 来规避运行时检查，强制按照目标类型来使用目标内存，结果成功了？看起来没有，因为出现新的问题了：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/4.jpg" /></p>
+<blockquote>
+<p>注意：中间我们还修复了另一个问题，<code>bad_weak_ptr</code>，这个问题是 Humble 官方问题，和 OH 无关，解决方案 Github 都是有的，这里是 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/ros-navigation/navigation2/issues/5335">对应 issue</a> 和 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/ros-navigation/navigation2/pull/5341/files">对应 PR</a>，我们照着修改 <code>ros_navigation2/nav2_util/include/nav2_util/lifecycle_node.hpp</code> 和 <code>ros_navigation2/nav2_util/src/lifecycle_node.cpp</code> 就行，这里和讨论无关，不再赘述。</p>
+</blockquote>
+<p>由于新问题 “Exception when loading BT: [Any:convert]: no known safe conversion between…” 在网络上甚至找不到相关求助帖，我们只能继续手动调试。</p>
+<p>这个问题似乎是和 Behavior Tree 解析 XML（<code>.../navigate_through_poses_w_replanning_and_recovery.xml</code>）和实例化有关，并且看起来和前一个问题没关系（暂时的）。</p>
+<p>因此我们继续补充日志，使用 <code>execinfo.h</code> 打印问题堆栈，在递归构造 Behavior Tree 的时候打印节点详细信息等等，一步步溯源。添加的第一版日志内容：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/5.jpg" /></p>
+<p>以及 XML 文件信息：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/6.jpg" /></p>
+<p>结合源码（<code>behavior_tree_cpp_v3/src</code> 中的 <code>xml_parsing.cpp</code> 和 <code>bt_factory.cpp</code>）看出，程序解析到 <code>RemovePassedGoals</code> 后，调用 <code>XMLParser::Pimpl::createNodeFromXML</code> 创建 Behavior Tree 节点时抛出上面的异常。</p>
+<p>于是根据这个线索阅读源码、定向加强日志：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/7.jpg" /></p>
+<p>问题出在 <code>BehaviorTreeFactory::instantiateTreeNode</code> 执行加载 Behavior Tree 的插件 <code>RemovePassedGoals</code> 上！</p>
+<p>阅读 <code>bt_factory.h</code> 和 <code>nav2_behavior_tree/plugins/action/remove_passed_goals_action.cpp</code> 源码可知，插件加载过程中，会从 <code>BehaviorTree::Blackboard</code>（注释描述是在插件间存放 Behavior Tree 有类型数据的数据结构）上读取类型为 <code>std::shared_ptr&lt;tf2_ros::Buffer&gt;</code> 的数据。</p>
+<p>这个数据在插件注册（configure）时被用 <code>Any</code> 的方法写到 Blackboard 中，而插件实例化（activate）时从 Any 中以 <code>safe_any::cast&lt;T&gt;</code> 的方法读取出来。</p>
+<p><strong><u>重点来了：但两种类型相同为什么会出错呢？我猛然想到上一个 <code>dynamic_cast</code> 失败的问题</u></strong>。。</p>
+<h3 id="三、问题的共性：C-Template-RTTI-Run-Time-Type-Information"><a href="#三、问题的共性：C-Template-RTTI-Run-Time-Type-Information" class="headerlink" title="三、问题的共性：C++ Template RTTI (Run-Time Type Information)"></a>三、问题的共性：C++ Template RTTI (Run-Time Type Information)</h3><p>新问题中，<code>std::shared_ptr&lt;tf2_ros::Buffer&gt;</code> 恰好是一个模板实例化出来的类型，而旧问题中，<code>dynamic_cast</code> 映射的 <code>impl::AbstractMetaObject&lt;Base&gt;</code> 也是一个模板实例化的类型。</p>
+<p>这两个问题的共性是，<strong><u>看起来它们的类型名称是一样的，但实际上运行时 libc 认为它们是不同的类型</u></strong>？这个验证起来简单，直接打印类型对应的 type info 和 <code>typeid</code>。</p>
+<p>以旧问题为例，使用打印调试法，检查 <code>factoryMap</code> 中究竟存放了什么，为什么类型不匹配？在 <code>factory</code> 赋值语句后面添加调试代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// --- DEBUGGING BLOCK START ---</span></span><br><span class="line">impl::AbstractMetaObjectBase* base_ptr = factoryMap[derived_class_name];</span><br><span class="line"><span class="keyword">if</span> (!factory &amp;&amp; base_ptr) &#123;</span><br><span class="line">  <span class="type">const</span> std::type_info&amp; src_type = <span class="built_in">typeid</span>(*base_ptr);</span><br><span class="line">  <span class="type">const</span> std::type_info&amp; dst_type = <span class="built_in">typeid</span>(impl::AbstractMetaObject&lt;Base&gt;);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">CONSOLE_BRIDGE_logError</span>(<span class="string">&quot;class_loader.impl: DYNAMIC CAST FAILURE DEBUGGING:&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 1. Check raw pointer</span></span><br><span class="line">  <span class="built_in">CONSOLE_BRIDGE_logError</span>(<span class="string">&quot;  Raw Pointer Address: %p&quot;</span>, (<span class="type">void</span>*)base_ptr);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2. Compare Type Names</span></span><br><span class="line">  <span class="built_in">CONSOLE_BRIDGE_logError</span>(<span class="string">&quot;  Source Type Name: %s&quot;</span>, src_type.<span class="built_in">name</span>());</span><br><span class="line">  <span class="built_in">CONSOLE_BRIDGE_logError</span>(<span class="string">&quot;  Target Type Name: %s&quot;</span>, dst_type.<span class="built_in">name</span>());</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 3. Compare Type Info Addresses</span></span><br><span class="line">  <span class="built_in">CONSOLE_BRIDGE_logError</span>(<span class="string">&quot;  Source TypeInfo Address: %p&quot;</span>, (<span class="type">void</span>*)&amp;src_type);</span><br><span class="line">  <span class="built_in">CONSOLE_BRIDGE_logError</span>(<span class="string">&quot;  Target TypeInfo Address: %p&quot;</span>, (<span class="type">void</span>*)&amp;dst_type);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 4. Check Base Class TypeInfo</span></span><br><span class="line">  <span class="type">const</span> std::type_info&amp; base_param_type = <span class="built_in">typeid</span>(Base);</span><br><span class="line">  <span class="built_in">CONSOLE_BRIDGE_logError</span>(<span class="string">&quot;  Base Template Param TypeInfo Addr: %p&quot;</span>, (<span class="type">void</span>*)&amp;base_param_type);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// --- DEBUGGING BLOCK END ---</span></span><br></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[component_container_isolated-1] Error:   class_loader.impl: DYNAMIC CAST FAILURE DEBUGGING:</span><br><span class="line">[component_container_isolated-1]          at line 295 in .../class_loader_core.hpp </span><br><span class="line">[component_container_isolated-1] Error:     Raw Pointer Address: 0x7f8ac2f430</span><br><span class="line">[component_container_isolated-1]          at line 298 in .../class_loader_core.hpp </span><br><span class="line">[component_container_isolated-1] Error:     Source Type Name: N12class_loader4impl10MetaObjectIN9nav2_amcl23DifferentialMotionModelENS2_11MotionModelEEE</span><br><span class="line">[component_container_isolated-1]          at line 301 in .../class_loader_core.hpp </span><br><span class="line">[component_container_isolated-1] Error:     Target Type Name: N12class_loader4impl18AbstractMetaObjectIN9nav2_amcl11MotionModelEEE</span><br><span class="line">[component_container_isolated-1]          at line 302 in .../class_loader_core.hpp </span><br><span class="line">[component_container_isolated-1] Error:     Source TypeInfo Address: 0x7ef19881a8</span><br><span class="line">[component_container_isolated-1]          at line 306 in .../class_loader_core.hpp </span><br><span class="line">[component_container_isolated-1] Error:     Target TypeInfo Address: 0x7efa22ad28</span><br><span class="line">[component_container_isolated-1]          at line 307 in .../class_loader_core.hpp </span><br><span class="line">[component_container_isolated-1] Error:     Base Template Param TypeInfo Addr: 0x7efa224840</span><br><span class="line">[component_container_isolated-1]          at line 311 in .../class_loader_core.hpp </span><br></pre></td></tr></table></figure>
+<p>关键来了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[component_container_isolated-1] Error:      Source TypeInfo Address: 0x7ef19881a8</span><br><span class="line">[component_container_isolated-1] Error:      Target TypeInfo Address: 0x7efa22ad28</span><br></pre></td></tr></table></figure>
+<p>这两个类型的类型对象（type info object）的地址不同，这意味着 libc 将插件中的 <code>AbstractMetaObject</code>（0x7ef…）与 <code>class_loader</code> 中的 <code>AbstractMetaObject</code>（0x7efa…）视为完全不同的类型，尽管它们名称相同！</p>
+<p><strong><u>这正是典型的 Split RTTI（Run-Time Type Information）问题！</u></strong></p>
+<h3 id="四、问题根源"><a href="#四、问题根源" class="headerlink" title="四、问题根源"></a>四、问题根源</h3><p>为了验证我的想法，我先后执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nm -C -D libclass_loader.so | grep AbstractMetaObject</span><br><span class="line">nm -C -D libmotions_lib.so | grep AbstracMetaObject</span><br></pre></td></tr></table></figure>
+<p>观察到第一条指令输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">... (omit)</span><br><span class="line">0000000000042078 V typeinfo for class_loader::impl::AbstractMetaObjectBase</span><br><span class="line">0000000000016a6c V typeinfo name for class_loader::impl::AbstractMetaObjectBase</span><br><span class="line">0000000000042060 V vtable for class_loader::impl::AbstractMetaObjectBase </span><br></pre></td></tr></table></figure>
+<p>第二条输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> ... (omit)</span><br><span class="line">0000000000008110 V typeinfo for class_loader::impl::AbstractMetaObject&lt;nav2_amcl::MotionModel&gt;</span><br><span class="line">0000000000008100 V typeinfo for class_loader::impl::AbstractMetaObjectBase</span><br><span class="line">00000000000043f9 V typeinfo name for class_loader::impl::AbstractMetaObject&lt;nav2_amcl::MotionModel&gt;</span><br><span class="line">000000000000443e V typeinfo name for class_loader::impl::AbstractMetaObjectBase </span><br></pre></td></tr></table></figure>
+<p>这证明了一件事，在两个动态链接库中，<code>AbstractMetaObjectBase</code> RTTI symbols 全标记为 Weak（<code>V</code>）。</p>
+<p>询问了 GPT 后发现，这个加载行为对于 musl libc 和 glibc 是不同的：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>glibc</th>
+<th>musl</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Typeinfo merging</td>
+<td>forgiving</td>
+<td>strict</td>
+</tr>
+<tr>
+<td>Symbol interposition</td>
+<td>permissive</td>
+<td>limited</td>
+</tr>
+<tr>
+<td><code>RTLD_GLOBAL</code> side effects</td>
+<td>common</td>
+<td>reduced</td>
+</tr>
+<tr>
+<td>Weak RTTI symbols</td>
+<td>often merged</td>
+<td>not merged</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>于是我判断问题的根源：</p>
+<ol>
+<li>两个库中都将符号 <code>typeinfo for ... AbstractMetaObjectBase</code> 标记为 <code>V</code>（弱引用）。</li>
+<li>musl libc 的动态链接器（<code>ld-musl-xxx.so</code>）对符号作用域边界要求更严格。当 <code>class_loader</code> 使用 dlopen 加载插件时，它<strong><u>不会将 RTTI symbols 加入全局符号表</u></strong>。</li>
+<li>再由于 RTTI symbols 不是全局可见（或插件处于隔离状态）的，插件无法 “看到” 主进程中的现有 TypeInfo；此时 musl libc 会 fallback 到使用 RTTI symbol local copy 模式：<strong><u>对每个没见过的 RTTI symbol，都在自己的内存空间中实例化创建一个新的 type info object</u></strong>；</li>
+</ol>
+<p>正因如此，跨动态链接库（DSOs）的 TypeInfo 对象的指针地址才会不一致，进而导致了两个相同的类型信息错误地存在两个不同的内存地址，<strong><u>进而导致 <code>dynamic_cast&lt;T&gt;</code> 以及 <code>safe_any::cast&lt;T&gt;</code> 这样的逻辑没法正确判断横跨插件传递的类型是否一致</u></strong>。</p>
+<p>到这里，我们根据调试结果以及分析过程，可以板上钉钉地说，就是这个原因，<strong><u>没有第二种可能</u></strong>（不过读者有异议欢迎讨论）。</p>
+<h3 id="五、解决方案"><a href="#五、解决方案" class="headerlink" title="五、解决方案"></a>五、解决方案</h3><p>有了清晰的思路，问题就很好解决了。为了避免 RTTI symbols 在各个插件间不可见的问题，</p>
+<ol>
+<li><p><strong><u>首先是要确保 RTTI Symbols 能够正确导出</u></strong>，这个需要对所有可执行文件的链接过程（<code>CMAKE_EXE_LINKER_FLAGS</code>）加上 <code>-rdynamic</code>（或 <code>-Wl,--export-dynamic</code>）；</p>
+</li>
+<li><p>然后需要让所有插件需要的 RTTI Symbols 显式加载到 global symbol table 中，让插件加载前这些 RTTI symbols 就已经位于内存中，这样再加载插件时，musl libc 能从 global symbol table 中找到，就不会错误创建额外的 type info object 了！</p>
+</li>
+</ol>
+<p>想要实现第二步有点难度，我们之前尝试更改所有 <code>dlopen</code> 加载 flags（例如 <code>rcutils/src/shared_library.c</code>），添加一个 <code>RTLD_GLOBAL</code>，但不行，因为 <code>class_loader</code> 自己定义了 AbstractMetaObject，它自己没法全局加载 RTTI Symbols。</p>
+<p><strong><u>替代方案</u></strong>是运行前使用 <code>export LD_PRELOAD=/path/to/libclass_loader.so</code>，强制预先加载 <code>class_loader</code> 的 RTTI symbols，大部分问题就解决了。</p>
+<p>到这里，问题就能解决了吗？很可惜，还差一点。我们发现，仅仅是这样还是会出现 type info 不一致的问题。不应该啊？我们确定了问题根源，也找到了非常正确解决方案。。</p>
+<p>最后这一个坑我怀疑是 OpenHarmony 留给我们的。因为我发现 OpenHarmony 的 musl libc 和官方的 musl libc 是不同的，美其名曰 “安全特性”（参见官方 <code>third_party_musl</code> 仓库）：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/8.png" /></p>
+<p>我怀疑 musl libc 将不同动态链接库间共享全局 RTTI symbols 的机制改坏了，即便 <code>LD_PRELOAD</code> 提前加载了一些必要的库，RTTI 符号也没办法跨动态链接库共享（或者是 HUAWEI 官方为了“安全”有意为之。。）</p>
+<blockquote>
+<p>为什么这么猜测？因为我使用 Final Solution 中的做法就能加载成功了。解法即原因，不言自明。。</p>
+</blockquote>
+<p>欢迎懂 OpenHarmony musl libc 如何修改的朋友分享交流是不是这么回事。</p>
+<h3 id="Final-Solution"><a href="#Final-Solution" class="headerlink" title="Final Solution"></a>Final Solution</h3><ol>
+<li><p><strong><u>确保 RTTI Symbols 能够正确导出</u></strong>，这个需要对所有可执行文件的链接过程（<code>CMAKE_EXE_LINKER_FLAGS</code>）加上 <code>-rdynamic</code>（或 <code>-Wl,--export-dynamic</code>）；</p>
+</li>
+<li><p>（OpenHarmony 上的权宜之计）运行前执行 <code>export LD_PRELOAD=/path/to/libclass_loader.so:/path/to/liblayers.so</code>（<code>/path/to</code> 改成 <code>libclass_loader.so</code> 实际安装路径）；</p>
+<blockquote>
+<p><code>liblayers.so</code> 存放了其他插件所需的 RTTI Symbols，例如 Navigation2 StaticLayers 的定义。如果不添加，和 <code>class_loader</code> 在 OpenHarmony 下有同样问题，会导致 <code>local/global_costmap</code> 插件加载失败；</p>
+</blockquote>
+</li>
+<li><p>（OpenHarmony 上的权宜之计）ROS2 源码将 <code>src/ros/class_loader/include/class_loader/class_loader_core.hpp</code> 中的 <code>dynamic_cast</code> 改为 <code>static_cast</code>；</p>
+</li>
+</ol>
+<p>如果不是 OpenHarmony musl libc 而是普通 musl libc，则不需要 2、3 两步就行！</p>
+<p>更多 ROS2 + OpenHarmony 技术解决方案，欢迎关注 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://gitcode.com/openharmony-robot">OpenHarmony Robot PMC</a> 一同交流！</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top">SSRVodka</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top/technical/ros2ohos-plugins-fail/">https://blog.sjtuxhw.top/technical/ros2ohos-plugins-fail/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.sjtuxhw.top" target="_blank">SSRVodka's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/HarmonyOS/">HarmonyOS</a><a class="post-meta__tags" href="/tags/OpenHarmony/">OpenHarmony</a><a class="post-meta__tags" href="/tags/ROS2/">ROS2</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/ohos-ros2nav2-fix.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/technical/embodied-paper-202511/" title="具身智能论文速读 2025年11月"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/embodied-paper-vla.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">具身智能论文速读 2025年11月</div></div><div class="info-2"><div class="info-item-1">VLA-0: Building State-of-the-Art VLAs with Zero ModificationNVIDIA 团队提出，探索一种极简且零修改的 VLA 模型构建范式，突破现有 VLA 方法的复杂性瓶颈，最终在仿真和真实场景中均实现 state-of-the-art（SOTA）性能。 BackgroundVLA 的核心价值是让机器人同时理解视觉（环境图像）、语言（任务指令）并输出动作，是实现通用机器人操作的关键技术。但当前 VLA 的构建方法仍存在复杂性过高、性能与简洁性难以兼顾的问题，具体可通过现有三类主流方法的局限体现：      类别 代表模型 核心思路 关键缺陷     Discrete Token VLAs（AG） RT-2、OpenVLA 连续动作 → 离散为 “动作 bin” → 映射到 VLM 词汇表 1. 动作分辨率受限（细粒度控制需数千 bin，与 VLM 词汇冲突）；2. 破坏 VLM 预训练语言理解（复用词汇）   Generative Action-Head VLAs（AG） π₀、SmolVLA VLM 输出 latent...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/literary/2023-hdc/" title="2023 HDC 参会笔记与感悟"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/2023-HDC.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-07</div><div class="info-item-2">2023 HDC 参会笔记与感悟</div></div><div class="info-2"><div class="info-item-1">Author: SJTU-XHW Language: Simple Chinese License: CC BY 4.0 本人学识有限，内容难免有错，恳请读者能够批评指正，本人将不胜感激！ 注：在笔记的 这里 你可以体验有趣的 WebXR 的项目 Demo ~  8 月 4 日主会场：HarmonyOS 4 与 SDK 主题演讲一、 Harmony 4 UX 设计 系统输入法表情更新：上千个专属定制的 unicode 表情符号，精细化表情符号所代表的语义；  举例：一碗面条所对应的表情就有 4 种之多，提供 “宽面”、“窄面”，“拌面”、“汤面” 之选择；   结合 HarmonyOS 4 图像识别处理的技术，用户可以 定制 “以自己主角” 的壁纸、主题，体现个性化界面设计之美； 系统界面 UI 焕然一新，同时给用户和开发者提供更多不同的窗口组件；  二、 Security 细化权限控制粒度，最小化权限给予。将应用权限交由用户决定；  举例：用户不允许透露的信息（如通讯录），可以采取提交 “虚假信息”...</div></div></div></a><a class="pagination-related" href="/technical/hilog-paper/" title="OpenHarmony Hilog 架构趣读"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/hilog-paper.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-29</div><div class="info-item-2">OpenHarmony Hilog 架构趣读</div></div><div class="info-2"><div class="info-item-1">最近看到一篇讨论 OpenHarmony Hilog 日志子系统的设计的论文，遂进行了一番阅读。该论文发表在软件学报上。 摘要 分析当今主流日志系统的技术架构和优缺点； 基于 OpenHarmony 操作系统的异构设备互联特性，设计 HiLog 日志系统模型规范； 设计并实现第 1 个面向 OpenHarmony 的日志系统 HiLog, 并贡献到 OpenHarmony 主线； 对 HiLog 日志系统的关键指标进行测试和对比试验；  实现的 HiLog 具有以下特征：  基础性能：日志写入阶段吞吐量分别为 1 500 KB/s 和 700 KB/s，吞吐量相对 Android Log 提升 114%； 日志持久化：压缩率 3.5%，丢包率...</div></div></div></a><a class="pagination-related" href="/technical/tee-lab/" title="机密计算与TEE：知识整理和试验笔记"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/tee-lab.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-17</div><div class="info-item-2">机密计算与TEE：知识整理和试验笔记</div></div><div class="info-2"><div class="info-item-1">Part 1. 机密计算与 TEE 技术入门知识整理本节参考文献参见 1.5 节。 1.0 Background为了防止未经授权的访问，数据安全性是基于三种方面构建的，即静态存储数据、传输中数据、和使用中数据。 业界目睹了几项引人注目的内存抓取（例如 Target 信用卡和个人信息泄露事件）和 CPU 侧信道攻击，还有许多虚拟机管理程序（Hypervisor）漏洞也被报道出来，这些攻击和漏洞的报道显著提高了业界对  “使用中数据”的关注，另外，涉及恶意软件注入的著名攻击事件，例如 Triton 攻击和乌克兰电网袭击，更是使得保护“正在使用的数据”成为数据安全领域迫在眉睫的努力方向。 机密计算就是针对数据在使用过程中的安全问题所提出的一种解决方案。它是一种基于硬件的技术，将数据、特定功能、应用程序，同操作系统、系统管理程序或虚拟机管理器以及其他特定进程隔离开来，让数据存储在受信任的执行环境（TEE）中，即使是使用调试器，也无法从外部查看数据或者执行操作。TEE 确保只有经过授权的代码才能访问数据，如果代码被篡改，TEE...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="xhw-card-content"><div class="xhw-avatar-group"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="xhw-sticker"><img class="sticker-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/sad.avif" alt="emoji-sticker"/></div></div></div><div class="author-info-name">SSRVodka</div><div class="author-info-description">A blog to document learning and life</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">65</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">84</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="https://blog.sjtuxhw.top/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span><a class="service-status-badge" id="serviceStatusBadge" href="https://status.sjtuxhw.top" rel="external nofollow noreferrer" target="_blank"><span class="status-loading"></span><span class="status-text">loading...</span></a></div><div class="announcement_content">Thanks for visiting! |•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E7%8C%9C%E6%B5%8B%EF%BC%9ASymbols-Not-Found"><span class="toc-text">一、猜测：Symbols Not Found?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E4%B8%B4%E6%97%B6%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%9F%E6%96%B0%E9%97%AE%E9%A2%98%E5%87%BA%E7%8E%B0"><span class="toc-text">二、临时的解决方案？新问题出现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E9%97%AE%E9%A2%98%E7%9A%84%E5%85%B1%E6%80%A7%EF%BC%9AC-Template-RTTI-Run-Time-Type-Information"><span class="toc-text">三、问题的共性：C++ Template RTTI (Run-Time Type Information)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E9%97%AE%E9%A2%98%E6%A0%B9%E6%BA%90"><span class="toc-text">四、问题根源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-text">五、解决方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Final-Solution"><span class="toc-text">Final Solution</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/technical/ros2ohos-plugins-fail/" title="ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ohos-ros2nav2-fix.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案"/></a><div class="content"><a class="title" href="/technical/ros2ohos-plugins-fail/" title="ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案">ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案</a><time datetime="2025-12-18T12:49:17.000Z" title="发表于 2025-12-18 20:49:17">2025-12-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/embodied-paper-202511/" title="具身智能论文速读 2025年11月"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/embodied-paper-vla.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="具身智能论文速读 2025年11月"/></a><div class="content"><a class="title" href="/technical/embodied-paper-202511/" title="具身智能论文速读 2025年11月">具身智能论文速读 2025年11月</a><time datetime="2025-11-15T02:25:05.000Z" title="发表于 2025-11-15 10:25:05">2025-11-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/chat/web-search-mcps/" title="Survey: 有哪些好用的用于网络搜索的 MCP Servers?"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ws-mcp.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Survey: 有哪些好用的用于网络搜索的 MCP Servers?"/></a><div class="content"><a class="title" href="/chat/web-search-mcps/" title="Survey: 有哪些好用的用于网络搜索的 MCP Servers?">Survey: 有哪些好用的用于网络搜索的 MCP Servers?</a><time datetime="2025-08-28T15:56:12.000Z" title="发表于 2025-08-28 23:56:12">2025-08-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/2025-ccf/" title="CCF 2025 会议笔记"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ccf-2025.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CCF 2025 会议笔记"/></a><div class="content"><a class="title" href="/technical/2025-ccf/" title="CCF 2025 会议笔记">CCF 2025 会议笔记</a><time datetime="2025-08-03T03:36:45.000Z" title="发表于 2025-08-03 11:36:45">2025-08-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/transformer/" title="Transformer 论文精读 + 代码实现"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/transformer.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Transformer 论文精读 + 代码实现"/></a><div class="content"><a class="title" href="/technical/transformer/" title="Transformer 论文精读 + 代码实现">Transformer 论文精读 + 代码实现</a><time datetime="2025-07-20T15:15:10.000Z" title="发表于 2025-07-20 23:15:10">2025-07-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2025 By SSRVodka  |  tech SJTU saves the world</div><div class="framework-info"><span>Built With love &amp; </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme By </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><div style="display:flex;flex-flow:row;justify-content:center;align-items:center;"> <a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <span class="footer-separator">|</span> <a style="display:flex;flex-flow:row;align-items:center;" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> 本网站由 <img style="margin:0 3px;" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/upCloud_logo_blue.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-image"><a class="rightMenu-item" href="javascript:rmf.copyImageUrl();" rel="external nofollow noreferrer"><i class="fa-solid fa-link"></i><span>复制图片地址</span></a><a class="rightMenu-item" href="javascript:rmf.downloadImage();" rel="external nofollow noreferrer"><i class="fa-solid fa-download"></i><span>保存图片</span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-link"><a class="rightMenu-item" href="javascript:rmf.copyLink();" rel="external nofollow noreferrer"><i class="fa-solid fa-link"></i><span>复制链接地址</span></a><a class="rightMenu-item" href="javascript:rmf.openLinkNewTab();" rel="external nofollow noreferrer"><i class="fa-solid fa-external-link-alt"></i><span>在新标签页打开</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"emoji":["https://unpkg.com/@waline/emojis@1.2.0/tw-emoji","https://unpkg.com/@waline/emojis@1.2.0/tieba"],"locale":{"reactionTitle":"你认为这篇文章怎么样？","placeholder":"给大佬递笔 XP\n[ Akismet AI Filter 🤖 ON ]"},"reaction":["https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsup.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsdown.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_antic.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_cool.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_sleepy.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_emm.gif"]}
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://waline.sjtuxhw.top/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script src="/js/rightmenu.js"></script><script src="/js/mourn.js"></script><script src="/js/status_badge.js"></script><script defer src="/js/console_welcome.js"></script><script async data-pjax src="/js/bsz.build-20250729.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

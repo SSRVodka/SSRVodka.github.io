@@ -1,3 +1,5 @@
+https://blog.sjtuxhw.top/technical/ros2ohos-plugins-fail/
+https://blog.sjtuxhw.top/technical/embodied-paper-202511/
 https://blog.sjtuxhw.top/chat/web-search-mcps/
 https://blog.sjtuxhw.top/technical/2025-ccf/
 https://blog.sjtuxhw.top/literary/2023-hdc/
@@ -64,8 +66,8 @@ https://blog.sjtuxhw.top/review/convex-opt/
 https://blog.sjtuxhw.top/technical/cmake-advanced/
 https://blog.sjtuxhw.top/chat/my-cdn-services/
 https://blog.sjtuxhw.top/technical/algo-in-ai/
-https://blog.sjtuxhw.top/gallery/2023-April/index.html
 https://blog.sjtuxhw.top/gallery/2023-January/index.html
+https://blog.sjtuxhw.top/gallery/2023-April/index.html
 https://blog.sjtuxhw.top/gallery/2023-July/index.html
 https://blog.sjtuxhw.top/gallery/2022-March/index.html
 https://blog.sjtuxhw.top/gallery/2022-June/index.html
@@ -144,8 +146,10 @@ https://blog.sjtuxhw.top/tags/Matlab/
 https://blog.sjtuxhw.top/tags/OS/
 https://blog.sjtuxhw.top/tags/Paper/
 https://blog.sjtuxhw.top/tags/Python/
-https://blog.sjtuxhw.top/tags/React/
+https://blog.sjtuxhw.top/tags/OpenHarmony/
+https://blog.sjtuxhw.top/tags/ROS2/
 https://blog.sjtuxhw.top/tags/Redis/
+https://blog.sjtuxhw.top/tags/React/
 https://blog.sjtuxhw.top/tags/SQL/
 https://blog.sjtuxhw.top/tags/Database/
 https://blog.sjtuxhw.top/tags/MySQL/
@@ -160,6 +164,7 @@ https://blog.sjtuxhw.top/tags/Appreciation/
 https://blog.sjtuxhw.top/tags/Flag/
 https://blog.sjtuxhw.top/tags/Qt/
 https://blog.sjtuxhw.top/tags/C/
+https://blog.sjtuxhw.top/tags/VLA/
 https://blog.sjtuxhw.top/tags/IL/
 https://blog.sjtuxhw.top/tags/Rust/
 https://blog.sjtuxhw.top/tags/PyTorch/
@@ -179,7 +184,6 @@ https://blog.sjtuxhw.top/tags/Graph/
 https://blog.sjtuxhw.top/tags/IO/
 https://blog.sjtuxhw.top/tags/TEE/
 https://blog.sjtuxhw.top/tags/TrustZone/
-https://blog.sjtuxhw.top/tags/OpenHarmony/
 https://blog.sjtuxhw.top/tags/Linux/
 https://blog.sjtuxhw.top/tags/Logic/
 https://blog.sjtuxhw.top/tags/Set-Theory/

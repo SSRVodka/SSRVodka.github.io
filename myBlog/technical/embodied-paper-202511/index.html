@@ -1,0 +1,418 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>具身智能论文速读 2025年11月 | SSRVodka's blog</title><meta name="author" content="SSRVodka,xhwpro@gmail.com"><meta name="copyright" content="SSRVodka"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="VLA-0: Building State-of-the-Art VLAs with Zero ModificationNVIDIA 团队提出，探索一种极简且零修改的 VLA 模型构建范式，突破现有 VLA 方法的复杂性瓶颈，最终在仿真和真实场景中均实现 state-of-the-art（SOTA）性能。 BackgroundVLA 的核心价值是让机器人同时理解视觉（环境图像）、语言（任务指令）并">
+<meta property="og:type" content="article">
+<meta property="og:title" content="具身智能论文速读 2025年11月">
+<meta property="og:url" content="https://blog.sjtuxhw.top/technical/embodied-paper-202511/index.html">
+<meta property="og:site_name" content="SSRVodka&#39;s blog">
+<meta property="og:description" content="VLA-0: Building State-of-the-Art VLAs with Zero ModificationNVIDIA 团队提出，探索一种极简且零修改的 VLA 模型构建范式，突破现有 VLA 方法的复杂性瓶颈，最终在仿真和真实场景中均实现 state-of-the-art（SOTA）性能。 BackgroundVLA 的核心价值是让机器人同时理解视觉（环境图像）、语言（任务指令）并">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.sjtuxhw.top/cover_imgs/embodied-paper-vla.jpg">
+<meta property="article:published_time" content="2025-11-15T02:25:05.000Z">
+<meta property="article:modified_time" content="2025-12-18T13:06:16.358Z">
+<meta property="article:author" content="SSRVodka">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Robot">
+<meta property="article:tag" content="Paper">
+<meta property="article:tag" content="VLA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.sjtuxhw.top/cover_imgs/embodied-paper-vla.jpg"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.sjtuxhw.top/technical/embodied-paper-202511/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="/css/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":300,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功 ヾ(≧∇≦*)ゝ',
+    error: '复制失败 (#`皿´)',
+    noSupport: '浏览器不支持 ╮(╯_╰)╭'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#333","bgDark":"#1f1f1f","position":"top-center"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '具身智能论文速读 2025年11月',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="/css/mouseConfig.css"/><link rel="stylesheet" href="/css/rightmenu.css"/><link rel="stylesheet" href="/css/custom_music.css"/><link rel="stylesheet" href="/css/addFonts.css"/><link rel="stylesheet" href="/css/titleFonts.css"/><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="SSRVodka's blog" type="application/atom+xml">
+</head><body><div id="loading-box"><div id="main-loading-bg"><div class="truckWrapper"><div class="truckBody"><svg class="trucksvg" viewBox="0 0 198 93" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z" fill="currentColor" stroke="#282828" stroke-width="3"></path><path d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z" fill="#7D7C7C" stroke="#282828" stroke-width="3"></path><path d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z" fill="#282828" stroke="#282828" stroke-width="2"></path><rect x="187" y="63" width="5" height="7" rx="1" fill="#FFFCAB" stroke="#282828" stroke-width="2"></rect><rect x="193" y="81" width="4" height="11" rx="1" fill="#282828" stroke="#282828" stroke-width="2"></rect><rect x="6.5" y="1.5" width="121" height="90" rx="2.5" fill="#DFDFDF" stroke="#282828" stroke-width="3"></rect><rect x="1" y="84" width="6" height="4" rx="2" fill="#DFDFDF" stroke="#282828" stroke-width="2"></rect></svg></div><div class="truckTires"><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg><svg class="tiresvg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="13.5" fill="#282828" stroke="#282828" stroke-width="3"></circle><circle cx="15" cy="15" r="7" fill="#DFDFDF"></circle></svg></div><div class="road"></div><svg class="lampPost" fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 453.459 453.459" xml:space="preserve"><path d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993 c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514 c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16 c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914 h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75 v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795 V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017 h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"></path></svg></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+      setTimeout(() => {
+        $loadingBox.style.display = 'none'
+      }, 800)
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()
+</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">65</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">84</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://notes.sjtuxhw.top"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> Notes</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener external nofollow noreferrer" href="https://www.travellings.cn/go.html"><i class="fa-fw fa-solid fa-train-subway"></i><span> Travelling</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.sjtuxhw.top/cover_imgs/embodied-paper-vla.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/head_icon.png" alt="Logo"><span class="site-name">SSRVodka's blog</span></a><a class="nav-page-title" href="/"><span class="site-name">具身智能论文速读 2025年11月</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://notes.sjtuxhw.top"><i class="fa-fw fa-solid fa-pen-to-square"></i><span> Notes</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-gamepad"></i><span> ACG-Lab</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/ACGLab/MikuTap/"><i class="fa-fw fas fa-music"></i><span> MikuTap</span></a></li><li><a class="site-page child" href="/ACGLab/Live2D/"><i class="fa-fw fa-solid fa-face-kiss-wink-heart"></i><span> Live2D</span></a></li><li><a class="site-page child" href="/ACGLab/Folio-2019/"><i class="fa-fw fa-solid fa-car-side"></i><span> Folio-2019</span></a></li><li><a class="site-page child" href="/ACGLab/Cube/"><i class="fa-fw fa-solid fa-cube"></i><span> Cube</span></a></li><li><a class="site-page child" href="/ACGLab/TowerBlocks/"><i class="fa-fw fa-solid fa-gopuram"></i><span> TBlocks</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/friend-links/"><i class="fa-fw fas fa-link"></i><span> Links</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fa fa-camera"></i><span> Gallery</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener external nofollow noreferrer" href="https://www.travellings.cn/go.html"><i class="fa-fw fa-solid fa-train-subway"></i><span> Travelling</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">具身智能论文速读 2025年11月</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-15T02:25:05.000Z" title="发表于 2025-11-15 10:25:05">2025-11-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-12-18T13:06:16.358Z" title="更新于 2025-12-18 21:06:16">2025-12-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/technical/">technical</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/technical/embodied-paper-202511/#post-comment"><span class="waline-comment-count" data-path="/technical/embodied-paper-202511/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="VLA-0-Building-State-of-the-Art-VLAs-with-Zero-Modification"><a href="#VLA-0-Building-State-of-the-Art-VLAs-with-Zero-Modification" class="headerlink" title="VLA-0: Building State-of-the-Art VLAs with Zero Modification"></a>VLA-0: Building State-of-the-Art VLAs with Zero Modification</h2><p>NVIDIA 团队提出，探索一种<strong>极简且零修改</strong>的 VLA 模型构建范式，突破现有 VLA 方法的复杂性瓶颈，最终在仿真和真实场景中均实现 state-of-the-art（SOTA）性能。</p>
+<h3 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h3><p>VLA 的核心价值是让机器人同时理解视觉（环境图像）、语言（任务指令）并输出动作，是实现通用机器人操作的关键技术。但当前 VLA 的构建方法仍存在<strong>复杂性过高、性能与简洁性难以兼顾</strong>的问题，具体可通过现有三类主流方法的局限体现：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/cate.png" width="1000px" /></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>代表模型</th>
+<th>核心思路</th>
+<th>关键缺陷</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Discrete Token VLAs（AG）</td>
+<td>RT-2、OpenVLA</td>
+<td>连续动作 → 离散为 “动作 bin” → 映射到 VLM 词汇表</td>
+<td>1. 动作分辨率受限（细粒度控制需数千 bin，与 VLM 词汇冲突）；2. 破坏 VLM 预训练语言理解（复用词汇）</td>
+</tr>
+<tr>
+<td>Generative Action-Head VLAs（AG）</td>
+<td>π₀、SmolVLA</td>
+<td>VLM 输出 latent 向量→新增 “动作生成头”（如扩散模型）解码为动作</td>
+<td>1. 新增网络需额外微调；2. 削弱 VLM 的语言接地能力（语言与动作关联变弱）；3. 泛化性受非预训练动作头影响</td>
+</tr>
+<tr>
+<td>自定义架构 VLAs（Custom Arch）</td>
+<td>OpenVLA-OFT、π-FAST</td>
+<td>修改 VLM 架构（如加专用 ACT 头）或自定义动作令牌器（如 DCT）</td>
+<td>1. 需大规模架构修改与额外参数；2. 训练流程复杂（如自定义令牌器需单独优化）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>是否存在一种 “无侵入式” 的 VLA 构建方法：不修改 VLM 的词汇表、不新增网络组件、不改变架构，同时实现 SOTA 性能？</strong></p>
+<p>“将动作直接表示为文本” 这一最简单的策略被长期忽视（因直觉上认为 “文本不适合表示连续动作”），因此这个工作正是为验证该策略的有效性而提出 VLA-0。</p>
+<h3 id="Design-Principle"><a href="#Design-Principle" class="headerlink" title="Design Principle"></a>Design Principle</h3><p>“零修改 VLM，最大化利用其原生文本生成能力”，通过精心设计的 “输入 - 输出范式 + 训练 / 推理策略”，实现动作预测的高性能</p>
+<ul>
+<li><p>Backbone:  Qwen-VL-2.5（3B），<strong>Vision encoder (ViT)</strong> for image features + <strong>Language model</strong> for reasoning and text generation.</p>
+<ul>
+<li><strong>性能均衡</strong>：在同参数规模（3B）下，视觉 - 语言理解能力 competitive；</li>
+<li><strong>计算高效</strong>：相比大模型（如 17B），训练和推理速度更快，降低落地门槛；</li>
+<li><strong>开源可复现</strong>；</li>
+</ul>
+</li>
+<li><p>输入输出：完全遵循 VLM 的 “视觉 + 文本输入 -&gt; 文本输出” 范式</p>
+<ul>
+<li><p>Input：</p>
+<ul>
+<li><p>System Prompt：明确任务规则，示例如下（H = 预测步数，D = 动作维度，B = 整数范围）：</p>
+<p>“分析输入图像，预测未来 H 步的机器人动作。每步动作含 D 个维度。仅输出 H×D 个整数（范围 0-B），用空格分隔，不包含其他内容。”</p>
+<p>该提示强制 VLM 仅生成动作相关的整数序列，避免冗余文本。</p>
+</li>
+<li><p>图像输入：根据场景灵活选择，且两种输入方式性能无差异：</p>
+<ul>
+<li>仿真场景：第三人称相机 + 手腕相机（与基线模型一致）；</li>
+<li>真实场景：左右双目相机（如图 3 所示）；</li>
+<li>可选方案：将多图拼接为单张复合图（简化输入逻辑，性能不变）。</li>
+</ul>
+</li>
+<li><p><strong>任务指令（Task Instruction）</strong>：自然语言描述目标，如 “Put the cupcake in the bowl”（将纸杯蛋糕放进碗里）。</p>
+</li>
+</ul>
+</li>
+<li><p>Output:</p>
+<p><strong>空格分隔的整数序列</strong>（如 “4 12 98 3 0 0 …”），代表连续动作的 “文本化编码”：</p>
+<ul>
+<li>（prompt 编码时）将机器人的连续动作值（如末端执行器坐标、关节角度）归一化到 [0, B] 的整数范围（B 为超参，实验中最优值为 1000）；</li>
+<li>推理时将整数序列反归一化回连续动作，直接控制机器人。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/arch.png" width="700px" /></p>
+<h3 id="Core-Tech"><a href="#Core-Tech" class="headerlink" title="Core Tech"></a>Core Tech</h3><p>如果仅依靠 “文本表示动作” 的范式，VLA-0 是没有办法达到 SOTA 水平的，所以重点还是在下面的核心技术中：</p>
+<h4 id="Action-Decoding"><a href="#Action-Decoding" class="headerlink" title="Action-Decoding"></a>Action-Decoding</h4><p>通过 “连续动作 -&gt; 归一化整数 -&gt; 文本输出”，无需依赖 VLM 词汇表的 bin 划分，理论上可通过调整超参数 B（如 1000、4000）实现任意分辨率（实验证明 B=1000 已足够，B=4000 无额外增益）。做法就是将连续动作的文本表示映射到固定范围的 <code>[0, B]</code> 中，<code>_val = round((value - min) / (max - min) * B)</code>；</p>
+<p>做法优点：</p>
+<ul>
+<li>可以克服像 OpenVLA 这样 Discrete Token VLA 的缺陷（encoded bins 数量限制 &amp; token 冲突、语义污染降低理解能力、naive per-dimension binning 表示低效性($\pi$-FAST 尝试解决) ）；</li>
+<li>支持任意分辨率的动作细节，而不需要大规模的 discrete tokens 干扰模型的 vocabulary；</li>
+</ul>
+<h4 id="Ensemble-Prediction"><a href="#Ensemble-Prediction" class="headerlink" title="Ensemble Prediction"></a>Ensemble Prediction</h4><blockquote>
+<p>不是创新点</p>
+</blockquote>
+<p>本质上是通过 action chunking 提升动作稳定性（单步预测噪声很大，结合上模型较低的输出频率(tip: $\pi$-0 基于的 flow matching 的 diffusion head)），借鉴 ACT 模型的 “多步预测集成” 策略：<u>推理时，VLM 每步预测 <strong>n 个未来动作</strong>（如 n=5），当前步 t 的最终动作是 “t 步预测的第 1 个动作、t-1 步预测的第 2 个动作、…、t-n+1 步预测的第 n 个动作” 的平均值</u>；</p>
+<blockquote>
+<p>消融实验验证：通过集成降低单步噪声，实验证明移除该技术后成功率下降 2 个百分点；</p>
+</blockquote>
+<h4 id="Masked-Action-Augmentation"><a href="#Masked-Action-Augmentation" class="headerlink" title="Masked Action Augmentation"></a>Masked Action Augmentation</h4><p>因为 VLM 的文本生成是自回归的，若仅训练生成整数序列，VLM 可能只是把任务误当成了另一种 auto-completion，比如根据时间序列的规律上次数值是 100 下次就会猜测 101，并没有结合到视觉信息，仅依靠语言推理；</p>
+<p>训练时<strong>随机掩码目标动作字符串中的部分字符</strong>（如将 “123 456” 掩码为 “1#3 4##”），迫使 VLM 必须依赖图像（环境信息）和任务指令（目标）推理动作，而非仅依赖前序数值；</p>
+<blockquote>
+<p>消融实验验证：移除该技术后成功率下降 1.2 个百分点，证明其能强化 VLM 的 “视觉 - 语言 - 动作关联”。</p>
+</blockquote>
+<p>缺点：文章并未提及相关掩码策略？</p>
+<blockquote>
+<ul>
+<li>数值操作是具有强局部结构（数字顺序编码大小）和全局语义（微小数字变化可能对应实际单位中的巨大变化，取决于量纲）的多位数字符串。随机遮蔽单个字符会以不可预测的方式破坏结构。</li>
+<li>自回归语言模型基于先前生成的标记进行训练。若在目标侧进行遮蔽，模型仍然可能学会复制未遮蔽的前缀并简单“猜测”后缀；若遮蔽分布不切实际，则可能过度拟合遮蔽模式？</li>
+<li>“动作” 这个东西会不会有依赖项（需要跨标记衡量），如关节向量或(x,y,z)三元组。掩盖动作部分与掩盖完整动作条目会产生不同效果。</li>
+</ul>
+</blockquote>
+<h3 id="Training"><a href="#Training" class="headerlink" title="Training"></a>Training</h3><p>VLA-0 仅需对基础 VLM 进行<strong>全量微调</strong>（无新增参数），训练配置：</p>
+<ul>
+<li>损失函数：标准交叉熵损失（与 VLM 预训练一致，无需设计新损失）；</li>
+<li>优化器：Adam；</li>
+<li>训练参数：64 个 epoch，batch size = 192，学习率 = $5\times 10^{-6}$；</li>
+<li>计算资源：8 张 A100 GPU，训练耗时约 32 小时（相比大模型微调更高效）。</li>
+</ul>
+<blockquote>
+<p>[!QUESTION]</p>
+<p>无任何微调（仅通过 prompt engineering 实现动作预测）， VLA-0 的策略是否仍能生效？</p>
+<p>VLA-0 的性能依赖 “VLM 的原生文本生成能力” 还是 “微调后习得的动作 - 视觉 - 语言关联”（只是 Qwen 单纯比较好）？</p>
+</blockquote>
+<h3 id="Tests-amp-Eval"><a href="#Tests-amp-Eval" class="headerlink" title="Tests &amp; Eval"></a>Tests &amp; Eval</h3><ul>
+<li><p>仿真环境实验：LIBERO benchmark</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/libero.png" /></p>
+<p>| 套件     | 测试能力                       | VLA-0 成功率 | 最优 baseline（无预训练）成功率 |<br>| ———— | ——————————————— | —————— | ———————————————- |<br>| Spatial  | 空间定位能力（如精准放置）     | 97.0%        | $\pi_{0.5}$-KI（96.6%）         |<br>| Object   | 物体交互能力（如操作特定物体） | 97.8%        | $\pi_{0.5}$-KI（97.2%）         |<br>| Goal     | 目标理解能力（如匹配指令目标） | 96.2%        | $\pi_{0.5}$-KI（94.6%）         |<br>| Long     | 长序列动作能力（如多步操作）   | 87.6%        | $\pi_{0.5}$-KI（85.8%）         |<br>| <strong>平均</strong> | ——                             | <strong>94.7%</strong>    | $\pi_{0.5}$-KI（93.3%）         |</p>
+</li>
+<li><p>真实世界实验：LeRobot SO-100 dataset，和 SmolVLA 对比</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="imgs/smol.png"/></p>
+<blockquote>
+<p>VLA-0 无大规模预训练，仍能在各方面平均领先 12.5 个百分点，证明其在真实场景的鲁棒性。</p>
+</blockquote>
+</li>
+<li><p>消融实验：</p>
+<p>| 实验配置                                   | 平均成功率     | 性能下降幅度 |<br>| ————————————————————— | ——————— | —————— |<br>| 完整 VLA-0（动作集成 + 掩码增强 + B=1000） | 94.7%          | -            |<br>| 移除动作集成                               | 92.7%          | -2.0%        |<br>| 移除掩码增强                               | 93.5%          | -1.2%        |<br>| B=250（降低分辨率）                        | 93.2%          | -1.5%        |<br>| B=4000（提高分辨率）                       | 94.2%          | -0.5%        |<br>| 图像拼接 vs 分开输入                       | 94.5% vs 94.7% | 无差异       |</p>
+</li>
+</ul>
+<p>Code not available for now…</p>
+<h3 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h3><ul>
+<li><p>未探索大规模动作数据预训练：若给 VLA-0 加入大规模机器人数据预训练，性能是否能进一步超越 OpenVLA-OFT？</p>
+</li>
+<li><p>推理速度优化：当前真实场景推理速度为 4Hz，可通过模型蒸馏、量化进一步提升，适配更高实时性需求；</p>
+</li>
+</ul>
+<blockquote>
+<p>当前 VLA-0 仅验证了 “低维动作”（如末端执行器坐标、关节角度）的文本化表示。“高维动作”（如机器人手部 20  个自由度的精细操作）呢？</p>
+<p>整数序列的长度会大幅增加（如 H=10 步 ×D=20 维 = 200 个整数）。会不会导致 “动作序列中前后维度的依赖关系紊乱”？</p>
+<p>Modify the code</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top">SSRVodka</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://blog.sjtuxhw.top/technical/embodied-paper-202511/">https://blog.sjtuxhw.top/technical/embodied-paper-202511/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://blog.sjtuxhw.top" target="_blank">SSRVodka's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AI/">AI</a><a class="post-meta__tags" href="/tags/Robot/">Robot</a><a class="post-meta__tags" href="/tags/Paper/">Paper</a><a class="post-meta__tags" href="/tags/VLA/">VLA</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.sjtuxhw.top/cover_imgs/embodied-paper-vla.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat_pay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat_pay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/technical/ros2ohos-plugins-fail/" title="ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ohos-ros2nav2-fix.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案</div></div><div class="info-2"><div class="info-item-1">越过交叉编译的重重阻碍，我在将 ROS2 及其生态迁移到原生 OpenHarmony 平台上的过程中遇到了一个比较大的问题：ROS2 似乎无法加载插件形态的动态链接库！就是说，launch 一个 ROS2 应用（需要动态链接库）本身是可以的，但是这个 ROS2 应用如果使用到了动态链接库插件（一般通过 ROS2 的 class_loader 组件间接加载）就出问题了。 TL; DR:（太长不看版）最终解决方案请参见 “Final Solution” 一节；如果想看问题根源请参见 “问题根源” 一节。 下文将详细叙述调试经过，供读者思考、相互学习。举个实际迁移调试过程中的例子。下面是我编写的问题描述：  我在 OpenHarmony 上运行迁移的 Navigation2 框架时遇到一些问题，加载的 navigation2 相关的动态链接库出现加载失败的问题。 运行的应用环境是任意一个使用 navigation2 的 ROS 应用，例如 B 站鱼香肉丝 UP 开发的 fishbot 机器人的 navigation2.launch.py（删除 rviz2...</div></div></div></a><a class="pagination-related" href="/chat/web-search-mcps/" title="Survey: 有哪些好用的用于网络搜索的 MCP Servers?"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ws-mcp.jpeg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Survey: 有哪些好用的用于网络搜索的 MCP Servers?</div></div><div class="info-2"><div class="info-item-1">网络搜索的 MCP servers 由两个部分组成：一个是网页搜索服务，另一个是包装成符合 MCP 规范的 MCP server（供 Agent 使用）。 考虑到现在 MCP servers 相当繁多，而且大多生命短暂（无人维护），因此想让 AI 用上网络搜索的 MCP 工具，首先考虑的是有公司维护的、性价比高的产品，一般搜索质量会好一点，然后再考虑开发者个人搭建的那些 MCP servers（一般它们就是将一个或多个网页搜索服务包装起来，当然也有很多是“巧用”传统搜索引擎的）。 TL; DR下面的表格先对目前 survey 到的进行总结： 表 I: 公司维护的网页搜索产品及配套 MCP Server    名称 主要功能 免费额度/限制 搜索服务 私有部署支持 MCP Server 使用体验     Brave Search 网页搜索、新闻聚合、视频/图像聚合 1 请求/秒，2000 请求/月，free plan...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/technical/embodied-3-papers-202503/" title="具身智能论文速读3篇 2025年3月"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/embodied-3-202503.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-02</div><div class="info-item-2">具身智能论文速读3篇 2025年3月</div></div><div class="info-2"><div class="info-item-1">HumanUP: Learning Getting-Up Policies for Real-World Humanoid Robots主旨：如何通过强化学习（RL）和仿真到现实（Sim-to-Real）的方法，为人形机器人开发能够从不同跌倒姿势和不同地形中自主起身的控制策略； 背景：人形机器人在实际应用中容易跌倒，而手动设计控制器来处理各种跌倒姿势和复杂地形非常困难。现有的控制器通常只能处理有限的跌倒情况，缺乏泛化能力。因此，论文提出了一种基于学习的框架，通过仿真训练生成能够在真实世界中应对多种跌倒姿势和地形的起身策略。目前的挑战有：  非周期性行为：起身任务不像行走那样有固定的周期性接触模式，接触序列需要动态调整。 丰富的接触：起身过程中，机器人不仅依靠脚部接触地面，还可能利用身体其他部位（如手臂、躯干）来施加力。 稀疏奖励：起身任务的奖励信号较为稀疏，机器人需要在长时间内做出正确的动作才能获得奖励。   论文的解决方案 HumanUP：  第一阶段（Stage...</div></div></div></a><a class="pagination-related" href="/technical/2025-ccf/" title="CCF 2025 会议笔记"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ccf-2025.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-08-03</div><div class="info-item-2">CCF 2025 会议笔记</div></div><div class="info-2"><div class="info-item-1">主论坛主论坛开幕主要介绍了开源社区的背景现状以及院士自己的工作，我选个比较感兴趣的记录一下。 郑纬民院士介绍的它们团队的成果 Mooncake 和 KTransformer； 1. Mooncake这个工作的核心是解决大规模语言模型（LLM）在线服务（尤其是长上下文场景）中的效率、成本和延迟问题，特别是围绕 KV Cache 的管理优化展开。简言之：用更多的存储资源（CPU内存、SSD、网络带宽）来换取更少的昂贵计算资源（GPU）消耗，从而显著提升服务吞吐量和用户体验。 郑院士向我们介绍 kimi AI 服务器其实更新迭代过 5 次，但每次都会崩溃，主要原因是大量用户在短时间内问了很复杂的问题，或者上传了很长的文档来分析，导致的显存紧缺。LLM 在回答你的问题之前，需要先“理解”你输入的所有内容（Prefill 阶段），然后才能开始一个字一个字地生成回答（Decoding 阶段）。这个过程中产生了一个关键的东西：KV Cache (Key-Value Cache)。  [!NOTE] KV Cache 是 LLM（尤其是 Transformer...</div></div></div></a><a class="pagination-related" href="/technical/transformer/" title="Transformer 论文精读 + 代码实现"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/transformer.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-20</div><div class="info-item-2">Transformer 论文精读 + 代码实现</div></div><div class="info-2"><div class="info-item-1">笔记温习一下经典的 Transformer 架构的论文，结合代码实现和解读。  前置知识 循环神经网络、卷积神经网络的演化过程、结构、代表性的模型；  传统的注意力机制（attention）已经在很多场合下成为序列/转录模型的不可分割的一部分，因为无论两个词语语义的依赖在输入/输出序列中距离多远，都能建模依赖关系。但是这种传统的注意力机制仍然没有用在 recurrent 网络中。  自注意力机制（self-attention）是通过关联单个序列中的的不同位置，来计算这个序列的 hidden representation。自注意力机制在此前被成功应用与阅读理解、抽象总结等任务中；  另外有工作表明，基于循环注意力机制（recurrent attention）的端到端记忆网络（end-to-end memory networks），它并没有采用传统 RNN 的序列对齐循环（sequence-aligned recurrence）的计算方法，仍然能在简单语言问答、语言建模等任务上取得比较好的效果；  循环注意力机制：一种将注意力机制与循环神经网络（RNN）相结合的技术，常见的有...</div></div></div></a><a class="pagination-related" href="/technical/algo-in-ai/" title="Algorithms in AI"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/algo-in-ai.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-20</div><div class="info-item-2">Algorithms in AI</div></div><div class="info-2"><div class="info-item-1">Chapter 0. Intro0.1 The definition of Artificial Intelligence Think rationally -&gt; Think like people -&gt; Act like people -&gt; Act rationally.  The system maximumly achieving predefined goals. -&gt; Maximize the expected utility. (最大化预期效用)   Brains and AI  Why not reverse engineering the brains? -&gt; Not as modular as software.  But there are the lessons learned from the brain (interleave, 交织在一起):  Memory (data): Judge situations depending on the previous experiences...</div></div></div></a><a class="pagination-related" href="/technical/ml-roadmap/" title="知识图谱：Machine Learning Roadmap"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ml-roadmap.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-08</div><div class="info-item-2">知识图谱：Machine Learning Roadmap</div></div><div class="info-2"><div class="info-item-1">笔者感觉 ML 这块知识点太多，互联网上多数信息都难以结构化，尤其是一个方向的知识火起来后，每个人都写一篇博客，看的眼花缭乱。。因此笔者简单总结了一下机器学习领域的知识图谱，方便知识体系构建和回顾。 如有错误，欢迎读者勘误斧正。  </div></div></div></a><a class="pagination-related" href="/chat/web-search-mcps/" title="Survey: 有哪些好用的用于网络搜索的 MCP Servers?"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ws-mcp.jpeg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-08-28</div><div class="info-item-2">Survey: 有哪些好用的用于网络搜索的 MCP Servers?</div></div><div class="info-2"><div class="info-item-1">网络搜索的 MCP servers 由两个部分组成：一个是网页搜索服务，另一个是包装成符合 MCP 规范的 MCP server（供 Agent 使用）。 考虑到现在 MCP servers 相当繁多，而且大多生命短暂（无人维护），因此想让 AI 用上网络搜索的 MCP 工具，首先考虑的是有公司维护的、性价比高的产品，一般搜索质量会好一点，然后再考虑开发者个人搭建的那些 MCP servers（一般它们就是将一个或多个网页搜索服务包装起来，当然也有很多是“巧用”传统搜索引擎的）。 TL; DR下面的表格先对目前 survey 到的进行总结： 表 I: 公司维护的网页搜索产品及配套 MCP Server    名称 主要功能 免费额度/限制 搜索服务 私有部署支持 MCP Server 使用体验     Brave Search 网页搜索、新闻聚合、视频/图像聚合 1 请求/秒，2000 请求/月，free plan...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="xhw-card-content"><div class="xhw-avatar-group"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/favicon.ico" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="xhw-sticker"><img class="sticker-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/sad.avif" alt="emoji-sticker"/></div></div></div><div class="author-info-name">SSRVodka</div><div class="author-info-description">A blog to document learning and life</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">65</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">84</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/SSRVodka" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:sjtuxhw12345@sjtu.edu.cn" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="https://blog.sjtuxhw.top/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span><a class="service-status-badge" id="serviceStatusBadge" href="https://status.sjtuxhw.top" rel="external nofollow noreferrer" target="_blank"><span class="status-loading"></span><span class="status-text">loading...</span></a></div><div class="announcement_content">Thanks for visiting! |•'-'•) ✧</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#VLA-0-Building-State-of-the-Art-VLAs-with-Zero-Modification"><span class="toc-text">VLA-0: Building State-of-the-Art VLAs with Zero Modification</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Background"><span class="toc-text">Background</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Design-Principle"><span class="toc-text">Design Principle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Core-Tech"><span class="toc-text">Core Tech</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Action-Decoding"><span class="toc-text">Action-Decoding</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Ensemble-Prediction"><span class="toc-text">Ensemble Prediction</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Masked-Action-Augmentation"><span class="toc-text">Masked Action Augmentation</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Training"><span class="toc-text">Training</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tests-amp-Eval"><span class="toc-text">Tests &amp; Eval</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Future"><span class="toc-text">Future</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/technical/ros2ohos-plugins-fail/" title="ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ohos-ros2nav2-fix.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案"/></a><div class="content"><a class="title" href="/technical/ros2ohos-plugins-fail/" title="ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案">ROS2 迁移到 OpenHarmony 平台后无法加载 Plugins 动态链接库的解决方案</a><time datetime="2025-12-18T12:49:17.000Z" title="发表于 2025-12-18 20:49:17">2025-12-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/embodied-paper-202511/" title="具身智能论文速读 2025年11月"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/embodied-paper-vla.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="具身智能论文速读 2025年11月"/></a><div class="content"><a class="title" href="/technical/embodied-paper-202511/" title="具身智能论文速读 2025年11月">具身智能论文速读 2025年11月</a><time datetime="2025-11-15T02:25:05.000Z" title="发表于 2025-11-15 10:25:05">2025-11-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/chat/web-search-mcps/" title="Survey: 有哪些好用的用于网络搜索的 MCP Servers?"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ws-mcp.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Survey: 有哪些好用的用于网络搜索的 MCP Servers?"/></a><div class="content"><a class="title" href="/chat/web-search-mcps/" title="Survey: 有哪些好用的用于网络搜索的 MCP Servers?">Survey: 有哪些好用的用于网络搜索的 MCP Servers?</a><time datetime="2025-08-28T15:56:12.000Z" title="发表于 2025-08-28 23:56:12">2025-08-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/2025-ccf/" title="CCF 2025 会议笔记"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/ccf-2025.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CCF 2025 会议笔记"/></a><div class="content"><a class="title" href="/technical/2025-ccf/" title="CCF 2025 会议笔记">CCF 2025 会议笔记</a><time datetime="2025-08-03T03:36:45.000Z" title="发表于 2025-08-03 11:36:45">2025-08-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/technical/transformer/" title="Transformer 论文精读 + 代码实现"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://cdn.sjtuxhw.top/cover_imgs/transformer.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Transformer 论文精读 + 代码实现"/></a><div class="content"><a class="title" href="/technical/transformer/" title="Transformer 论文精读 + 代码实现">Transformer 论文精读 + 代码实现</a><time datetime="2025-07-20T15:15:10.000Z" title="发表于 2025-07-20 23:15:10">2025-07-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2025 By SSRVodka  |  tech SJTU saves the world</div><div class="framework-info"><span>Built With love &amp; </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme By </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><div style="display:flex;flex-flow:row;justify-content:center;align-items:center;"> <a href="https://beian.miit.gov.cn" rel="external nofollow noreferrer" id="beian" target="_blank">ICP备案：沪ICP备2023012264-1号</a> <span class="footer-separator">|</span> <a style="display:flex;flex-flow:row;align-items:center;" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral" rel="external nofollow noreferrer" target="_blank"> 本网站由 <img style="margin:0 3px;" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/upCloud_logo_blue.png" title="upcloud" alt="upcloud" height="30px"> 提供CDN加速/云存储服务 </a></div></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><a class="rightMenu-item" href="javascript:window.history.back();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-left"></i></a><a class="rightMenu-item" href="javascript:window.location.reload();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-rotate-right"></i></a><a class="rightMenu-item" href="javascript:window.history.forward();" rel="external nofollow noreferrer"><i class="fa-solid fa-arrow-right"></i></a><a class="rightMenu-item" id="menu-radompage" href="javascript:window.location.href = window.location.origin;" rel="external nofollow noreferrer"><i class="fa-solid fa-house"></i></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-text"><a class="rightMenu-item" href="javascript:rmf.copySelect();" rel="external nofollow noreferrer"><i class="fa-solid fa-copy"></i><span>复制</span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-image"><a class="rightMenu-item" href="javascript:rmf.copyImageUrl();" rel="external nofollow noreferrer"><i class="fa-solid fa-link"></i><span>复制图片地址</span></a><a class="rightMenu-item" href="javascript:rmf.downloadImage();" rel="external nofollow noreferrer"><i class="fa-solid fa-download"></i><span>保存图片</span></a></div><div class="rightMenu-group rightMenu-line hide" id="menu-link"><a class="rightMenu-item" href="javascript:rmf.copyLink();" rel="external nofollow noreferrer"><i class="fa-solid fa-link"></i><span>复制链接地址</span></a><a class="rightMenu-item" href="javascript:rmf.openLinkNewTab();" rel="external nofollow noreferrer"><i class="fa-solid fa-external-link-alt"></i><span>在新标签页打开</span></a></div><div class="rightMenu-group rightMenu-line"><a class="rightMenu-item" href="javascript:rmf.switchDarkMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-circle-half-stroke"></i><span>昼夜切换</span></a><a class="rightMenu-item" href="javascript:rmf.switchReadMode();" rel="external nofollow noreferrer"><i class="fa-solid fa-book"></i><span>阅读模式</span></a></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+      
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"emoji":["https://unpkg.com/@waline/emojis@1.2.0/tw-emoji","https://unpkg.com/@waline/emojis@1.2.0/tieba"],"locale":{"reactionTitle":"你认为这篇文章怎么样？","placeholder":"给大佬递笔 XP\n[ Akismet AI Filter 🤖 ON ]"},"reaction":["https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsup.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_thumbsdown.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_antic.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_cool.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_sleepy.gif","https://unpkg.com/@waline/emojis@1.2.0/qq/qq_emm.gif"]}
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://waline.sjtuxhw.top/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script src="/js/rightmenu.js"></script><script src="/js/mourn.js"></script><script src="/js/status_badge.js"></script><script defer src="/js/console_welcome.js"></script><script async data-pjax src="/js/bsz.build-20250729.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
